@@ -2,92 +2,9 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology alquileres.ttl
-;;; :Date 22/11/2025 12:08:04
+;;; :Date 22/11/2025 13:24:03
 
-(defclass Property "Component físic: característiques intrínseques de l'habitatge."
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-    ;;; Relaciona una propietat amb una de les seves habitacions
-    (multislot hasRoom
-        (type INSTANCE)
-        (create-accessor read-write))
-    ;;; Relaciona un immoble amb la seva ubicació/coordenades
-    (multislot locatedAt
-        (type INSTANCE)
-        (create-accessor read-write))
-    (multislot allowsPets
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot area
-        (type INTEGER)
-        (create-accessor read-write))
-    (multislot isFurnished
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R1O0pLg0VGSnWZT6dgJpRV
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R1SFCCuCpn6muLxyHnX8u8
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R74VPorJymDh21w9Y2Kp1kP
-        (type INTEGER)
-        (create-accessor read-write))
-    (multislot R7atn1wTPkXSHzsOpUG5ikh
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R7uxQflJSq5NnYcyxSDxic2
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R8mTFlPLyTVgpskPUI82zsX
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R8tBBBYTGa9KATVMBd5yOt
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R9Hj1Il7UdYCOuzMzbRh7hE
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot R9UCzIEHEnc18VZEiD9ioO2
-        (type SYMBOL)
-        (create-accessor read-write))
-    (multislot RE2i5hP4gk8l5PVT4f3mgM
-        (type STRING)
-        (create-accessor read-write))
-    (multislot RJpPp7bhsimEuNBAKo8Gst
-        (type INTEGER)
-        (create-accessor read-write))
-    (multislot RZwZ0HTVDxD9O692xosHQQ
-        (type SYMBOL)
-        (create-accessor read-write))
-)
-
-(defclass Apartment
-    (is-a Property)
-    (role concrete)
-    (pattern-match reactive)
-    (multislot floor
-        (type STRING)
-        (create-accessor read-write))
-)
-
-(defclass Duplex
-    (is-a Property)
-    (role concrete)
-    (pattern-match reactive)
-    (multislot floor
-        (type STRING)
-        (create-accessor read-write))
-)
-
-(defclass House
-    (is-a Property)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass ClientProfile "Tipus de client: jove, família, estudiant, persona gran, etc."
+(defclass ClientProfile "Tipus de client: jove, famÃ­lia, estudiant, persona gran, etc."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
@@ -97,19 +14,19 @@
     (multislot prefers
         (type INSTANCE)
         (create-accessor read-write))
-    (multislot R8H0zmLKMYr8BIhs8BmFbuf
+    (multislot minDorms
         (type INTEGER)
         (create-accessor read-write))
-    (multislot RBN03MKzvambdcNjlzLit8C
+    (multislot familySize
         (type INTEGER)
         (create-accessor read-write))
-    (multislot RBypvi3ljAynVOtLEHiaEX6
+    (multislot minReasonablePrice
         (type INTEGER)
         (create-accessor read-write))
-    (multislot RCZ03zoqNVp23sEgKFiUtcH
+    (multislot minArea
         (type INTEGER)
         (create-accessor read-write))
-    (multislot RPPNEfX6hM6UrM2UvBnO9k
+    (multislot needsDoubleBedroom
         (type SYMBOL)
         (create-accessor read-write))
 )
@@ -144,14 +61,97 @@
     (pattern-match reactive)
 )
 
+(defclass Property "Component fÃ­sic: caracterÃ­stiques intrÃ­nseques de l'habitatge."
+    (is-a USER)
+    (role concrete)
+    (pattern-match reactive)
+    ;;; Relaciona una propietat amb una de les seves habitacions
+    (multislot hasRoom
+        (type INSTANCE)
+        (create-accessor read-write))
+    ;;; Relaciona un immoble amb la seva ubicaciÃ³/coordenades
+    (multislot locatedAt
+        (type INSTANCE)
+        (create-accessor read-write))
+    (multislot allowsPets
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot area
+        (type INTEGER)
+        (create-accessor read-write))
+    (multislot isFurnished
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot hasAirOrHeating
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot hasAppliances
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot naturalLight
+        (type INTEGER)
+        (create-accessor read-write))
+    (multislot hasPool
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot hasElevator
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot hasTerrace
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot hasBalcony
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot hasGarage
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot hasViews
+        (type SYMBOL)
+        (create-accessor read-write))
+    (multislot address
+        (type STRING)
+        (create-accessor read-write))
+    (multislot state
+        (type INTEGER)
+        (create-accessor read-write))
+    (multislot hasYard
+        (type SYMBOL)
+        (create-accessor read-write))
+)
+
+(defclass Apartment
+    (is-a Property)
+    (role concrete)
+    (pattern-match reactive)
+    (multislot floor
+        (type STRING)
+        (create-accessor read-write))
+)
+
+(defclass Duplex
+    (is-a Property)
+    (role concrete)
+    (pattern-match reactive)
+    (multislot floor
+        (type STRING)
+        (create-accessor read-write))
+)
+
+(defclass House
+    (is-a Property)
+    (role concrete)
+    (pattern-match reactive)
+)
+
 (defclass Service "Transport, supermercat, escola, centre de salut, oci, etc."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (multislot RDH5py9aOAunrA54HMTGzDM
+    (multislot serviceName
         (type STRING)
         (create-accessor read-write))
-    (multislot RWgtkrUcFXaRw5NYWMnl8I
+    (multislot serviceNoiseLevel
         (type INTEGER)
         (create-accessor read-write))
 )
@@ -198,13 +198,13 @@
     (pattern-match reactive)
 )
 
-(defclass Constraint "Tipus de restricció estricta que pot descartar ofertes (p. ex. no accepten mascotes)."
+(defclass Constraint "Tipus de restricciÃ³ estricta que pot descartar ofertes (p. ex. no accepten mascotes)."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
 )
 
-(defclass Location "Coordenades i referències administratives (districte, adreça)."
+(defclass Location "Coordenades i referÃ¨ncies administratives (districte, adreÃ§a)."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
@@ -216,19 +216,19 @@
         (create-accessor read-write))
 )
 
-(defclass Preference "Preferències i restriccions del client (preu màxim, distàncies, no mascotes...)."
+(defclass Preference "PreferÃ¨ncies i restriccions del client (preu mÃ xim, distÃ ncies, no mascotes...)."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
 )
 
-(defclass RecommendationLevel "Etiqueta que indica quina és la idoneïtat d'una oferta per a un client."
+(defclass RecommendationLevel "Etiqueta que indica quina Ã©s la idoneÃ¯tat d'una oferta per a un client."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
 )
 
-(defclass RentalOffer "Instància que representa una oferta concreta (piso, dúplex, casa...)."
+(defclass RentalOffer "InstÃ ncia que representa una oferta concreta (piso, dÃºplex, casa...)."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
@@ -239,20 +239,20 @@
     (multislot recommendedFor
         (type INSTANCE)
         (create-accessor read-write))
-    ;;; Útil per explicar per què una oferta és parcialment adequada o no adequada.
+    ;;; Ãštil per explicar per quÃ¨ una oferta Ã©s parcialment adequada o no adequada.
     (multislot violatesConstraint
         (type INSTANCE)
         (create-accessor read-write))
     (multislot price
         (type FLOAT)
         (create-accessor read-write))
-    (multislot R9SrozSgOLgl64XI1p05TML
+    (multislot maxPeople
         (type INTEGER)
         (create-accessor read-write))
-    (multislot R9hchd1x0gTGhRpVs5TMxQH
+    (multislot minMonths
         (type INTEGER)
         (create-accessor read-write))
-    (multislot R9yc3P8FYkA6CJy07xeVBXr
+    (multislot petsAllowed
         (type SYMBOL)
         (create-accessor read-write))
 )
@@ -263,12 +263,12 @@
     (pattern-match reactive)
 )
 
-(defclass R154PFFqJYFAEr8iYDocvg "Guarda les preferències/restriccions del client"
+(defclass Client "Guarda les preferÃ¨ncies/restriccions del client"
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
     ;;; Relaciona un client amb el seu perfil (grup socioeconomic predeterminat)
-    (multislot R8GC3Vc2gAI9zunWXNS1a06
+    (multislot hasProfile
         (type INSTANCE)
         (create-accessor read-write))
     (multislot clientAge
@@ -283,69 +283,69 @@
     (multislot priceFlexibility
         (type INTEGER)
         (create-accessor read-write))
-    (multislot R7iUDD6v7D1A3QvfnM4cxAW
+    (multislot wantsSchool
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot R8vo6JFtBbc0OiPHh98cSMe
+    (multislot prefersElevator
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot R95QuLN9I1tqczHNkrkU6X
+    (multislot wantsGreenArea
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot R9DFsnqEP13TgPLhirAB1ig
+    (multislot prefersTerrace
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot R9FEZeal3K764LtyjN8qaK7
+    (multislot prefersViews
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot R9qasDsciMvFuV9PXx1YyVg
+    (multislot prefersPool
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RBg7kLV7CizPPpX6PSztHZy
+    (multislot prefersFurniture
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RBmzu3L0a7ztxy1ryKPPRyn
+    (multislot prefersAppliances
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RBqbmP02LngAqxpU21Tq9D5
+    (multislot wantsNightLife
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RC6LV0sZHQJLFH82D6zcHrq
+    (multislot prefersYard
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RC963HwFvkt6jLFDzbFLHh
+    (multislot wantsStadium
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RCForDBQVOumYshYwxZR5Mn
+    (multislot prefersAirOrHeating
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RDQY44OouocHsJDGvIdgnHL
+    (multislot wantsTransport
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RDrmU0N39Stbvq9rmm3Vpw6
+    (multislot prefersGarage
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RiTxNKLzSNDKbsh5bmofi8
+    (multislot prefersBalcony
         (type SYMBOL)
         (create-accessor read-write))
-    (multislot RjwVL4JX3QUXblBKuwu32F
+    (multislot wantsHealthCenter
         (type SYMBOL)
         (create-accessor read-write))
 )
 
-(defclass RC91CrVmvTDZT8W6IfBONlP "Classe intermitja que diu la proximitat d'una propietat a un serveri"
+(defclass Proximity "Classe intermitja que diu la proximitat d'una propietat a un serveri"
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    ;;; Relació que s'utilitza quan un servei està dins d'una distància definida (p. ex. <=500 m).
+    ;;; RelaciÃ³ que s'utilitza quan un servei estÃ  dins d'una distÃ ncia definida (p. ex. <=500 m).
     (multislot nearService
         (type INSTANCE)
         (create-accessor read-write))
-    (multislot RDinkzM0Mob3iMujWO3SacC
+    (multislot nearProperty
         (type INSTANCE)
         (create-accessor read-write))
-    ;;; Si una Property està a prop (0), a mitja distància (1)
-    (multislot RBdHYuoZjfZ9Es7NSPA5L5D
+    ;;; Si una Property estÃ  a prop (0), a mitja distÃ ncia (1)
+    (multislot distanceCategory
         (type INTEGER)
         (create-accessor read-write))
 )
