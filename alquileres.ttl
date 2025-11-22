@@ -24,9 +24,18 @@
 
 ###  http://example.org/ontologia/alquileres#hasConstraint
 <http://example.org/ontologia/alquileres#hasConstraint> rdf:type owl:ObjectProperty ;
-                                                        rdfs:domain <http://example.org/ontologia/alquileres#ClientProfile> ;
+                                                        rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
                                                         rdfs:range <http://example.org/ontologia/alquileres#Constraint> ;
+                                                        rdfs:comment "Relaciona un client amb les restriccions estrictes que ha declarat."@ca ;
                                                         rdfs:label "tÃ© restricciÃ³"@ca .
+
+
+###  http://example.org/ontologia/alquileres#hasPreference
+<http://example.org/ontologia/alquileres#hasPreference> rdf:type owl:ObjectProperty ;
+                                                        rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
+                                                        rdfs:range <http://example.org/ontologia/alquileres#Preference> ;
+                                                        rdfs:comment "Resum de les preferÃ¨ncies declarades per un client en forma d'objectes reutilitzables."@ca ;
+                                                        rdfs:label "tÃ© preferÃ¨ncia"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#hasProperty
@@ -37,12 +46,52 @@
                                                       rdfs:label "tÃ© propietat"@ca .
 
 
+###  http://example.org/ontologia/alquileres#offersFeature
+<http://example.org/ontologia/alquileres#offersFeature> rdf:type owl:ObjectProperty ;
+                                                        rdfs:domain <http://example.org/ontologia/alquileres#Property> ;
+                                                        rdfs:range <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                        rdfs:comment "EnllaÃ§a una propietat amb una caracterÃ­stica concreta (piscina, balcÃ³, ascensor...)."@ca ;
+                                                        rdfs:label "inclou caracterÃ­stica"@ca .
+
+
 ###  http://example.org/ontologia/alquileres#hasRoom
 <http://example.org/ontologia/alquileres#hasRoom> rdf:type owl:ObjectProperty ;
                                                   rdfs:domain <http://example.org/ontologia/alquileres#Property> ;
                                                   rdfs:range <http://example.org/ontologia/alquileres#Room> ;
                                                   rdfs:comment "Relaciona una propietat amb una de les seves habitacions"^^xsd:string ;
                                                   rdfs:label "tÃ© habitaciÃ³"@ca .
+
+
+###  http://example.org/ontologia/alquileres#appliesToFeature
+<http://example.org/ontologia/alquileres#appliesToFeature> rdf:type owl:ObjectProperty ;
+                                                           rdfs:domain <http://example.org/ontologia/alquileres#FeaturePreference> ;
+                                                           rdfs:range <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                           rdfs:comment "Indica quina caracterÃ­stica concreta avalua una preferÃ¨ncia."@ca ;
+                                                           rdfs:label "aplica a caracterÃ­stica"@ca .
+
+
+###  http://example.org/ontologia/alquileres#targetsService
+<http://example.org/ontologia/alquileres#targetsService> rdf:type owl:ObjectProperty ;
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#ServiceProximityPreference> ;
+                                                         rdfs:range <http://example.org/ontologia/alquileres#Service> ;
+                                                         rdfs:comment "Servei o punt d'interÃ¨s sobre el qual s'expressa una preferÃ¨ncia de distÃ ncia."@ca ;
+                                                         rdfs:label "objectiu servei"@ca .
+
+
+###  http://example.org/ontologia/alquileres#restrictsFeature
+<http://example.org/ontologia/alquileres#restrictsFeature> rdf:type owl:ObjectProperty ;
+                                                          rdfs:domain <http://example.org/ontologia/alquileres#Constraint> ;
+                                                          rdfs:range <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                          rdfs:comment "CaracterÃ­stica que queda obligada o prohibida per la restricciÃ³."@ca ;
+                                                          rdfs:label "restringeix caracterÃ­stica"@ca .
+
+
+###  http://example.org/ontologia/alquileres#constrainsService
+<http://example.org/ontologia/alquileres#constrainsService> rdf:type owl:ObjectProperty ;
+                                                           rdfs:domain <http://example.org/ontologia/alquileres#ServiceDistanceConstraint> ;
+                                                           rdfs:range <http://example.org/ontologia/alquileres#Service> ;
+                                                           rdfs:comment "Servei al qual s'aplica una restricciÃ³ de distÃ ncia."@ca ;
+                                                           rdfs:label "limita servei"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#locatedAt
@@ -55,32 +104,41 @@
 
 ###  http://example.org/ontologia/alquileres#nearService
 <http://example.org/ontologia/alquileres#nearService> rdf:type owl:ObjectProperty ;
-                                                      rdfs:domain <http://example.org/ontologia/alquileres#Proximity> ;
+                                                      rdfs:domain <http://example.org/ontologia/alquileres#ProximityRelation> ;
                                                       rdfs:range <http://example.org/ontologia/alquileres#Service> ;
                                                       rdfs:comment "RelaciÃ³ que s'utilitza quan un servei estÃ  dins d'una distÃ ncia definida (p. ex. <=500 m)." ;
                                                       rdfs:label "tÃ© servei proper"@ca .
 
 
-###  http://example.org/ontologia/alquileres#prefers
-<http://example.org/ontologia/alquileres#prefers> rdf:type owl:ObjectProperty ;
-                                                  rdfs:domain <http://example.org/ontologia/alquileres#ClientProfile> ;
-                                                  rdfs:range <http://example.org/ontologia/alquileres#Preference> ;
-                                                  rdfs:label "prefers"@ca ;
-                                                  <http://www.w3.org/2004/02/skos/core#note> "Indica la preferÃ¨ncia del client"^^xsd:string .
+###  http://example.org/ontologia/alquileres#recommendedOffer
+<http://example.org/ontologia/alquileres#recommendedOffer> rdf:type owl:ObjectProperty ;
+                                                           rdfs:domain <http://example.org/ontologia/alquileres#Recommendation> ;
+                                                           rdfs:range <http://example.org/ontologia/alquileres#RentalOffer> ;
+                                                           rdfs:comment "Oferta concreta que avalua aquesta recomanaciÃ³."@ca ;
+                                                           rdfs:label "oferta recomanada"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#recommendedFor
 <http://example.org/ontologia/alquileres#recommendedFor> rdf:type owl:ObjectProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#RentalOffer> ;
-                                                         rdfs:range <http://example.org/ontologia/alquileres#ClientProfile> ;
-                                                         rdfs:label "recommendedFor"@ca .
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#Recommendation> ;
+                                                         rdfs:range <http://example.org/ontologia/alquileres#Client> ;
+                                                         rdfs:comment "Client destinatari d'una recomanaciÃ³ concreta."@ca ;
+                                                         rdfs:label "recomanada per a"@ca .
+
+
+###  http://example.org/ontologia/alquileres#satisfiesPreference
+<http://example.org/ontologia/alquileres#satisfiesPreference> rdf:type owl:ObjectProperty ;
+                                                              rdfs:domain <http://example.org/ontologia/alquileres#Recommendation> ;
+                                                              rdfs:range <http://example.org/ontologia/alquileres#Preference> ;
+                                                              rdfs:comment "Explica quines preferÃ¨ncies es consideren cobertes per la recomanaciÃ³."@ca ;
+                                                              rdfs:label "satisfÃ  la preferÃ¨ncia"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#violatesConstraint
 <http://example.org/ontologia/alquileres#violatesConstraint> rdf:type owl:ObjectProperty ;
-                                                             rdfs:domain <http://example.org/ontologia/alquileres#RentalOffer> ;
+                                                             rdfs:domain <http://example.org/ontologia/alquileres#Recommendation> ;
                                                              rdfs:range <http://example.org/ontologia/alquileres#Constraint> ;
-                                                             rdfs:comment "Ãštil per explicar per quÃ¨ una oferta Ã©s parcialment adequada o no adequada." ;
+                                                             rdfs:comment "Justifica quines restriccions no satisfÃ  una recomanaciÃ³ concreta."@ca ;
                                                              rdfs:label "incompleix"@ca .
 
 
@@ -95,7 +153,7 @@
 ###  http://example.org/ontologia/alquileres#nearProperty
 <http://example.org/ontologia/alquileres#nearProperty> rdf:type owl:ObjectProperty ;
                                                          rdfs:subPropertyOf owl:topObjectProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Proximity> ;
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#ProximityRelation> ;
                                                          rdfs:range <http://example.org/ontologia/alquileres#Property> ;
                                                          rdfs:label "nearProperty" ;
                                                          <http://www.w3.org/2004/02/skos/core#note> "Indica la distÃ ncia que es troba un servei de la propietat"^^xsd:string .
@@ -223,15 +281,6 @@
                                                          <http://www.w3.org/2004/02/skos/core#note> "Indica si la propietat tÃ© piscina o no"^^xsd:string .
 
 
-###  http://example.org/ontologia/alquileres#wantsSchool
-<http://example.org/ontologia/alquileres#wantsSchool> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "wantsSchool" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client vol estar a prop d'escoles"^^xsd:string .
-
-
 ###  http://example.org/ontologia/alquileres#hasElevator
 <http://example.org/ontologia/alquileres#hasElevator> rdf:type owl:DatatypeProperty ;
                                                          rdfs:subPropertyOf owl:topDataProperty ;
@@ -244,7 +293,7 @@
 ###  http://example.org/ontologia/alquileres#minDorms
 <http://example.org/ontologia/alquileres#minDorms> rdf:type owl:DatatypeProperty ;
                                                          rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#ClientProfile> ;
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
                                                          rdfs:range xsd:integer ;
                                                          rdfs:label "minDorms"^^xsd:string ;
                                                          <http://www.w3.org/2004/02/skos/core#note> "Minim nombre de dormitoris que necessita un client"^^xsd:string .
@@ -266,42 +315,6 @@
                                                         rdfs:range xsd:boolean ;
                                                         rdfs:label "hasBalcony"^^xsd:string ;
                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si la propietat tÃ© balcÃ³ o no"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#prefersElevator
-<http://example.org/ontologia/alquileres#prefersElevator> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersElevator" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir Ascensor"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#wantsGreenArea
-<http://example.org/ontologia/alquileres#wantsGreenArea> rdf:type owl:DatatypeProperty ;
-                                                        rdfs:subPropertyOf owl:topDataProperty ;
-                                                        rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                        rdfs:range xsd:boolean ;
-                                                        rdfs:label "wantsGreenArea" ;
-                                                        <http://www.w3.org/2004/02/skos/core#note> "Indica si el client vol estar a prop de Areas Verdes"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#prefersTerrace
-<http://example.org/ontologia/alquileres#prefersTerrace> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersTerrace" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir terrassa o no"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#prefersViews
-<http://example.org/ontologia/alquileres#prefersViews> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersViews" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir vistes"^^xsd:string .
 
 
 ###  http://example.org/ontologia/alquileres#hasGarage
@@ -340,15 +353,6 @@
                                                          <http://www.w3.org/2004/02/skos/core#note> "NÃºmero de mesos minims del contracte"^^xsd:string .
 
 
-###  http://example.org/ontologia/alquileres#prefersPool
-<http://example.org/ontologia/alquileres#prefersPool> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersPool" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir Piscina"^^xsd:string .
-
-
 ###  http://example.org/ontologia/alquileres#petsAllowed
 <http://example.org/ontologia/alquileres#petsAllowed> rdf:type owl:DatatypeProperty ;
                                                          rdfs:subPropertyOf owl:topDataProperty ;
@@ -361,7 +365,7 @@
 ###  http://example.org/ontologia/alquileres#familySize
 <http://example.org/ontologia/alquileres#familySize> rdf:type owl:DatatypeProperty ;
                                                          rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#ClientProfile> ;
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
                                                          rdfs:range xsd:integer ;
                                                          rdfs:label "familySize" ;
                                                          <http://www.w3.org/2004/02/skos/core#note> "Nombre d'integrants a la famÃ­lia"^^xsd:string .
@@ -369,79 +373,25 @@
 
 ###  http://example.org/ontologia/alquileres#distanceCategory
 <http://example.org/ontologia/alquileres#distanceCategory> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Proximity> ;
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#ProximityRelation> ;
                                                          rdfs:range xsd:integer ;
                                                          rdfs:comment "Si una Property estÃ  a prop (0), a mitja distÃ ncia (1)"^^xsd:string ;
                                                          rdfs:label "distanceCategory"^^xsd:string .
 
 
-###  http://example.org/ontologia/alquileres#prefersFurniture
-<http://example.org/ontologia/alquileres#prefersFurniture> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersFurniture"^^xsd:string ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix propietats amoblades o no"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#prefersAppliances
-<http://example.org/ontologia/alquileres#prefersAppliances> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersAppliances" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir ElectrodomÃ¨stics"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#wantsNightLife
-<http://example.org/ontologia/alquileres#wantsNightLife> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "wantsNightLife" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client vol estar a prop de Oci Nocturn"^^xsd:string .
-
-
 ###  http://example.org/ontologia/alquileres#minReasonablePrice
 <http://example.org/ontologia/alquileres#minReasonablePrice> rdf:type owl:DatatypeProperty ;
                                                          rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#ClientProfile> ;
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
                                                          rdfs:range xsd:integer ;
                                                          rdfs:label "minReasonablePrice" ;
                                                          <http://www.w3.org/2004/02/skos/core#note> "Minim de preu que tÃ© sentit pagar per una vivenda sense aixecar dubtes ()"^^xsd:string .
 
 
-###  http://example.org/ontologia/alquileres#prefersYard
-<http://example.org/ontologia/alquileres#prefersYard> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersYard" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir pati o no"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#wantsStadium
-<http://example.org/ontologia/alquileres#wantsStadium> rdf:type owl:DatatypeProperty ;
-                                                        rdfs:subPropertyOf owl:topDataProperty ;
-                                                        rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                        rdfs:range xsd:boolean ;
-                                                        rdfs:label "wantsStadium" ;
-                                                        <http://www.w3.org/2004/02/skos/core#note> "Indica si el client vol estar aprop d'estadis en general"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#prefersAirOrHeating
-<http://example.org/ontologia/alquileres#prefersAirOrHeating> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersAirOrHeating" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir Aire Acondicionat o CalefacciÃ³"^^xsd:string .
-
-
 ###  http://example.org/ontologia/alquileres#minArea
 <http://example.org/ontologia/alquileres#minArea> rdf:type owl:DatatypeProperty ;
                                                          rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#ClientProfile> ;
+                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
                                                          rdfs:range xsd:integer ;
                                                          rdfs:label "minArea" ;
                                                          <http://www.w3.org/2004/02/skos/core#note> "SuperfÃ­cie mÃ­nima que vol un client"^^xsd:string .
@@ -455,29 +405,108 @@
                                                          rdfs:label "serviceName" .
 
 
-###  http://example.org/ontologia/alquileres#wantsTransport
-<http://example.org/ontologia/alquileres#wantsTransport> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "wantsTransport" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client vol estar a prop dels serveis de transport"^^xsd:string .
+###  http://example.org/ontologia/alquileres#prefType
+<http://example.org/ontologia/alquileres#prefType> rdf:type owl:DatatypeProperty ;
+                                                   rdfs:domain <http://example.org/ontologia/alquileres#Preference> ;
+                                                   rdfs:range xsd:string ;
+                                                   rdfs:comment "Categoria textual de la preferÃ¨ncia (piscina, pressupost, transport...)."@ca ;
+                                                   rdfs:label "tipus de preferÃ¨ncia"@ca .
 
 
-###  http://example.org/ontologia/alquileres#prefersGarage
-<http://example.org/ontologia/alquileres#prefersGarage> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range xsd:boolean ;
-                                                         rdfs:label "prefersGarage" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir Garatje"^^xsd:string .
+###  http://example.org/ontologia/alquileres#prefValue
+<http://example.org/ontologia/alquileres#prefValue> rdf:type owl:DatatypeProperty ;
+                                                    rdfs:domain <http://example.org/ontologia/alquileres#Preference> ;
+                                                    rdfs:range xsd:string ;
+                                                    rdfs:comment "Valor objectiu expressat pel client (p. ex. 'si', 'mÃ­n. 3', 'menys de 950')."@ca ;
+                                                    rdfs:label "valor de preferÃ¨ncia"@ca .
 
 
-###  http://example.org/ontologia/alquileres#wantsSupermarket
-<http://example.org/ontologia/alquileres#wantsSupermarket> rdf:type owl:DatatypeProperty ;
-                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                         rdfs:label "wantsSupermarket" ;
-                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si el client vol estar a prop de supermercats"^^xsd:string .
+###  http://example.org/ontologia/alquileres#preferenceWeight
+<http://example.org/ontologia/alquileres#preferenceWeight> rdf:type owl:DatatypeProperty ;
+                                                           rdfs:domain <http://example.org/ontologia/alquileres#Preference> ;
+                                                           rdfs:range xsd:decimal ;
+                                                           rdfs:comment "ImportÃ ncia relativa (0-1 o percentatge) d'una preferÃ¨ncia."@ca ;
+                                                           rdfs:label "pes de preferÃ¨ncia"@ca .
+
+
+###  http://example.org/ontologia/alquileres#prefUnit
+<http://example.org/ontologia/alquileres#prefUnit> rdf:type owl:DatatypeProperty ;
+                                                   rdfs:domain <http://example.org/ontologia/alquileres#Preference> ;
+                                                   rdfs:range xsd:string ;
+                                                   rdfs:comment "Unitat utilitzada per interpretar el valor (EUR, m2, minuts...)."@ca ;
+                                                   rdfs:label "unitat preferÃ¨ncia"@ca .
+
+
+###  http://example.org/ontologia/alquileres#isHardPreference
+<http://example.org/ontologia/alquileres#isHardPreference> rdf:type owl:DatatypeProperty ;
+                                                          rdfs:domain <http://example.org/ontologia/alquileres#Preference> ;
+                                                          rdfs:range xsd:boolean ;
+                                                          rdfs:comment "Indica si la preferÃ¨ncia s'hauria de tractar gairebÃ© com una restricciÃ³."@ca ;
+                                                          rdfs:label "preferÃ¨ncia estricta"@ca .
+
+
+###  http://example.org/ontologia/alquileres#preferredDistanceCategory
+<http://example.org/ontologia/alquileres#preferredDistanceCategory> rdf:type owl:DatatypeProperty ;
+                                                                   rdfs:domain <http://example.org/ontologia/alquileres#ServiceProximityPreference> ;
+                                                                   rdfs:range xsd:string ;
+                                                                   rdfs:comment "Categoria esperada (p. ex. proper, mitjÃ , lluny)."@ca ;
+                                                                   rdfs:label "categoria distÃ ncia preferida"@ca .
+
+
+###  http://example.org/ontologia/alquileres#preferredDistanceMeters
+<http://example.org/ontologia/alquileres#preferredDistanceMeters> rdf:type owl:DatatypeProperty ;
+                                                                 rdfs:domain <http://example.org/ontologia/alquileres#ServiceProximityPreference> ;
+                                                                 rdfs:range xsd:decimal ;
+                                                                 rdfs:comment "DistÃ ncia mÃ xima o ideal expressada en metres."@ca ;
+                                                                 rdfs:label "distÃ ncia preferida (m)"@ca .
+
+
+###  http://example.org/ontologia/alquileres#numericTarget
+<http://example.org/ontologia/alquileres#numericTarget> rdf:type owl:DatatypeProperty ;
+                                                       rdfs:domain <http://example.org/ontologia/alquileres#NumericPreference> ;
+                                                       rdfs:range xsd:decimal ;
+                                                       rdfs:comment "Valor numÃ¨ric objectiu d'una preferÃ¨ncia (p. ex. lloguer mÃ xim)."@ca ;
+                                                       rdfs:label "objectiu numÃ¨ric"@ca .
+
+
+###  http://example.org/ontologia/alquileres#consType
+<http://example.org/ontologia/alquileres#consType> rdf:type owl:DatatypeProperty ;
+                                                   rdfs:domain <http://example.org/ontologia/alquileres#Constraint> ;
+                                                   rdfs:range xsd:string ;
+                                                   rdfs:comment "Tipus o categoria de la restricciÃ³ declarada."@ca ;
+                                                   rdfs:label "tipus de restricciÃ³"@ca .
+
+
+###  http://example.org/ontologia/alquileres#requiredValue
+<http://example.org/ontologia/alquileres#requiredValue> rdf:type owl:DatatypeProperty ;
+                                                       rdfs:domain <http://example.org/ontologia/alquileres#Constraint> ;
+                                                       rdfs:range xsd:string ;
+                                                       rdfs:comment "Valor que s'ha de complir literalment per satisfer la restricciÃ³."@ca ;
+                                                       rdfs:label "valor requerit"@ca .
+
+
+###  http://example.org/ontologia/alquileres#limitValue
+<http://example.org/ontologia/alquileres#limitValue> rdf:type owl:DatatypeProperty ;
+                                                     rdfs:domain <http://example.org/ontologia/alquileres#NumericConstraint> ;
+                                                     rdfs:range xsd:decimal ;
+                                                     rdfs:comment "Llindar numÃ¨ric d'una restricciÃ³ (p. ex. preu â¤ 1200)."@ca ;
+                                                     rdfs:label "valor lÃ­mit"@ca .
+
+
+###  http://example.org/ontologia/alquileres#maxDistanceMeters
+<http://example.org/ontologia/alquileres#maxDistanceMeters> rdf:type owl:DatatypeProperty ;
+                                                            rdfs:domain <http://example.org/ontologia/alquileres#ServiceDistanceConstraint> ;
+                                                            rdfs:range xsd:decimal ;
+                                                            rdfs:comment "DistÃ ncia mÃ xima admissible per a una restricciÃ³ de servei."@ca ;
+                                                            rdfs:label "distÃ ncia mÃ xima (m)"@ca .
+
+
+###  http://example.org/ontologia/alquileres#recommendationLevel
+<http://example.org/ontologia/alquileres#recommendationLevel> rdf:type owl:DatatypeProperty ;
+                                                              rdfs:domain <http://example.org/ontologia/alquileres#Recommendation> ;
+                                                              rdfs:range xsd:string ;
+                                                              rdfs:comment "Etiqueta qualitativa (p. ex. molt recomanable, adequada, parcial)."@ca ;
+                                                              rdfs:label "nivell de recomanaciÃ³"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#address
@@ -501,7 +530,7 @@
 ###  http://example.org/ontologia/alquileres#needsDoubleBedroom
 <http://example.org/ontologia/alquileres#needsDoubleBedroom> rdf:type owl:DatatypeProperty ;
                                                         rdfs:subPropertyOf owl:topDataProperty ;
-                                                        rdfs:domain <http://example.org/ontologia/alquileres#ClientProfile> ;
+                                                        rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
                                                         rdfs:range xsd:boolean ;
                                                         rdfs:label "needsDoubleBedroom" ;
                                                         <http://www.w3.org/2004/02/skos/core#note> "Determina si el client necessita o no dormitoris dobles"^^xsd:string .
@@ -525,24 +554,6 @@
                                                         <http://www.w3.org/2004/02/skos/core#note> "Indica si la propietat tÃ© pati o no"^^xsd:string .
 
 
-###  http://example.org/ontologia/alquileres#prefersBalcony
-<http://example.org/ontologia/alquileres#prefersBalcony> rdf:type owl:DatatypeProperty ;
-                                                        rdfs:subPropertyOf owl:topDataProperty ;
-                                                        rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                        rdfs:range xsd:boolean ;
-                                                        rdfs:label "prefersBalcony" ;
-                                                        <http://www.w3.org/2004/02/skos/core#note> "Indica si el client prefereix tenir balcÃ³ o no"^^xsd:string .
-
-
-###  http://example.org/ontologia/alquileres#wantsHealthCenter
-<http://example.org/ontologia/alquileres#wantsHealthCenter> rdf:type owl:DatatypeProperty ;
-                                                        rdfs:subPropertyOf owl:topDataProperty ;
-                                                        rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                        rdfs:range xsd:boolean ;
-                                                        rdfs:label "wantsHealthCenter" ;
-                                                        <http://www.w3.org/2004/02/skos/core#note> "Indica si el client vol estar a prop de centres mÃ¨dics"^^xsd:string .
-
-
 #################################################################
 #    Classes
 #################################################################
@@ -561,8 +572,29 @@
 
 ###  http://example.org/ontologia/alquileres#Constraint
 <http://example.org/ontologia/alquileres#Constraint> rdf:type owl:Class ;
-                                                     rdfs:comment "Tipus de restricciÃ³ estricta que pot descartar ofertes (p. ex. no accepten mascotes)." ;
+                                                     rdfs:comment "Classe abstracta per representar restriccions estrictes que poden descartar ofertes (p. ex. no accepten mascotes)."@ca ;
                                                      rdfs:label "RestricciÃ³"@ca .
+
+
+###  http://example.org/ontologia/alquileres#HardFeatureConstraint
+<http://example.org/ontologia/alquileres#HardFeatureConstraint> rdf:type owl:Class ;
+                                                               rdfs:subClassOf <http://example.org/ontologia/alquileres#Constraint> ;
+                                                               rdfs:comment "Restringeix caracterÃ­stiques binÃ ries (p. ex. mascotes prohibides, cal ascensor)."@ca ;
+                                                               rdfs:label "RestricciÃ³ de caracterÃ­stica"@ca .
+
+
+###  http://example.org/ontologia/alquileres#NumericConstraint
+<http://example.org/ontologia/alquileres#NumericConstraint> rdf:type owl:Class ;
+                                                            rdfs:subClassOf <http://example.org/ontologia/alquileres#Constraint> ;
+                                                            rdfs:comment "Restriccions algebraiques sobre valors numÃ¨rics (pressupost, superfÃ­cie, places)."@ca ;
+                                                            rdfs:label "RestricciÃ³ numÃ¨rica"@ca .
+
+
+###  http://example.org/ontologia/alquileres#ServiceDistanceConstraint
+<http://example.org/ontologia/alquileres#ServiceDistanceConstraint> rdf:type owl:Class ;
+                                                                   rdfs:subClassOf <http://example.org/ontologia/alquileres#Constraint> ;
+                                                                   rdfs:comment "Exigeix distÃ ncies mÃ ximes a un tipus de servei concret."@ca ;
+                                                                   rdfs:label "RestricciÃ³ de distÃ ncia a servei"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#Couple
@@ -621,8 +653,29 @@
 
 ###  http://example.org/ontologia/alquileres#Preference
 <http://example.org/ontologia/alquileres#Preference> rdf:type owl:Class ;
-                                                     rdfs:comment "PreferÃ¨ncies i restriccions del client (preu mÃ xim, distÃ ncies, no mascotes...)." ;
+                                                     rdfs:comment "Condicions toves que orienten la recomanaciÃ³ (pressupost desitjat, caracterÃ­stiques valorades, proximitat)."@ca ;
                                                      rdfs:label "PreferÃ¨ncia"@ca .
+
+
+###  http://example.org/ontologia/alquileres#FeaturePreference
+<http://example.org/ontologia/alquileres#FeaturePreference> rdf:type owl:Class ;
+                                                           rdfs:subClassOf <http://example.org/ontologia/alquileres#Preference> ;
+                                                           rdfs:comment "PreferÃ¨ncies sobre caracterÃ­stiques de l'immoble (piscina, balcÃ³, ascensor, etc.)."@ca ;
+                                                           rdfs:label "PreferÃ¨ncia de caracterÃ­stica"@ca .
+
+
+###  http://example.org/ontologia/alquileres#NumericPreference
+<http://example.org/ontologia/alquileres#NumericPreference> rdf:type owl:Class ;
+                                                           rdfs:subClassOf <http://example.org/ontologia/alquileres#Preference> ;
+                                                           rdfs:comment "PreferÃ¨ncies que involucren un valor numÃ¨ric (pressupost, m2 mÃ­nims, distÃ ncies concretes)."@ca ;
+                                                           rdfs:label "PreferÃ¨ncia numÃ¨rica"@ca .
+
+
+###  http://example.org/ontologia/alquileres#ServiceProximityPreference
+<http://example.org/ontologia/alquileres#ServiceProximityPreference> rdf:type owl:Class ;
+                                                                    rdfs:subClassOf <http://example.org/ontologia/alquileres#Preference> ;
+                                                                    rdfs:comment "PreferÃ¨ncies relatives a la distÃ ncia respecte a un servei o punt d'interÃ¨s."@ca ;
+                                                                    rdfs:label "PreferÃ¨ncia de proximitat a servei"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#Property
@@ -631,10 +684,16 @@
                                                    rdfs:label "Habitatge / Propietat"@ca .
 
 
-###  http://example.org/ontologia/alquileres#RecommendationLevel
-<http://example.org/ontologia/alquileres#RecommendationLevel> rdf:type owl:Class ;
-                                                              rdfs:comment "Etiqueta que indica quina Ã©s la idoneÃ¯tat d'una oferta per a un client." ;
-                                                              rdfs:label "Nivell de recomanaciÃ³"@ca .
+###  http://example.org/ontologia/alquileres#PropertyFeature
+<http://example.org/ontologia/alquileres#PropertyFeature> rdf:type owl:Class ;
+                                                          rdfs:comment "CaracterÃ­stiques observables de la propietat utilitzades a les recomanacions (piscina, ascensor, terrassa, etc.)."@ca ;
+                                                          rdfs:label "CaracterÃ­stica d'habitatge"@ca .
+
+
+###  http://example.org/ontologia/alquileres#Recommendation
+<http://example.org/ontologia/alquileres#Recommendation> rdf:type owl:Class ;
+                                                         rdfs:comment "Entitat que explica la relaciÃ³ oferta-client, amb justificacions i nivell de qualitat."@ca ;
+                                                         rdfs:label "RecomanaciÃ³"@ca .
 
 
 ###  http://example.org/ontologia/alquileres#RentalOffer
@@ -667,8 +726,8 @@
                                                   rdfs:label "Estadi"@ca .
 
 
-###  http://example.org/ontologia/alquileres#Students
-<http://example.org/ontologia/alquileres#Students> rdf:type owl:Class ;
+###  http://example.org/ontologia/alquileres#Student
+<http://example.org/ontologia/alquileres#Student> rdf:type owl:Class ;
                                                    rdfs:subClassOf <http://example.org/ontologia/alquileres#ClientProfile> ;
                                                    rdfs:label "Estudiants"@ca .
 
@@ -693,14 +752,14 @@
 
 ###  http://example.org/ontologia/alquileres#Client
 <http://example.org/ontologia/alquileres#Client> rdf:type owl:Class ;
-                                                        rdfs:comment "Guarda les preferÃ¨ncies/restriccions del client"^^xsd:string ;
+                                                        rdfs:comment "Individu que encapsula dades personals i es relaciona amb preferÃ¨ncies i restriccions estructurades."@ca ;
                                                         rdfs:label "Client" .
 
 
-###  http://example.org/ontologia/alquileres#Proximity
-<http://example.org/ontologia/alquileres#Proximity> rdf:type owl:Class ;
+###  http://example.org/ontologia/alquileres#ProximityRelation
+<http://example.org/ontologia/alquileres#ProximityRelation> rdf:type owl:Class ;
                                                          rdfs:comment "Classe intermitja que diu la proximitat d'una propietat a un serveri"^^xsd:string ;
-                                                         rdfs:label "Proximity"^^xsd:string .
+                                                         rdfs:label "ProximityRelation"^^xsd:string .
 
 
 ###  Generated by the OWL API (version 4.5.13) https://github.com/owlcs/owlapi
