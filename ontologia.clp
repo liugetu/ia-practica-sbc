@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology alquileres.ttl
-;;; :Date 28/11/2025 10:54:33
+;;; :Date 28/11/2025 15:51:07
 
 (defclass ClientProfile "Tipus de client: jove, família, estudiant, persona gran, etc."
     (is-a USER)
@@ -201,6 +201,9 @@
     (multislot wantsStadium
         (type SYMBOL)
         (create-accessor read-write))
+    (multislot wantsSupermarket
+        (type SYMBOL)
+        (create-accessor read-write))
     (multislot wantsTransport
         (type SYMBOL)
         (create-accessor read-write))
@@ -216,6 +219,12 @@
     (multislot longitude
         (type FLOAT)
         (create-accessor read-write))
+)
+
+(defclass PropertyFeature "Defineix les possibles característiques d'una propietat"
+    (is-a USER)
+    (role concrete)
+    (pattern-match reactive)
 )
 
 (defclass Proximity "Classe intermitja que diu la proximitat d'una propietat a un serveri"
@@ -257,16 +266,12 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    ;;; Relaciona un immoble amb una de les seves possibles ofertes de lloguer
-    (multislot hasProperty
-        (type INSTANCE)
-        (create-accessor read-write))
-    ;;; Útil per explicar per què una oferta és parcialment adequada o no adequada.
-    (multislot violatesConstraint
-        (type INSTANCE)
-        (create-accessor read-write))
     ;;; La propietat té la característica
     (multislot hasFeature
+        (type INSTANCE)
+        (create-accessor read-write))
+    ;;; Relaciona un immoble amb una de les seves possibles ofertes de lloguer
+    (multislot hasProperty
         (type INSTANCE)
         (create-accessor read-write))
     (multislot maxPeople
@@ -289,17 +294,20 @@
     (pattern-match reactive)
 )
 
-(defclass PropertyFeature "Defineix les possibles característiques d'una propietat"
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-)
-
 (definstances instances
-    ([FeatureTerrace] of Característica
+    ([FeatureAirOrHeating] of Característica
     )
 
-    ([FeatureViews] of Característica
+    ([FeatureAppliances] of Característica
+    )
+
+    ([FeatureBalcony] of Característica
+    )
+
+    ([FeatureElevator] of Característica
+    )
+
+    ([FeatureFurniture] of Característica
     )
 
     ([FeatureGarage] of Característica
@@ -308,22 +316,13 @@
     ([FeaturePool] of Característica
     )
 
-    ([FeatureAppliances] of Característica
+    ([FeatureTerrace] of Característica
+    )
+
+    ([FeatureViews] of Característica
     )
 
     ([FeatureYard] of Característica
-    )
-
-    ([FeatureFurniture] of Característica
-    )
-
-    ([FeatureBalcony] of Característica
-    )
-
-    ([FeatureAirOrHeating] of Característica
-    )
-
-    ([FeatureElevator] of Característica
     )
 
 )
