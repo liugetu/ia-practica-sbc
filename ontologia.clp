@@ -2,61 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology alquileres.ttl
-;;; :Date 28/11/2025 10:30:28
-
-(defclass Service "Transport, supermercat, escola, centre de salut, oci, etc."
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-    (multislot serviceName
-        (type STRING)
-        (create-accessor read-write))
-    (multislot serviceNoiseLevel
-        (type INTEGER)
-        (create-accessor read-write))
-)
-
-(defclass GreenArea
-    (is-a Service)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass HealthCenter
-    (is-a Service)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Nightlife
-    (is-a Service)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass School
-    (is-a Service)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Stadium
-    (is-a Service)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Supermarket
-    (is-a Service)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Transport
-    (is-a Service)
-    (role concrete)
-    (pattern-match reactive)
-)
+;;; :Date 28/11/2025 10:54:33
 
 (defclass ClientProfile "Tipus de client: jove, família, estudiant, persona gran, etc."
     (is-a USER)
@@ -147,6 +93,60 @@
     (pattern-match reactive)
 )
 
+(defclass Service "Transport, supermercat, escola, centre de salut, oci, etc."
+    (is-a USER)
+    (role concrete)
+    (pattern-match reactive)
+    (multislot serviceName
+        (type STRING)
+        (create-accessor read-write))
+    (multislot serviceNoiseLevel
+        (type INTEGER)
+        (create-accessor read-write))
+)
+
+(defclass GreenArea
+    (is-a Service)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass HealthCenter
+    (is-a Service)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Nightlife
+    (is-a Service)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass School
+    (is-a Service)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Stadium
+    (is-a Service)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Supermarket
+    (is-a Service)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Transport
+    (is-a Service)
+    (role concrete)
+    (pattern-match reactive)
+)
+
 (defclass Client "Guarda les preferències/restriccions del client"
     (is-a USER)
     (role concrete)
@@ -155,8 +155,8 @@
     (multislot hasProfile
         (type INSTANCE)
         (create-accessor read-write))
-    ;;; El client té preferencia per la caracteristica
-    (multislot R92WjHXPnPWyEeeNCv2jGFT
+    ;;; El client té preferència per la característica
+    (multislot prefersFeature
         (type INSTANCE)
         (create-accessor read-write))
     (multislot clientAge
@@ -247,10 +247,6 @@
     (multislot recommendedFor
         (type INSTANCE)
         (create-accessor read-write))
-    ;;; Recomana una oferta a un client
-    (multislot RDYU606lLGlVlsgeGT5Ri2g
-        (type INSTANCE)
-        (create-accessor read-write))
     ;;; Etiqueta textual del grau d'idoneïtat (p. ex. molt recomanable).
     (multislot recommendationLevel
         (type STRING)
@@ -270,7 +266,7 @@
         (type INSTANCE)
         (create-accessor read-write))
     ;;; La propietat té la característica
-    (multislot RG2ubeGhoqCFfVIEI9JyYX
+    (multislot hasFeature
         (type INSTANCE)
         (create-accessor read-write))
     (multislot maxPeople
@@ -293,9 +289,41 @@
     (pattern-match reactive)
 )
 
-(defclass RDulbn8rWXVVWbWfyCyi4qU "Defineix les posibles característiques de una propietat"
+(defclass PropertyFeature "Defineix les possibles característiques d'una propietat"
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
 )
 
+(definstances instances
+    ([FeatureTerrace] of Característica
+    )
+
+    ([FeatureViews] of Característica
+    )
+
+    ([FeatureGarage] of Característica
+    )
+
+    ([FeaturePool] of Característica
+    )
+
+    ([FeatureAppliances] of Característica
+    )
+
+    ([FeatureYard] of Característica
+    )
+
+    ([FeatureFurniture] of Característica
+    )
+
+    ([FeatureBalcony] of Característica
+    )
+
+    ([FeatureAirOrHeating] of Característica
+    )
+
+    ([FeatureElevator] of Característica
+    )
+
+)

@@ -94,31 +94,23 @@
                                                              rdfs:label "incompleix"@ca .
 
 
-###  http://webprotege.stanford.edu/R92WjHXPnPWyEeeNCv2jGFT
-<http://webprotege.stanford.edu/R92WjHXPnPWyEeeNCv2jGFT> rdf:type owl:ObjectProperty ;
-                                                         rdfs:subPropertyOf owl:topObjectProperty ;
+###  http://example.org/ontologia/alquileres#prefersFeature
+<http://example.org/ontologia/alquileres#prefersFeature> rdf:type owl:ObjectProperty ;
                                                          rdfs:domain <http://example.org/ontologia/alquileres#Client> ;
-                                                         rdfs:range <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:comment "El client té preferencia per la caracteristica"^^xsd:string ;
-                                                         rdfs:label "preference" .
+                                                         rdfs:range <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                         rdfs:comment "El client té preferència per la característica"@ca ;
+                                                         rdfs:label "prefereix característica"@ca .
 
 
-###  http://webprotege.stanford.edu/RDYU606lLGlVlsgeGT5Ri2g
-<http://webprotege.stanford.edu/RDYU606lLGlVlsgeGT5Ri2g> rdf:type owl:ObjectProperty ;
-                                                         rdfs:subPropertyOf owl:topObjectProperty ;
-                                                         rdfs:domain <http://example.org/ontologia/alquileres#Recommendation> ;
-                                                         rdfs:range <http://example.org/ontologia/alquileres#RentalOffer> ;
-                                                         rdfs:comment "Recomana una oferta a un client"^^xsd:string ;
-                                                         rdfs:label "recommendedOffer" .
 
 
-###  http://webprotege.stanford.edu/RG2ubeGhoqCFfVIEI9JyYX
-<http://webprotege.stanford.edu/RG2ubeGhoqCFfVIEI9JyYX> rdf:type owl:ObjectProperty ;
-                                                        rdfs:subPropertyOf owl:topObjectProperty ;
-                                                        rdfs:domain <http://example.org/ontologia/alquileres#RentalOffer> ;
-                                                        rdfs:range <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                        rdfs:comment "La propietat té la característica"^^xsd:string ;
-                                                        rdfs:label "hasCaracteristic" .
+
+###  http://example.org/ontologia/alquileres#hasFeature
+<http://example.org/ontologia/alquileres#hasFeature> rdf:type owl:ObjectProperty ;
+                                                     rdfs:domain <http://example.org/ontologia/alquileres#RentalOffer> ;
+                                                     rdfs:range <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                     rdfs:comment "La propietat té la característica"@ca ;
+                                                     rdfs:label "té característica"@ca .
 
 
 #################################################################
@@ -540,74 +532,74 @@
                                                      rdfs:label "Jove"@ca .
 
 
-###  http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU
-<http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> rdf:type owl:Class ;
-                                                         rdfs:comment "Defineix les posibles característiques de una propietat"^^xsd:string ;
-                                                         rdfs:label "Caracteristic"^^xsd:string .
+###  http://example.org/ontologia/alquileres#PropertyFeature
+<http://example.org/ontologia/alquileres#PropertyFeature> rdf:type owl:Class ;
+                                                          rdfs:comment "Defineix les possibles característiques d'una propietat"@ca ;
+                                                          rdfs:label "Característica"@ca .
 
 
 #################################################################
 #    Individuals
 #################################################################
 
-###  http://webprotege.stanford.edu/R75BsRQMqDQaDTUMPST4PO6
-<http://webprotege.stanford.edu/R75BsRQMqDQaDTUMPST4PO6> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:label "Terrace" .
+###  http://example.org/ontologia/alquileres#FeatureTerrace
+<http://example.org/ontologia/alquileres#FeatureTerrace> rdf:type owl:NamedIndividual ,
+                                                                  <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                         rdfs:label "Terrassa"@ca .
 
 
-###  http://webprotege.stanford.edu/R7fqwmVtpn277TEwhlwB4lE
-<http://webprotege.stanford.edu/R7fqwmVtpn277TEwhlwB4lE> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:label "Views" .
+###  http://example.org/ontologia/alquileres#FeatureViews
+<http://example.org/ontologia/alquileres#FeatureViews> rdf:type owl:NamedIndividual ,
+                                                               <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                       rdfs:label "Vistes"@ca .
 
 
-###  http://webprotege.stanford.edu/R8I5Ux7OGHMUau7FVSfiyMR
-<http://webprotege.stanford.edu/R8I5Ux7OGHMUau7FVSfiyMR> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:label "Garage" .
+###  http://example.org/ontologia/alquileres#FeatureGarage
+<http://example.org/ontologia/alquileres#FeatureGarage> rdf:type owl:NamedIndividual ,
+                                                                <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                       rdfs:label "Garatge"@ca .
 
 
-###  http://webprotege.stanford.edu/R8Sdou4IN327Mg4jBOSF4ZX
-<http://webprotege.stanford.edu/R8Sdou4IN327Mg4jBOSF4ZX> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:comment "Piscina"^^xsd:string ;
-                                                         rdfs:label "Pool" .
+###  http://example.org/ontologia/alquileres#FeaturePool
+<http://example.org/ontologia/alquileres#FeaturePool> rdf:type owl:NamedIndividual ,
+                                                                <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                       rdfs:label "Piscina"@ca .
 
 
-###  http://webprotege.stanford.edu/R9XPa3Oh2rBeuLuq8xo0aGD
-<http://webprotege.stanford.edu/R9XPa3Oh2rBeuLuq8xo0aGD> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:label "Appliances" .
+###  http://example.org/ontologia/alquileres#FeatureAppliances
+<http://example.org/ontologia/alquileres#FeatureAppliances> rdf:type owl:NamedIndividual ,
+                                                                         <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                                rdfs:label "Electrodomèstics"@ca .
 
 
-###  http://webprotege.stanford.edu/RBETEkkJwCieOJZvau5k2P7
-<http://webprotege.stanford.edu/RBETEkkJwCieOJZvau5k2P7> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:label "Yard" .
+###  http://example.org/ontologia/alquileres#FeatureYard
+<http://example.org/ontologia/alquileres#FeatureYard> rdf:type owl:NamedIndividual ,
+                                                               <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                      rdfs:label "Jardí/pati"@ca .
 
 
-###  http://webprotege.stanford.edu/RBtwTK0ELL0Ld5FQxWqVdIn
-<http://webprotege.stanford.edu/RBtwTK0ELL0Ld5FQxWqVdIn> rdf:type owl:NamedIndividual ;
-                                                         rdfs:label "Furniture" .
+###  http://example.org/ontologia/alquileres#FeatureFurniture
+<http://example.org/ontologia/alquileres#FeatureFurniture> rdf:type owl:NamedIndividual ,
+                                                                <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                       rdfs:label "Amoblat"@ca .
 
 
-###  http://webprotege.stanford.edu/RCPJVYI4BX1S4bro02WLyVl
-<http://webprotege.stanford.edu/RCPJVYI4BX1S4bro02WLyVl> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:label "Balcony" .
+###  http://example.org/ontologia/alquileres#FeatureBalcony
+<http://example.org/ontologia/alquileres#FeatureBalcony> rdf:type owl:NamedIndividual ,
+                                                               <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                      rdfs:label "Balcó"@ca .
 
 
-###  http://webprotege.stanford.edu/RDcPnsvyzNFhug3rK2D69Az
-<http://webprotege.stanford.edu/RDcPnsvyzNFhug3rK2D69Az> rdf:type owl:NamedIndividual ,
-                                                                  <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                         rdfs:label "AirOrHeating" .
+###  http://example.org/ontologia/alquileres#FeatureAirOrHeating
+<http://example.org/ontologia/alquileres#FeatureAirOrHeating> rdf:type owl:NamedIndividual ,
+                                                                       <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                              rdfs:label "Climatització"@ca .
 
 
-###  http://webprotege.stanford.edu/Rda9kpBmW2BU5j0FdpEtoD
-<http://webprotege.stanford.edu/Rda9kpBmW2BU5j0FdpEtoD> rdf:type owl:NamedIndividual ,
-                                                                 <http://webprotege.stanford.edu/RDulbn8rWXVVWbWfyCyi4qU> ;
-                                                        rdfs:label "Elevator" .
+###  http://example.org/ontologia/alquileres#FeatureElevator
+<http://example.org/ontologia/alquileres#FeatureElevator> rdf:type owl:NamedIndividual ,
+                                                                 <http://example.org/ontologia/alquileres#PropertyFeature> ;
+                                                        rdfs:label "Ascensor"@ca .
 
 
 ###  Generated by the OWL API (version 4.5.13) https://github.com/owlcs/owlapi
