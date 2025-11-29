@@ -423,44 +423,4 @@
     (price 1600.0)
   )
 
-  ;;; ------------------------------
-  ;;; RECOMANACIONS D'EXEMPLE (PER PROVES)
-  ;;; ------------------------------
-
-  ([recom-parella-centre-1] of Recommendation
-    (aboutOffer [oferta-pis-centre])
-    (recommendedFor [client-parella-centre])
-    (recommendationLevel "molt recomanable")
-  )
-
-  ([recom-parella-centre-2] of Recommendation
-    (aboutOffer [oferta-duplex-centre])
-    (recommendedFor [client-parella-centre])
-    (recommendationLevel "acceptable")
-  )
-
-  ([recom-familia-casa] of Recommendation
-    (aboutOffer [oferta-casa-periferia])
-    (recommendedFor [client-familia-verda])
-    (recommendationLevel "molt recomanable")
-  )
-
-  ([recom-estudiants-campus] of Recommendation
-    (aboutOffer [oferta-pis-campus])
-    (recommendedFor [client-estudiants-campus])
-    (recommendationLevel "molt recomanable")
-  )
-
-  ([recom-gent-gran-centre] of Recommendation
-    (aboutOffer [oferta-pis-centre])
-    (recommendedFor [client-gent-gran-tranquil])
-    (recommendationLevel "adequat si el soroll és acceptable")
-  )
-
-  ([recom-jove-centre-lowcost] of Recommendation
-    (aboutOffer [oferta-pis-centre])
-    (recommendedFor [client-jove-centre-lowcost])
-    (recommendationLevel "molt recomanable")
-  )
-
 ) ;; fi de definstances inicialitzacio
