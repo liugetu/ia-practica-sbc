@@ -2,43 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology alquileres.ttl
-;;; :Date 28/11/2025 15:51:07
-
-(defclass ClientProfile "Tipus de client: jove, família, estudiant, persona gran, etc."
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Couple
-    (is-a ClientProfile)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Elderly
-    (is-a ClientProfile)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Family
-    (is-a ClientProfile)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass Students
-    (is-a ClientProfile)
-    (role concrete)
-    (pattern-match reactive)
-)
-
-(defclass YoungAdult
-    (is-a ClientProfile)
-    (role concrete)
-    (pattern-match reactive)
-)
+;;; :Date 29/11/2025 11:33:14
 
 (defclass Property "Component físic: característiques intrínseques de l'habitatge."
     (is-a USER)
@@ -55,9 +19,7 @@
     (multislot address
         (type STRING)
         (create-accessor read-write))
-    (multislot allowsPets
-        (type SYMBOL)
-        (create-accessor read-write))
+    ;;; Superfície de l'immoble
     (multislot area
         (type INTEGER)
         (create-accessor read-write))
@@ -73,6 +35,7 @@
     (is-a Property)
     (role concrete)
     (pattern-match reactive)
+    ;;; Planta on esta situat el pis o duplex
     (multislot floor
         (type STRING)
         (create-accessor read-write))
@@ -82,6 +45,7 @@
     (is-a Property)
     (role concrete)
     (pattern-match reactive)
+    ;;; Planta on esta situat el pis o duplex
     (multislot floor
         (type STRING)
         (create-accessor read-write))
@@ -97,6 +61,7 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
+    ;;; Nom del servei
     (multislot serviceName
         (type STRING)
         (create-accessor read-write))
@@ -147,6 +112,42 @@
     (pattern-match reactive)
 )
 
+(defclass ClientProfile "Tipus de client: jove, família, estudiant, persona gran, etc."
+    (is-a USER)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Couple
+    (is-a ClientProfile)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Elderly
+    (is-a ClientProfile)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Family
+    (is-a ClientProfile)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass Students
+    (is-a ClientProfile)
+    (role concrete)
+    (pattern-match reactive)
+)
+
+(defclass YoungAdult
+    (is-a ClientProfile)
+    (role concrete)
+    (pattern-match reactive)
+)
+
 (defclass Client "Guarda les preferències/restriccions del client"
     (is-a USER)
     (role concrete)
@@ -159,17 +160,16 @@
     (multislot prefersFeature
         (type INSTANCE)
         (create-accessor read-write))
+    ;;; Edat del client
     (multislot clientAge
         (type INTEGER)
         (create-accessor read-write))
+    ;;; Preu màxim que es pot permetre de pagar el client
     (multislot clientMaxPrice
         (type FLOAT)
         (create-accessor read-write))
     (multislot familySize
         (type INTEGER)
-        (create-accessor read-write))
-    (multislot hasCar
-        (type SYMBOL)
         (create-accessor read-write))
     (multislot minArea
         (type INTEGER)
@@ -183,6 +183,7 @@
     (multislot needsDoubleBedroom
         (type SYMBOL)
         (create-accessor read-write))
+    ;;; Flexibilitat respecte el preu màxim que es pot permetre (en percentatge)
     (multislot priceFlexibility
         (type INTEGER)
         (create-accessor read-write))
@@ -213,9 +214,11 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
+    ;;; Coordenada de latitud de l'immoble
     (multislot latitude
         (type FLOAT)
         (create-accessor read-write))
+    ;;; Coordenada de longitud de l'immoble
     (multislot longitude
         (type FLOAT)
         (create-accessor read-write))
@@ -280,9 +283,7 @@
     (multislot minMonths
         (type INTEGER)
         (create-accessor read-write))
-    (multislot petsAllowed
-        (type SYMBOL)
-        (create-accessor read-write))
+    ;;; Preu mensual en euros que es demana per aquella oferta de lloguer
     (multislot price
         (type FLOAT)
         (create-accessor read-write))
@@ -323,6 +324,10 @@
     )
 
     ([FeatureYard] of Característica
+    )
+
+    ;;; permeten / volen tenir mascotes
+    ([petsAllowed] of Característica
     )
 
 )
