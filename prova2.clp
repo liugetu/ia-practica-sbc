@@ -1,33 +1,33 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Recomendador de alquileres - CLIPS v2
-;; Versión que utiliza ontologia.clp (defclass COOL)
-;; - Genera recomendaciones: Muy recomendable / Adecuado / Parcialmente adecuado
-;; - Indica criterios no cumplidos y aspectos que destacan
+;; Recomanador d'Lloguers - CLIPS v2
+;; Versió que utilitza ontologia.clp (defclass COOL)
+;; - Genera recomanacions: Molt recomanable / Adequat / Parcialment adequat
+;; - Indica criteris no complerts i aspectes que destaquen
 ;;
-;; USO:
+;; ÚS:
 ;;   clips
 ;;   (load "ontologia.clp")
-;;   (load "prova_v2.clp")
+;;   (load "prova2.clp")
 ;;   (reset)
 ;;   (run)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Templates auxiliares para el razonamiento
+;; Templates auxiliars per al raonament
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(deftemplate unmet-criterion
+(deftemplate criteri-no-complert
    (slot clientId)
    (slot offerId)
-   (slot criterion)
+   (slot criteri)
 )
 
-(deftemplate highlight
+(deftemplate aspecte-destacable
    (slot offerId)
    (slot text)
 )
 
-(deftemplate price-ok
+(deftemplate preu-ok
    (slot clientId)
    (slot offerId)
 )
@@ -38,11 +38,11 @@
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Reglas para evaluar criterios básicos
+;; Regles per avaluar criteris bàsics
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Precio aceptable
-(defrule check-price-ok
+;; Preu acceptable
+(defrule comprovar-preu-ok
    ?c <- (object (is-a Client) 
            (clientMaxPrice $?maxlist&:(> (length$ $?maxlist) 0)) 
            (priceFlexibility $?pflist&:(> (length$ $?pflist) 0)))
@@ -50,10 +50,10 @@
    (test (<= (nth$ 1 $?plist) 
              (* (nth$ 1 $?maxlist) (+ 1 (/ (nth$ 1 $?pflist) 100.0)))))
    =>
-   (assert (price-ok (clientId (instance-name ?c)) (offerId (instance-name ?o))))
+   (assert (preu-ok (clientId (instance-name ?c)) (offerId (instance-name ?o))))
 )
 
-(defrule check-price-not-ok
+(defrule comprovar-preu-no-ok
    ?c <- (object (is-a Client) 
            (clientMaxPrice $?maxlist&:(> (length$ $?maxlist) 0)) 
            (priceFlexibility $?pflist&:(> (length$ $?pflist) 0)))
@@ -61,12 +61,12 @@
    (test (> (nth$ 1 $?plist) 
             (* (nth$ 1 $?maxlist) (+ 1 (/ (nth$ 1 $?pflist) 100.0)))))
    =>
-   (assert (unmet-criterion (clientId (instance-name ?c)) (offerId (instance-name ?o)) 
-           (criterion "Precio por encima del máximo (con flexibilidad)")))
+   (assert (criteri-no-complert (clientId (instance-name ?c)) (offerId (instance-name ?o)) 
+           (criteri "Preu per sobre del màxim (amb flexibilitat)")))
 )
 
-;; Area check
-(defrule check-area-ok
+;; Comprovació d'àrea
+(defrule comprovar-area-ok
    ?c <- (object (is-a Client) (minArea $?minAlist&:(> (length$ $?minAlist) 0)))
    ?o <- (object (is-a RentalOffer) (hasProperty $?proplist&:(> (length$ $?proplist) 0)))
    (object (name ?prop&:(eq ?prop (nth$ 1 $?proplist))) (is-a Property) 
@@ -76,7 +76,7 @@
    (assert (area-ok (clientId (instance-name ?c)) (offerId (instance-name ?o))))
 )
 
-(defrule check-area-not-ok
+(defrule comprovar-area-no-ok
    ?c <- (object (is-a Client) (minArea $?minAlist&:(> (length$ $?minAlist) 0)))
    ?o <- (object (is-a RentalOffer) (hasProperty $?proplist&:(> (length$ $?proplist) 0)))
    (object (name ?prop&:(eq ?prop (nth$ 1 $?proplist))) (is-a Property) 
@@ -85,38 +85,38 @@
    =>
    (bind ?area (nth$ 1 $?arealist))
    (bind ?minA (nth$ 1 $?minAlist))
-   (assert (unmet-criterion (clientId (instance-name ?c)) (offerId (instance-name ?o)) 
-           (criterion (str-cat "Superficie insuficiente: " ?area " m2 < pedido " ?minA " m2"))))
+   (assert (criteri-no-complert (clientId (instance-name ?c)) (offerId (instance-name ?o)) 
+           (criteri (str-cat "Superfície insuficient: " ?area " m2 < sol·licitat " ?minA " m2"))))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Highlights
+;; Aspectes destacables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defrule highlight-cheap
+(defrule destacar-economic
    ?o <- (object (is-a RentalOffer) (price $?plist&:(> (length$ $?plist) 0)))
    ?c <- (object (is-a Client) (clientMaxPrice $?maxlist&:(> (length$ $?maxlist) 0)))
    (test (< (nth$ 1 $?plist) (* (nth$ 1 $?maxlist) 0.85)))
    =>
-   (assert (highlight (offerId (instance-name ?o)) 
-           (text "Precio significativamente inferior al máximo del cliente")))
+   (assert (aspecte-destacable (offerId (instance-name ?o)) 
+           (text "Preu significativament inferior al màxim del client")))
 )
 
-(defrule highlight-balcony-furnished-pets
+(defrule destacar-balco-moblat-mascotes
    ?o <- (object (is-a RentalOffer) (hasFeature $?features))
    (test (and (member$ [FeatureBalcony] $?features)
               (member$ [FeatureFurniture] $?features)
               (member$ [petsAllowed] $?features)))
    =>
-   (assert (highlight (offerId (instance-name ?o)) 
-           (text "Balcón, amueblado y permite mascotas")))
+   (assert (aspecte-destacable (offerId (instance-name ?o)) 
+           (text "Balcó, moblat i permet mascotes")))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Final evaluation
+;; Avaluació final
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defrule evaluate-offer
+(defrule avaluar-oferta
    (declare (salience -10))
    ?c <- (object (is-a Client))
    ?o <- (object (is-a RentalOffer))
@@ -124,42 +124,42 @@
    (bind ?cname (instance-name ?c))
    (bind ?oname (instance-name ?o))
    
-   (bind ?reasons (create$))
-   (do-for-all-facts ((?m unmet-criterion)) 
+   (bind ?raons (create$))
+   (do-for-all-facts ((?m criteri-no-complert)) 
        (and (eq ?m:clientId ?cname) (eq ?m:offerId ?oname))
-       (bind ?reasons (insert$ ?reasons (+ (length$ ?reasons) 1) ?m:criterion))
+       (bind ?raons (insert$ ?raons (+ (length$ ?raons) 1) ?m:criteri))
    )
    
-   (bind ?hlist (create$))
-   (do-for-all-facts ((?h highlight)) (eq ?h:offerId ?oname)
-       (bind ?hlist (insert$ ?hlist (+ (length$ ?hlist) 1) ?h:text))
+   (bind ?destacats (create$))
+   (do-for-all-facts ((?h aspecte-destacable)) (eq ?h:offerId ?oname)
+       (bind ?destacats (insert$ ?destacats (+ (length$ ?destacats) 1) ?h:text))
    )
    
-   (if (= (length$ ?reasons) 0) then
-       (if (> (length$ ?hlist) 0) then
+   (if (= (length$ ?raons) 0) then
+       (if (> (length$ ?destacats) 0) then
            (make-instance of Recommendation 
                (aboutOffer ?oname) 
                (recommendedFor ?cname) 
-               (recommendationLevel "Muy recomendable"))
+               (recommendationLevel "Molt recomanable"))
          else
            (make-instance of Recommendation 
                (aboutOffer ?oname) 
                (recommendedFor ?cname) 
-               (recommendationLevel "Adecuado"))
+               (recommendationLevel "Adequat"))
        )
      else
        (make-instance of Recommendation 
            (aboutOffer ?oname) 
            (recommendedFor ?cname) 
-           (recommendationLevel "Parcialmente adecuado"))
+           (recommendationLevel "Parcialment adequat"))
    )
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Presentation
+;; Presentació
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defrule print-recommendations
+(defrule imprimir-recomanacions
    ?r <- (object (is-a Recommendation)
            (aboutOffer $?oidlist&:(> (length$ $?oidlist) 0))
            (recommendedFor $?cidlist&:(> (length$ $?cidlist) 0))
@@ -169,42 +169,42 @@
    (bind ?cid (nth$ 1 $?cidlist))
    (bind ?lev (nth$ 1 $?levlist))
    
-   (printout t crlf "=== Recomendación para cliente " ?cid " sobre oferta " ?oid " ===" crlf)
-   (printout t "Nivel: " ?lev crlf)
+   (printout t crlf "=== Recomanació per al client " ?cid " sobre l'oferta " ?oid " ===" crlf)
+   (printout t "Nivell: " ?lev crlf)
    
-   (bind ?reasons (create$))
-   (do-for-all-facts ((?u unmet-criterion)) 
+   (bind ?raons (create$))
+   (do-for-all-facts ((?u criteri-no-complert)) 
        (and (eq ?u:clientId ?cid) (eq ?u:offerId ?oid))
-       (bind ?reasons (insert$ ?reasons (+ (length$ ?reasons) 1) ?u:criterion))
+       (bind ?raons (insert$ ?raons (+ (length$ ?raons) 1) ?u:criteri))
    )
    
-   (if (> (length$ ?reasons) 0) then
-       (printout t "Criterios no cumplidos:" crlf)
-       (foreach ?r ?reasons (printout t " - " ?r crlf))
+   (if (> (length$ ?raons) 0) then
+       (printout t "Criteris no complerts:" crlf)
+       (foreach ?r ?raons (printout t " - " ?r crlf))
      else
-       (printout t "Criterios no cumplidos: ninguno" crlf)
+       (printout t "Criteris no complerts: cap" crlf)
    )
    
-   (bind ?highlights (create$))
-   (do-for-all-facts ((?h highlight)) (eq ?h:offerId ?oid)
-       (bind ?highlights (insert$ ?highlights (+ (length$ ?highlights) 1) ?h:text))
+   (bind ?destacats (create$))
+   (do-for-all-facts ((?h aspecte-destacable)) (eq ?h:offerId ?oid)
+       (bind ?destacats (insert$ ?destacats (+ (length$ ?destacats) 1) ?h:text))
    )
    
-   (if (> (length$ ?highlights) 0) then
-       (printout t "Aspectos destacables:" crlf)
-       (foreach ?h ?highlights (printout t " * " ?h crlf))
+   (if (> (length$ ?destacats) 0) then
+       (printout t "Aspectes destacables:" crlf)
+       (foreach ?h ?destacats (printout t " * " ?h crlf))
      else
-       (printout t "Aspectos destacables: ninguno particular" crlf)
+       (printout t "Aspectes destacables: cap en particular" crlf)
    )
    (printout t "-------------------------------------------" crlf)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Datos de ejemplo usando definstances
+;; Dades d'exemple utilitzant definstances
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(definstances example-data
-    ;; Cliente
+(definstances dades-exemple
+    ;; Client
     ([Client1] of Client
         (clientAge 30)
         (clientMaxPrice 950.0)
@@ -220,23 +220,23 @@
         (wantsTransport yes)
     )
     
-    ;; Propiedades
+    ;; Propietats
     ([Property1] of Property
         (address "C/ Falsa 123")
         (area 75)
     )
     
     ([Property2] of Property
-        (address "Av. Ejemplo 50")
+        (address "Av. Exemple 50")
         (area 55)
     )
     
     ([Property3] of Property
-        (address "Plaza Central 2")
+        (address "Plaça Central 2")
         (area 85)
     )
     
-    ;; Ofertas
+    ;; Ofertes
     ([Offer1] of RentalOffer
         (hasProperty [Property1])
         (price 900.0)
