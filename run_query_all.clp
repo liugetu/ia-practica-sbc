@@ -1,5 +1,6 @@
+;;; clips -f run_query_all.clp
 ;;; ---------------------------------------------------------
-;;; run_query.clp
+;;; run_query_all.clp
 ;;; Script to load the ontology, initialization data, expert system
 ;;; and run the recommendation query
 ;;; ---------------------------------------------------------
