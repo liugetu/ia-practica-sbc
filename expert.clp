@@ -7,6 +7,64 @@
 ;;;   - Carregades les instàncies d'exemple (inicialització.clp)
 ;;; ---------------------------------------------------------
 
+;;; ---------------------------------------------------------
+;;; FUNCIONS PER CÁLCUL AUTOMÀTIC DE PROXIMITATS
+;;; ---------------------------------------------------------
+
+(deffunction manhattan-distance (?lat1 ?lon1 ?lat2 ?lon2)
+  "Calcula la distancia Manhattan entre dues coordenades"
+  (+ (abs (- ?lat1 ?lat2)) (abs (- ?lon1 ?lon2)))
+)
+
+(deffunction get-distance-category (?distance)
+  "Determina la categoria de distància: 0=prop(<0.005), 1=mig(0.005-0.009), 2=lluny(>=0.010)"
+  (if (< ?distance 0.005) then 0
+   else (if (< ?distance 0.010) then 1
+    else 2))
+)
+
+;;; ---------------------------------------------------------
+;;; REGLES PER GENERAR PROXIMITATS AUTOMÀTIQUES
+;;; ---------------------------------------------------------
+
+(defrule calcular-proximitats
+  "Calcula automàticament les proximitats entre propietats i serveis"
+  (declare (salience 30))
+  (object (is-a Property) 
+          (OBJECT ?prop-name)
+          (locatedAt ?prop-location))
+  (object (is-a Service)
+          (OBJECT ?service-name)  
+          (ServiceLocatedAt ?service-location))
+  (object (is-a Location)
+          (OBJECT ?prop-location)
+          (latitude ?prop-lat)
+          (longitude ?prop-lon))
+  (object (is-a Location)
+          (OBJECT ?service-location)
+          (latitude ?serv-lat)
+          (longitude ?serv-lon))
+  
+  ;; Verificar que no existeix ja una proximitat per aquesta combinació
+  (not (object (is-a Proximity) 
+               (nearProperty ?prop-name)
+               (nearService ?service-name)))
+  =>
+  
+  ;; Calcular distància Manhattan
+  (bind ?distance (manhattan-distance ?prop-lat ?prop-lon ?serv-lat ?serv-lon))
+  
+  ;; Determinar categoria
+  (bind ?category (get-distance-category ?distance))
+  
+  ;; Crear instància de proximitat amb nom generat automàticament
+  (make-instance (gensym*)
+    of Proximity
+    (nearProperty ?prop-name)
+    (nearService ?service-name)
+    (distanceCategory ?category))
+)
+
 ;;; Llindars globals per transformar punts -> nivell de recomanació
 
 (defglobal
@@ -148,8 +206,8 @@
    ;; Nombre d'habitacions
    (bind ?ndorms (length$ ?habitacions))
    (if (>= ?ndorms ?minD)
-       then (bind ?nova (+ ?nova 15))
-       else (bind ?nova (- ?nova 10)))
+       then (bind ?nova (+ ?nova 30))
+       else (bind ?nova (- ?nova 30)))
 
    (modify ?a (punts ?nova)
             (mida-avaluada TRUE)
@@ -186,8 +244,17 @@
    )
 
    ;; Llum natural
-   (if (>= ?llum 8) then
+   (if (== ?llum 0) then
+      (bind ?nova (+ ?nova 0))
+   )
+   (if (== ?llum 1) then
       (bind ?nova (+ ?nova 5))
+   )
+   (if (== ?llum 2) then
+      (bind ?nova (+ ?nova 5))
+   )
+   (if (== ?llum 3) then
+      (bind ?nova (+ ?nova 10))
    )
 
    (modify ?a (punts ?nova)
@@ -220,22 +287,61 @@
 )
 
 ;;; ---------------------------------------------------------
-;;; CRITERIS DE SERVEIS I PROXIMITAT
-;;;   - Es premien o penalitzen segons la preferència del client
-;;;   - Es considera distància categoria 0 com "a prop"
+;;; CRITERIS DE SERVEIS I PROXIMITAT - SISTEMA GENÈRIC
+;;;   - Es premien (si) o penalitzen (no) segons la preferència del client i la proximitat
+;;;   - Categoria 0 = prop (punts complets), 1 = mitja (meitat punts), 2 = lluny (quart punts)
+;;;   - Sistema genèric que mapeja automàticament tipus de serveis amb preferències
 ;;; ---------------------------------------------------------
 
-;;; ---- Zones verdes ----
+;;; Funció per obtenir la preferència del client per un tipus de servei
+(deffunction get-service-preference (?client ?service-type)
+  "Retorna la preferència del client pel tipus de servei donat"
+  (bind ?client-obj (instance-address * ?client))
+  (switch ?service-type
+    (case GreenArea then (send ?client-obj get-wantsGreenArea))
+    (case HealthCenter then (send ?client-obj get-wantsHealthCenter))
+    (case Nightlife then (send ?client-obj get-wantsNightLife))
+    (case School then (send ?client-obj get-wantsSchool))
+    (case Stadium then (send ?client-obj get-wantsStadium))
+    (case Supermarket then (send ?client-obj get-wantsSupermarket))
+    (case Transport then (send ?client-obj get-wantsTransport))
+    (default indiferent))
+)
 
-(defrule criteri-zona-verda-positiu
+;;; Funció per obtenir els punts base segons el tipus de servei
+(deffunction get-service-points (?service-type)
+  "Retorna els punts base per al tipus de servei"
+  (switch ?service-type
+    (case GreenArea then 10)
+    (case HealthCenter then 12)
+    (case Nightlife then 8)
+    (case School then 10)
+    (case Stadium then 8)
+    (case Supermarket then 11)
+    (case Transport then 11)
+    (default 10))
+)
+
+;;; Funció per obtenir el flag d'avaluació corresponent
+(deffunction get-evaluation-flag (?service-type)
+  "Retorna el nom del flag d'avaluació per al tipus de servei"
+  (switch ?service-type
+    (case GreenArea then verd-avaluat)
+    (case HealthCenter then salut-avaluada)
+    (case Nightlife then nit-avaluada)
+    (case School then escola-avaluada)
+    (case Stadium then estadi-avaluat)
+    (case Supermarket then super-avaluat)
+    (case Transport then transport-avaluat)
+    (default servei-avaluat))
+)
+
+;;; Regla genèrica per serveis desitjats (si) - proximitat categoria 0 (prop)
+(defrule criteri-servei-positiu-prop
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p)
-                    (verd-avaluat FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsGreenArea si))
+                    (punts ?p))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
@@ -243,72 +349,91 @@
            (nearProperty ?prop)
            (nearService ?srv)
            (distanceCategory 0))
-   (object (is-a GreenArea)
+   (object (is-a ?service-type&:(subclassp ?service-type Service))
            (name ?srv))
+   
+   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
+   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
+   
+   ;; Verificar que el client vol aquest tipus de servei
+   (test (eq (get-service-preference ?c ?service-type) si))
    =>
-   (modify ?a (punts (+ ?p 10))
-            (verd-avaluat TRUE))
+   (bind ?base-points (get-service-points ?service-type))
+   (bind ?flag (get-evaluation-flag ?service-type))
+   
+   (modify ?a 
+           (punts (+ ?p ?base-points))
+           (?flag TRUE))
 )
 
-(defrule criteri-zona-verda-negatiu
+;;; Regla genèrica per serveis desitjats (si) - proximitat categoria 1 (mitja)
+(defrule criteri-servei-positiu-mitja
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p)
-                    (verd-avaluat FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsGreenArea no))
+                    (punts ?p))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
    (object (is-a Proximity)
            (nearProperty ?prop)
            (nearService ?srv)
-           (distanceCategory 0))
-   (object (is-a GreenArea)
+           (distanceCategory 1))
+   (object (is-a ?service-type&:(subclassp ?service-type Service))
            (name ?srv))
+   
+   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
+   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
+   
+   ;; Verificar que el client vol aquest tipus de servei
+   (test (eq (get-service-preference ?c ?service-type) si))
    =>
-   (modify ?a (punts (- ?p 5))
-            (verd-avaluat TRUE))
+   (bind ?base-points (get-service-points ?service-type))
+   (bind ?half-points (div ?base-points 2))
+   (bind ?flag (get-evaluation-flag ?service-type))
+   
+   (modify ?a 
+           (punts (+ ?p ?half-points))
+           (?flag TRUE))
 )
 
-;;; ---- Centres de salut ----
-
-(defrule criteri-salut-positiu
+;;; Regla genèrica per serveis desitjats (si) - proximitat categoria 2 (lluny)
+(defrule criteri-servei-positiu-lluny
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p)
-                    (salut-avaluada FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsHealthCenter si))
+                    (punts ?p))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
    (object (is-a Proximity)
            (nearProperty ?prop)
            (nearService ?srv)
-           (distanceCategory 0))
-   (object (is-a HealthCenter)
+           (distanceCategory 2))
+   (object (is-a ?service-type&:(subclassp ?service-type Service))
            (name ?srv))
+   
+   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
+   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
+   
+   ;; Verificar que el client vol aquest tipus de servei
+   (test (eq (get-service-preference ?c ?service-type) si))
    =>
-   (modify ?a (punts (+ ?p 8))
-            (salut-avaluada TRUE))
+   (bind ?base-points (get-service-points ?service-type))
+   (bind ?quarter-points (div ?base-points 4))
+   (bind ?flag (get-evaluation-flag ?service-type))
+   
+   (modify ?a 
+           (punts (+ ?p ?quarter-points))
+           (?flag TRUE))
 )
 
-;;; ---- Oci nocturn ----
-
-(defrule criteri-oci-nocturn-positiu
+;;; Regla genèrica per serveis NO desitjats (no) - proximitat categoria 0 (prop)
+(defrule criteri-servei-negatiu-prop
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p)
-                    (nit-avaluada FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsNightLife si))
+                    (punts ?p))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
@@ -316,136 +441,83 @@
            (nearProperty ?prop)
            (nearService ?srv)
            (distanceCategory 0))
-   (object (is-a Nightlife)
-           (name ?srv)
-           (serviceNoiseLevel ?nivell))
-   =>
-   (modify ?a (punts (+ ?p 12))
-            (nit-avaluada TRUE))
-)
-
-(defrule criteri-oci-nocturn-negatiu
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (nit-avaluada FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsNightLife no))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (hasProperty ?prop))
-   (object (is-a Proximity)
-           (nearProperty ?prop)
-           (nearService ?srv)
-           (distanceCategory 0))
-   (object (is-a Nightlife)
-           (name ?srv)
-           (serviceNoiseLevel ?nivell))
-   =>
-   (modify ?a (punts (- ?p 15))
-            (nit-avaluada TRUE))
-)
-
-;;; ---- Escoles ----
-
-(defrule criteri-escola-positiu
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (escola-avaluada FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsSchool si))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (hasProperty ?prop))
-   (object (is-a Proximity)
-           (nearProperty ?prop)
-           (nearService ?srv)
-           (distanceCategory 0))
-   (object (is-a School)
+   (object (is-a ?service-type&:(subclassp ?service-type Service))
            (name ?srv))
+   
+   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
+   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
+   
+   ;; Verificar que el client NO vol aquest tipus de servei
+   (test (eq (get-service-preference ?c ?service-type) no))
    =>
-   (modify ?a (punts (+ ?p 8))
-            (escola-avaluada TRUE))
+   (bind ?base-points (get-service-points ?service-type))
+   (bind ?flag (get-evaluation-flag ?service-type))
+   
+   (modify ?a 
+           (punts (- ?p ?base-points))
+           (?flag TRUE))
 )
 
-;;; ---- Estadis ----
-
-(defrule criteri-estadi-positiu
+;;; Regla genèrica per serveis NO desitjats (no) - proximitat categoria 1 (mitja)
+(defrule criteri-servei-negatiu-mitja
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p)
-                    (estadi-avaluat FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsStadium si))
+                    (punts ?p))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
    (object (is-a Proximity)
            (nearProperty ?prop)
            (nearService ?srv)
-           (distanceCategory 0))
-   (object (is-a Stadium)
+           (distanceCategory 1))
+   (object (is-a ?service-type&:(subclassp ?service-type Service))
            (name ?srv))
+   
+   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
+   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
+   
+   ;; Verificar que el client NO vol aquest tipus de servei
+   (test (eq (get-service-preference ?c ?service-type) no))
    =>
-   (modify ?a (punts (+ ?p 6))
-            (estadi-avaluat TRUE))
+   (bind ?base-points (get-service-points ?service-type))
+   (bind ?half-points (div ?base-points 2))
+   (bind ?flag (get-evaluation-flag ?service-type))
+   
+   (modify ?a 
+           (punts (- ?p ?half-points))
+           (?flag TRUE))
 )
 
-;;; ---- Supermercats ----
-
-(defrule criteri-supermercat-positiu
+;;; Regla genèrica per serveis NO desitjats (no) - proximitat categoria 2 (lluny)
+(defrule criteri-servei-negatiu-lluny
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p)
-                    (super-avaluat FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsSupermarket si))
+                    (punts ?p))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
    (object (is-a Proximity)
            (nearProperty ?prop)
            (nearService ?srv)
-           (distanceCategory 0))
-   (object (is-a Supermarket)
+           (distanceCategory 2))
+   (object (is-a ?service-type&:(subclassp ?service-type Service))
            (name ?srv))
+   
+   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
+   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
+   
+   ;; Verificar que el client NO vol aquest tipus de servei
+   (test (eq (get-service-preference ?c ?service-type) no))
    =>
-   (modify ?a (punts (+ ?p 6))
-            (super-avaluat TRUE))
-)
-
-;;; ---- Transport públic ----
-
-(defrule criteri-transport-positiu
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (transport-avaluat FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (wantsTransport si))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (hasProperty ?prop))
-   (object (is-a Proximity)
-           (nearProperty ?prop)
-           (nearService ?srv)
-           (distanceCategory 0))
-   (object (is-a Transport)
-           (name ?srv))
-   =>
-   (modify ?a (punts (+ ?p 10))
-            (transport-avaluat TRUE))
+   (bind ?base-points (get-service-points ?service-type))
+   (bind ?quarter-points (div ?base-points 4))
+   (bind ?flag (get-evaluation-flag ?service-type))
+   
+   (modify ?a 
+           (punts (- ?p ?quarter-points))
+           (?flag TRUE))
 )
 
 ;;; ---------------------------------------------------------
@@ -474,7 +546,7 @@
            (distanceCategory 0))
    (object (is-a Service)
            (name ?srv)
-           (serviceNoiseLevel ?nivell&:(> ?nivell 6)))
+           (serviceNoiseLevel ?nivell&:(>= ?nivell 2)))
    =>
    (modify ?a (punts (- ?p 15))
             (soroll-avaluat TRUE))

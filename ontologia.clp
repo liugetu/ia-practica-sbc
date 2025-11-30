@@ -37,7 +37,7 @@
     (pattern-match reactive)
     ;;; Planta on esta situat el pis o duplex
     (multislot floor
-        (type STRING)
+        (type INTEGER)
         (create-accessor read-write))
 )
 
@@ -47,7 +47,7 @@
     (pattern-match reactive)
     ;;; Planta on esta situat el pis o duplex
     (multislot floor
-        (type STRING)
+        (type INTEGER)
         (create-accessor read-write))
 )
 
@@ -61,6 +61,10 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
+    ;;; Relaciona un servei amb la seva ubicació/coordenades
+    (multislot ServiceLocatedAt
+        (type INSTANCE)
+        (create-accessor read-write))
     ;;; Nom del servei
     (multislot serviceName
         (type STRING)
@@ -296,38 +300,15 @@
 )
 
 (definstances instances
-    ([FeatureAirOrHeating] of PropertyFeature
-    )
-
-    ([FeatureAppliances] of PropertyFeature
-    )
-
-    ([FeatureBalcony] of PropertyFeature
-    )
-
-    ([FeatureElevator] of PropertyFeature
-    )
-
-    ([FeatureFurniture] of PropertyFeature
-    )
-
-    ([FeatureGarage] of PropertyFeature
-    )
-
-    ([FeaturePool] of PropertyFeature
-    )
-
-    ([FeatureTerrace] of PropertyFeature
-    )
-
-    ([FeatureViews] of PropertyFeature
-    )
-
-    ([FeatureYard] of PropertyFeature
-    )
-
-    ;;; permeten / volen tenir mascotes
-    ([petsAllowed] of PropertyFeature
-    )
-
+    ([FeatureAirOrHeating] of PropertyFeature)
+    ([FeatureAppliances] of PropertyFeature)
+    ([FeatureBalcony] of PropertyFeature)
+    ([FeatureElevator] of PropertyFeature)
+    ([FeatureFurniture] of PropertyFeature)
+    ([FeatureGarage] of PropertyFeature)
+    ([FeaturePool] of PropertyFeature)
+    ([FeatureTerrace] of PropertyFeature)
+    ([FeatureViews] of PropertyFeature)
+    ([FeatureYard] of PropertyFeature)
+    ([FeaturePetsAllowed] of PropertyFeature)
 )
