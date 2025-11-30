@@ -63,25 +63,36 @@
   ;;; ------------------------------
 
   ;; Pis centre
-  ([pis-centre-dorm-1] of Room)
-  ([pis-centre-dorm-2] of Room)
+  ([pis-centre-dorm-1] of Room
+    (IsDouble TRUE))
+  ([pis-centre-dorm-2] of Room
+    (IsDouble FALSE))
 
   ;; Pis campus
-  ([pis-campus-dorm-1] of Room)
-  ([pis-campus-dorm-2] of Room)
+  ([pis-campus-dorm-1] of Room
+    (IsDouble TRUE))
+  ([pis-campus-dorm-2] of Room
+    (IsDouble FALSE))
 
   ;; Casa perifèria
-  ([casa-periferia-dorm-1] of Room)
-  ([casa-periferia-dorm-2] of Room)
-  ([casa-periferia-dorm-3] of Room)
+  ([casa-periferia-dorm-1] of Room
+    (IsDouble TRUE))
+  ([casa-periferia-dorm-2] of Room
+    (IsDouble FALSE))
+  ([casa-periferia-dorm-3] of Room
+    (IsDouble FALSE))
 
   ;; Dúplex centre
-  ([duplex-centre-dorm-1] of Room)
-  ([duplex-centre-dorm-2] of Room)
+  ([duplex-centre-dorm-1] of Room
+    (IsDouble TRUE))
+  ([duplex-centre-dorm-2] of Room
+    (IsDouble FALSE))
 
   ;; Pis eixample
-  ([pis-eixample-dorm-1] of Room)
-  ([pis-eixample-dorm-2] of Room)
+  ([pis-eixample-dorm-1] of Room
+    (IsDouble TRUE))
+  ([pis-eixample-dorm-2] of Room
+    (IsDouble TRUE))
 
   ;;; ------------------------------
   ;;; SERVEIS

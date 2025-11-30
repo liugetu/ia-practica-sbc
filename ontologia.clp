@@ -293,10 +293,15 @@
         (create-accessor read-write))
 )
 
-(defclass Room "Modela dormitoris (simple/doble) i altres estances si cal."
+(defclass Room "Modela dormitoris (simple/doble)"
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
+    (slot IsDouble
+        (type SYMBOL)
+        (allowed-values TRUE FALSE)
+        (default FALSE)
+        (create-accessor read-write))
 )
 
 (definstances instances

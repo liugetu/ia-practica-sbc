@@ -101,6 +101,7 @@
    (slot transport-avaluat   (type SYMBOL) (default FALSE))
 
    (slot soroll-avaluat      (type SYMBOL) (default FALSE))
+   (slot habitacio-doble-avaluada (type SYMBOL) (default FALSE))
 )
 
 ;;; ---------------------------------------------------------
@@ -129,7 +130,8 @@
                       (estadi-avaluat FALSE)
                       (super-avaluat FALSE)
                       (transport-avaluat FALSE)
-                      ( soroll-avaluat FALSE)))
+                      (soroll-avaluat FALSE)
+                      (habitacio-doble-avaluada FALSE)))
 )
 
 ;;; ---------------------------------------------------------
@@ -464,6 +466,51 @@
    (bind ?penalitzacio (* ?nivell 5))
    (modify ?a (punts (- ?p ?penalitzacio))
             (soroll-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE HABITACIÓ DOBLE
+;;;   - Si el client vol habitació doble i la té: +10 punts
+;;;   - Si el client vol habitació doble però no la té: -10 punts
+;;;   - Altrament: 0 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-habitacio-doble
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (habitacio-doble-avaluada FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (needsDoubleBedroom ?vol-doble))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (hasRoom $?habitacions))
+   =>
+   (bind ?nova ?p)
+   
+   ;; Verificar si té habitació doble
+   (bind ?te-doble FALSE)
+   (progn$ (?room ?habitacions)
+      (if (and (object-existp ?room)
+               (eq (send (instance-address * ?room) get-IsDouble) TRUE))
+          then (bind ?te-doble TRUE)))
+   
+   ;; Aplicar puntuació segons les regles
+   (if (eq ?vol-doble si)
+       then 
+         (if (eq ?te-doble TRUE)
+             then (bind ?nova (+ ?nova 10))    ; Vol i té: +10
+             else (bind ?nova (- ?nova 10)))   ; Vol però no té: -10
+       ; else -> No vol habitació doble: 0 punts (no fem res)
+   )
+   
+   (modify ?a (punts ?nova)
+            (habitacio-doble-avaluada TRUE))
 )
 
 ;;; ---------------------------------------------------------
