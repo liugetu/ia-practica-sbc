@@ -53,6 +53,11 @@
     (longitude 2.125)
   )
 
+  ([loc-eixample-sud] of Location
+    (latitude 41.389)
+    (longitude 2.169)
+  )
+
   ;;; ------------------------------
   ;;; HABITACIONS
   ;;; ------------------------------
@@ -73,6 +78,10 @@
   ;; Dúplex centre
   ([duplex-centre-dorm-1] of Room)
   ([duplex-centre-dorm-2] of Room)
+
+  ;; Pis eixample
+  ([pis-eixample-dorm-1] of Room)
+  ([pis-eixample-dorm-2] of Room)
 
   ;;; ------------------------------
   ;;; SERVEIS
@@ -132,6 +141,30 @@
     (ServiceLocatedAt [loc-barri-universitari])
   )
 
+  ([parc-eixample] of GreenArea
+    (serviceName "Parc de l'Eixample")
+    (serviceNoiseLevel 0)
+    (ServiceLocatedAt [loc-eixample-sud])
+  )
+
+  ([cap-eixample] of HealthCenter
+    (serviceName "CAP Eixample Sud")
+    (serviceNoiseLevel 0)
+    (ServiceLocatedAt [loc-eixample-sud])
+  )
+
+  ([super-eixample] of Supermarket
+    (serviceName "Supermercat Eixample")
+    (serviceNoiseLevel 0)
+    (ServiceLocatedAt [loc-eixample-sud])
+  )
+
+  ([metro-eixample] of Transport
+    (serviceName "Metro L2 - Eixample")
+    (serviceNoiseLevel 0)
+    (ServiceLocatedAt [loc-eixample-sud])
+  )
+
   ;;; ------------------------------
   ;;; PROPIETATS (IMMOBLES)
   ;;; ------------------------------
@@ -141,7 +174,7 @@
     (address "C/ Major 10, Barri Centre")
     (area 75)
     (naturalLight 3)
-    (state 8)
+    (state 4)
     (floor 3)
     (hasRoom [pis-centre-dorm-1] [pis-centre-dorm-2])
     (locatedAt [loc-centre])
@@ -152,7 +185,7 @@
     (address "Av. Universitat 5, Zona Campus")
     (area 60)
     (naturalLight 0)
-    (state 7)
+    (state 3)
     (floor 2)
     (hasRoom [pis-campus-dorm-1] [pis-campus-dorm-2])
     (locatedAt [loc-campus])
@@ -163,7 +196,7 @@
     (address "Passatge dels Pins 12, Urbanització Verda")
     (area 120)
     (naturalLight 1)
-    (state 9)
+    (state 1)
     (hasRoom [casa-periferia-dorm-1]
              [casa-periferia-dorm-2]
              [casa-periferia-dorm-3])
@@ -175,11 +208,22 @@
     (address "Rbla. Nova 3, Barri Centre")
     (area 90)
     (naturalLight 2)
-    (state 9)
+    (state 4)
     (floor 6)
     (hasRoom [duplex-centre-dorm-1]
              [duplex-centre-dorm-2])
     (locatedAt [loc-zona-oci])
+  )
+
+  ;; Pis renovat a l'Eixample Sud
+  ([prop-pis-eixample] of Apartment
+    (address "C/ Provença 125, Eixample Sud")
+    (area 85)
+    (naturalLight 3)
+    (state 5)
+    (floor 2)
+    (hasRoom [pis-eixample-dorm-1] [pis-eixample-dorm-2])
+    (locatedAt [loc-eixample-sud])
   )
 
   ;;; ------------------------------
@@ -301,6 +345,27 @@
     (wantsTransport si)
   )
 
+  ;; Parella professional que busca comoditat i serveis
+  ([client-parella-professional] of Client
+    (hasProfile [perfil-parella-jove])
+    (prefersFeature [FeatureElevator] [FeatureBalcony] [FeatureAirOrHeating] [FeatureTerrace])
+    (clientAge 30)
+    (clientMaxPrice 1000.0)
+    (familySize 2)
+    (minArea 70)
+    (minDorms 2)
+    (minReasonablePrice 800)
+    (needsDoubleBedroom si)
+    (priceFlexibility 20)
+    (wantsGreenArea si)
+    (wantsHealthCenter si)
+    (wantsNightLife indiferent)
+    (wantsSchool indiferent)
+    (wantsStadium indiferent)
+    (wantsSupermarket si)
+    (wantsTransport si)
+  )
+
   ;;; ------------------------------
   ;;; OFERTES DE LLOGUER
   ;;; ------------------------------
@@ -339,6 +404,15 @@
     (maxPeople 4)
     (minMonths 12)
     (price 1600.0)
+  )
+
+  ;; Oferta pel pis de l'Eixample
+  ([oferta-pis-eixample] of RentalOffer
+    (hasProperty [prop-pis-eixample])
+    (hasFeature [FeatureElevator] [FeatureBalcony] [FeatureAirOrHeating] [FeatureTerrace] [FeatureAppliances] [FeatureFurniture])
+    (maxPeople 3)
+    (minMonths 12)
+    (price 950.0)
   )
 
 ) ;; fi de definstances inicialitzacio

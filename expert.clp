@@ -7,6 +7,14 @@
 ;;;   - Carregades les instàncies d'exemple (inicialització.clp)
 ;;; ---------------------------------------------------------
 
+;;; Llindars globals per transformar punts -> nivell de recomanació
+
+(defglobal
+  ?*PUNTS-NO*      = 0
+  ?*PUNTS-POC*     = 25
+  ?*PUNTS-RECOM*   = 60
+)
+
 ;;; ---------------------------------------------------------
 ;;; FUNCIONS PER CÁLCUL AUTOMÀTIC DE PROXIMITATS
 ;;; ---------------------------------------------------------
@@ -17,9 +25,9 @@
 )
 
 (deffunction get-distance-category (?distance)
-  "Determina la categoria de distància: 0=prop(<0.005), 1=mig(0.005-0.009), 2=lluny(>=0.010)"
-  (if (< ?distance 0.005) then 0
-   else (if (< ?distance 0.010) then 1
+  "Determina la categoria de distància: 0=prop(<0.010), 1=mig(0.010-0.050), 2=lluny(>=0.050)"
+  (if (< ?distance 0.010) then 0
+   else (if (< ?distance 0.050) then 1
     else 2))
 )
 
@@ -63,14 +71,6 @@
     (nearProperty ?prop-name)
     (nearService ?service-name)
     (distanceCategory ?category))
-)
-
-;;; Llindars globals per transformar punts -> nivell de recomanació
-
-(defglobal
-  ?*PUNTS-NO*      = 0
-  ?*PUNTS-POC*     = 25
-  ?*PUNTS-RECOM*   = 60
 )
 
 ;;; ---------------------------------------------------------
@@ -155,18 +155,18 @@
 
    ;; Si el preu és per sota o igual del màxim assumible, sumem punts
    (if (<= ?preu ?max) then
-      (bind ?nova (+ ?nova 20))
+      (bind ?nova (+ ?nova 50))
    else
       ;; Si supera el màxim però dins de la flexibilitat, penalització moderada
       (if (<= ?preu (* ?max (+ 1 (/ ?flex 100.0))))
-          then (bind ?nova (- ?nova 10))
-          else (bind ?nova (- ?nova 30))   ; Massa car
+          then (bind ?nova (+ ?nova 25))
+          else (bind ?nova (- ?nova 100))   ; Massa car
       )
    )
 
    ;; Si el preu és especialment raonable (per sota del mínim "raonable")
    (if (<= ?preu ?minR) then
-      (bind ?nova (+ ?nova 10))
+      (bind ?nova (- ?nova 10))
    )
 
    (modify ?a (punts ?nova)
@@ -198,10 +198,19 @@
    =>
    (bind ?nova ?p)
 
-   ;; Comparació d'àrea
+   ;; Comparació d'àrea proporcional
+   (bind ?area-ratio (/ ?area ?minA))
    (if (>= ?area ?minA)
-       then (bind ?nova (+ ?nova 15))
-       else (bind ?nova (- ?nova 15)))
+       then 
+         ;; Área suficient o més gran - mínim 20 punts + fins a 10 més segons ratio
+         (bind ?extra-bonus (min 10 (* 10 (- ?area-ratio 1))))
+         (bind ?area-bonus (+ 20 ?extra-bonus))
+         (bind ?nova (+ ?nova ?area-bonus))
+       else 
+         ;; Área insuficient - mínim -20 punts - fins a 10 més segons ratio
+         (bind ?extra-penalty (min 10 (* 10 (- 1 ?area-ratio))))
+         (bind ?area-penalty (+ -20 (- ?extra-penalty)))
+         (bind ?nova (+ ?nova ?area-penalty)))
 
    ;; Nombre d'habitacions
    (bind ?ndorms (length$ ?habitacions))
@@ -235,10 +244,10 @@
    (bind ?nova ?p)
 
    ;; Estat general de l'immoble
-   (if (>= ?estat 8) then
+   (if (>= ?estat 4) then
       (bind ?nova (+ ?nova 10))
    else
-      (if (<= ?estat 5) then
+      (if (<= ?estat 2) then
           (bind ?nova (- ?nova 10))
       )
    )
@@ -521,22 +530,17 @@
 )
 
 ;;; ---------------------------------------------------------
-;;; CRITERI GENERIC DE SOROLL PER GENT GRAN
-;;;  - Si el client és gent gran i hi ha serveis molt sorollosos
-;;;    a prop, penalitzem.
+;;; CRITERI GENERIC DE SOROLL
+;;;  - Si hi ha serveis sorollosos a prop (categoria 0), es penalitza
+;;;    proporcionalment al nivell de soroll (0-3): de -0 a -15 punts
 ;;; ---------------------------------------------------------
 
-(defrule criteri-soroll-gent-gran
+(defrule criteri-soroll-general
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
                     (punts ?p)
                     (soroll-avaluat FALSE))
-   (object (is-a Client)
-           (name ?c)
-           (hasProfile ?perfil))
-   (object (is-a Elderly)
-           (name ?perfil))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
@@ -546,9 +550,11 @@
            (distanceCategory 0))
    (object (is-a Service)
            (name ?srv)
-           (serviceNoiseLevel ?nivell&:(>= ?nivell 2)))
+           (serviceNoiseLevel ?nivell&:(> ?nivell 0)))
    =>
-   (modify ?a (punts (- ?p 15))
+   ;; Calcular penalització proporcional: nivell 1=-5, nivell 2=-10, nivell 3=-15
+   (bind ?penalitzacio (* ?nivell 5))
+   (modify ?a (punts (- ?p ?penalitzacio))
             (soroll-avaluat TRUE))
 )
 
