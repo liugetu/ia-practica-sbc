@@ -18,6 +18,17 @@
 (reset)
 (run)
 
+;;; Function to get numeric value for recommendation level ordering
+(deffunction nivell-to-numeric (?nivell)
+   (switch ?nivell
+      (case "molt recomenat" then 4)
+      (case "recomenat" then 3)
+      (case "poc recomenat" then 2)
+      (case "no recomenat" then 1)
+      (default 0)
+   )
+)
+
 ;;; Function to display recommendations for a specific client  
 (deffunction mostrar-recomanacions-client (?nom-client)
    (bind ?trobat FALSE)
@@ -30,29 +41,76 @@
    
    (printout t crlf "=== RECOMANACIONS PER AL CLIENT " ?nom-client " ===" crlf crlf)
    
+   ;; Collect all recommendations for this client
+   (bind ?recomanacions (create$))
+   
    (do-for-all-instances
       ((?r Recommendation))
       (eq (nth$ 1 ?r:recommendedFor) ?nom-client)
       (bind ?trobat TRUE)
       (bind ?oferta (nth$ 1 ?r:aboutOffer))
       (bind ?nivell (nth$ 1 ?r:recommendationLevel))
+      (bind ?nivell-numeric (nivell-to-numeric ?nivell))
       
-      ;; Get offer details
-      (bind ?offer-obj (instance-address ?oferta))
-      (if (neq ?offer-obj FALSE) then
-         (bind ?preu (nth$ 1 (send ?offer-obj get-price)))
-         (bind ?prop-list (send ?offer-obj get-hasProperty))
-         (if (> (length$ ?prop-list) 0) then
-            (bind ?prop-obj (instance-address (nth$ 1 ?prop-list)))
-            (if (neq ?prop-obj FALSE) then
-               (bind ?adreca (nth$ 1 (send ?prop-obj get-address)))
-               (bind ?area (nth$ 1 (send ?prop-obj get-area)))
-               (printout t "  Oferta: " ?oferta crlf)
-               (printout t "    Adreça: " ?adreca crlf)
-               (printout t "    Preu: " ?preu " €/mes" crlf)
-               (printout t "    Superfície: " ?area " m2" crlf)
-               (printout t "    Nivell: " ?nivell crlf)
-               (printout t "  ----------------------------------------" crlf)
+      ;; Store recommendation data as a list: [numeric-level, offer-name, level-string, instance]
+      (bind ?rec-data (create$ ?nivell-numeric ?oferta ?nivell ?r))
+      (bind ?recomanacions (create$ ?recomanacions ?rec-data))
+   )
+   
+   ;; Sort recommendations by level (highest first)
+   (if ?trobat then
+      ;; Simple bubble sort for recommendations
+      (bind ?n (/ (length$ ?recomanacions) 4))
+      (loop-for-count (?i 1 ?n)
+         (loop-for-count (?j 1 (- ?n ?i))
+            (bind ?pos-j (* (- ?j 1) 4))
+            (bind ?pos-j+1 (* ?j 4))
+            (bind ?nivell-j (nth$ (+ ?pos-j 1) ?recomanacions))
+            (bind ?nivell-j+1 (nth$ (+ ?pos-j+1 1) ?recomanacions))
+            
+            (if (< ?nivell-j ?nivell-j+1) then
+               ;; Swap elements
+               (bind ?temp1 (nth$ (+ ?pos-j 1) ?recomanacions))
+               (bind ?temp2 (nth$ (+ ?pos-j 2) ?recomanacions))
+               (bind ?temp3 (nth$ (+ ?pos-j 3) ?recomanacions))
+               (bind ?temp4 (nth$ (+ ?pos-j 4) ?recomanacions))
+               
+               (bind ?recomanacions (replace$ ?recomanacions (+ ?pos-j 1) (+ ?pos-j 4)
+                  (nth$ (+ ?pos-j+1 1) ?recomanacions)
+                  (nth$ (+ ?pos-j+1 2) ?recomanacions)
+                  (nth$ (+ ?pos-j+1 3) ?recomanacions)
+                  (nth$ (+ ?pos-j+1 4) ?recomanacions)))
+               
+               (bind ?recomanacions (replace$ ?recomanacions (+ ?pos-j+1 1) (+ ?pos-j+1 4)
+                  ?temp1 ?temp2 ?temp3 ?temp4))
+            )
+         )
+      )
+      
+      ;; Display sorted recommendations
+      (loop-for-count (?i 1 ?n)
+         (bind ?pos (* (- ?i 1) 4))
+         (bind ?oferta (nth$ (+ ?pos 2) ?recomanacions))
+         (bind ?nivell (nth$ (+ ?pos 3) ?recomanacions))
+         (bind ?r (nth$ (+ ?pos 4) ?recomanacions))
+         
+         ;; Get offer details
+         (bind ?offer-obj (instance-address ?oferta))
+         (if (neq ?offer-obj FALSE) then
+            (bind ?preu (nth$ 1 (send ?offer-obj get-price)))
+            (bind ?prop-list (send ?offer-obj get-hasProperty))
+            (if (> (length$ ?prop-list) 0) then
+               (bind ?prop-obj (instance-address (nth$ 1 ?prop-list)))
+               (if (neq ?prop-obj FALSE) then
+                  (bind ?adreca (nth$ 1 (send ?prop-obj get-address)))
+                  (bind ?area (nth$ 1 (send ?prop-obj get-area)))
+                  (printout t "  Oferta: " ?oferta crlf)
+                  (printout t "    Adreça: " ?adreca crlf)
+                  (printout t "    Preu: " ?preu " €/mes" crlf)
+                  (printout t "    Superfície: " ?area " m2" crlf)
+                  (printout t "    Nivell: " ?nivell crlf)
+                  (printout t "  ----------------------------------------" crlf)
+               )
             )
          )
       )
