@@ -89,6 +89,30 @@
            (criteri (str-cat "Superfície insuficient: " ?area " m2 < sol·licitat " ?minA " m2"))))
 )
 
+;; Comprovació de durada del lloguer (mesos)
+(defrule comprovar-mesos-incompatible
+   ?c <- (object (is-a Client) (minMonthsClient $?minClist&:(> (length$ $?minClist) 0)))
+   ?o <- (object (is-a RentalOffer) (minMonths $?minOlist&:(> (length$ $?minOlist) 0)))
+   (test (> (nth$ 1 $?minOlist) (nth$ 1 $?minClist)))
+   =>
+   (bind ?offerMonths (nth$ 1 $?minOlist))
+   (bind ?clientMonths (nth$ 1 $?minClist))
+   (bind ?diff (- ?offerMonths ?clientMonths))
+   (assert (criteri-no-complert (clientId (instance-name ?c)) (offerId (instance-name ?o)) 
+           (criteri (str-cat "L'oferta requereix " ?offerMonths " mesos (client vol " ?clientMonths " mesos, +" ?diff " mesos)"))))
+)
+
+(defrule destacar-durada-compatible
+   ?c <- (object (is-a Client) (minMonthsClient $?minClist&:(> (length$ $?minClist) 0)))
+   ?o <- (object (is-a RentalOffer) (minMonths $?minOlist&:(> (length$ $?minOlist) 0)))
+   (test (<= (nth$ 1 $?minOlist) (nth$ 1 $?minClist)))
+   =>
+   (bind ?offerMonths (nth$ 1 $?minOlist))
+   (bind ?clientMonths (nth$ 1 $?minClist))
+   (assert (aspecte-destacable (offerId (instance-name ?o)) 
+           (text (str-cat "Durada compatible (" ?offerMonths " mesos requerits, client vol " ?clientMonths " mesos)"))))
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Aspectes destacables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -218,6 +242,7 @@
         (wantsSchool no)
         (wantsSupermarket yes)
         (wantsTransport yes)
+        (minMonthsClient 12)
     )
     
     ;; Propietats

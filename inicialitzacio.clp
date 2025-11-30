@@ -64,35 +64,35 @@
 
   ;; Pis centre
   ([pis-centre-dorm-1] of Room
-    (IsDouble TRUE))
+    (isDouble TRUE))
   ([pis-centre-dorm-2] of Room
-    (IsDouble FALSE))
+    (isDouble FALSE))
 
   ;; Pis campus
   ([pis-campus-dorm-1] of Room
-    (IsDouble TRUE))
+    (isDouble TRUE))
   ([pis-campus-dorm-2] of Room
-    (IsDouble FALSE))
+    (isDouble FALSE))
 
   ;; Casa perifèria
   ([casa-periferia-dorm-1] of Room
-    (IsDouble TRUE))
+    (isDouble TRUE))
   ([casa-periferia-dorm-2] of Room
-    (IsDouble FALSE))
+    (isDouble FALSE))
   ([casa-periferia-dorm-3] of Room
-    (IsDouble FALSE))
+    (isDouble FALSE))
 
   ;; Dúplex centre
   ([duplex-centre-dorm-1] of Room
-    (IsDouble TRUE))
+    (isDouble TRUE))
   ([duplex-centre-dorm-2] of Room
-    (IsDouble FALSE))
+    (isDouble FALSE))
 
   ;; Pis eixample
   ([pis-eixample-dorm-1] of Room
-    (IsDouble TRUE))
+    (isDouble TRUE))
   ([pis-eixample-dorm-2] of Room
-    (IsDouble TRUE))
+    (isDouble TRUE))
 
   ;;; ------------------------------
   ;;; SERVEIS
@@ -270,6 +270,7 @@
     (wantsStadium indiferent)
     (wantsSupermarket si)
     (wantsTransport si)
+    (minMonthsClient 12)
   )
 
   ;; Família amb criatures que vol escola i zones verdes
@@ -291,6 +292,7 @@
     (wantsStadium indiferent)
     (wantsSupermarket si)
     (wantsTransport si)
+    (minMonthsClient 24)
   )
 
   ;; Estudiants que volen estar a prop del campus i del transport
@@ -312,6 +314,7 @@
     (wantsStadium si)
     (wantsSupermarket si)
     (wantsTransport si)
+    (minMonthsClient 10)
   )
 
   ;; Persona gran que prioritza la salut i la tranquil·litat
@@ -333,6 +336,7 @@
     (wantsStadium no)
     (wantsSupermarket si)
     (wantsTransport indiferent)
+    (minMonthsClient 12)
   )
 
   ;; Jove solter que vol centre però amb pressupost limitat
@@ -354,6 +358,7 @@
     (wantsStadium indiferent)
     (wantsSupermarket si)
     (wantsTransport si)
+    (minMonthsClient 6)
   )
 
   ;; Parella professional que busca comoditat i serveis
@@ -375,6 +380,7 @@
     (wantsStadium indiferent)
     (wantsSupermarket si)
     (wantsTransport si)
+    (minMonthsClient 12)
   )
 
   ;;; ------------------------------

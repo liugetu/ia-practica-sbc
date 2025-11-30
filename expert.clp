@@ -102,6 +102,7 @@
 
    (slot soroll-avaluat      (type SYMBOL) (default FALSE))
    (slot habitacio-doble-avaluada (type SYMBOL) (default FALSE))
+   (slot mesos-avaluats      (type SYMBOL) (default FALSE))
 )
 
 ;;; ---------------------------------------------------------
@@ -131,7 +132,8 @@
                       (super-avaluat FALSE)
                       (transport-avaluat FALSE)
                       (soroll-avaluat FALSE)
-                      (habitacio-doble-avaluada FALSE)))
+                      (habitacio-doble-avaluada FALSE)
+                      (mesos-avaluats FALSE)))
 )
 
 ;;; ---------------------------------------------------------
@@ -511,6 +513,36 @@
    
    (modify ?a (punts ?nova)
             (habitacio-doble-avaluada TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE DURADA MÍNIMA DE CONTRACTE
+;;;   - Si minMonthsClient <= minMonths de l'oferta: +15 punts
+;;;   - Si minMonthsClient > minMonths de l'oferta: -20 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-duracio-minima
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (mesos-avaluats FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (minMonthsClient ?minMesesClient))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (minMonths ?minMesesOferta))
+   =>
+   (bind ?nova ?p)
+   
+   ;; Si el client pot complir el mínim de mesos requerit per l'oferta
+   (if (>= ?minMesesClient ?minMesesOferta)
+       then (bind ?nova (+ ?nova 15))   ; Compatible: +15
+       else (bind ?nova (- ?nova 20)))  ; Incompatible: -20
+   
+   (modify ?a (punts ?nova)
+            (mesos-avaluats TRUE))
 )
 
 ;;; ---------------------------------------------------------

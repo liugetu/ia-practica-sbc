@@ -212,6 +212,10 @@
     (multislot wantsTransport
         (type SYMBOL)
         (create-accessor read-write))
+    ;;; Nombre mínim de mesos que el client vol llogar
+    (multislot minMonthsClient
+        (type INTEGER)
+        (create-accessor read-write))
 )
 
 (defclass Location "Coordenades i referències administratives (districte, adreça)."
@@ -297,7 +301,7 @@
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (slot IsDouble
+    (slot isDouble
         (type SYMBOL)
         (allowed-values TRUE FALSE)
         (default FALSE)
