@@ -83,3 +83,14 @@ Els perfils acceptats són:
   (minMonths 12)
   (price 1000.0)
 )
+
+Per a poder visualitzar totes les recomanacions creades, executar la següent comanda:
+
+(do-for-all-instances
+  ((?r Recommendation))
+  TRUE
+  (printout t
+    "Client: " ?r:recommendedFor
+    "  Oferta: " ?r:aboutOffer
+    "  Nivell: " ?r:recommendationLevel
+    crlf))
