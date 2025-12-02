@@ -11,8 +11,8 @@
 
 (defglobal
   ?*PUNTS-NO*      = 0
-  ?*PUNTS-POC*     = 25
-  ?*PUNTS-RECOM*   = 60
+  ?*PUNTS-POC*     = 50
+  ?*PUNTS-RECOM*   = 150
 )
 
 ;;; ---------------------------------------------------------
@@ -39,17 +39,17 @@
   "Calcula automàticament les proximitats entre propietats i serveis"
   (declare (salience 30))
   (object (is-a Property) 
-          (OBJECT ?prop-name)
+          (name ?prop-name)
           (locatedAt ?prop-location))
   (object (is-a Service)
-          (OBJECT ?service-name)  
+          (name ?service-name)  
           (ServiceLocatedAt ?service-location))
   (object (is-a Location)
-          (OBJECT ?prop-location)
+          (name ?prop-location)
           (latitude ?prop-lat)
           (longitude ?prop-lon))
   (object (is-a Location)
-          (OBJECT ?service-location)
+          (name ?service-location)
           (latitude ?serv-lat)
           (longitude ?serv-lon))
   
@@ -213,7 +213,7 @@
        else 
          ;; Área insuficient - mínim -20 punts - fins a 10 més segons ratio
          (bind ?extra-penalty (min 10 (* 10 (- 1 ?area-ratio))))
-         (bind ?area-penalty (+ -20 (- ?extra-penalty)))
+         (bind ?area-penalty (+ -20 (- 0 ?extra-penalty)))
          (bind ?nova (+ ?nova ?area-penalty)))
 
    ;; Nombre d'habitacions
@@ -257,16 +257,16 @@
    )
 
    ;; Llum natural
-   (if (== ?llum 0) then
+   (if (= ?llum 0) then
       (bind ?nova (+ ?nova 0))
    )
-   (if (== ?llum 1) then
+   (if (= ?llum 1) then
       (bind ?nova (+ ?nova 5))
    )
-   (if (== ?llum 2) then
+   (if (= ?llum 2) then
       (bind ?nova (+ ?nova 5))
    )
-   (if (== ?llum 3) then
+   (if (= ?llum 3) then
       (bind ?nova (+ ?nova 10))
    )
 
@@ -300,61 +300,18 @@
 )
 
 ;;; ---------------------------------------------------------
-;;; CRITERIS DE SERVEIS I PROXIMITAT - SISTEMA GENÈRIC
+;;; CRITERIS DE SERVEIS I PROXIMITAT
 ;;;   - Es premien (si) o penalitzen (no) segons la preferència del client i la proximitat
 ;;;   - Categoria 0 = prop (punts complets), 1 = mitja (meitat punts), 2 = lluny (quart punts)
-;;;   - Sistema genèric que mapeja automàticament tipus de serveis amb preferències
 ;;; ---------------------------------------------------------
 
-;;; Funció per obtenir la preferència del client per un tipus de servei
-(deffunction get-service-preference (?client ?service-type)
-  "Retorna la preferència del client pel tipus de servei donat"
-  (bind ?client-obj (instance-address * ?client))
-  (switch ?service-type
-    (case GreenArea then (send ?client-obj get-wantsGreenArea))
-    (case HealthCenter then (send ?client-obj get-wantsHealthCenter))
-    (case Nightlife then (send ?client-obj get-wantsNightLife))
-    (case School then (send ?client-obj get-wantsSchool))
-    (case Stadium then (send ?client-obj get-wantsStadium))
-    (case Supermarket then (send ?client-obj get-wantsSupermarket))
-    (case Transport then (send ?client-obj get-wantsTransport))
-    (default indiferent))
-)
-
-;;; Funció per obtenir els punts base segons el tipus de servei
-(deffunction get-service-points (?service-type)
-  "Retorna els punts base per al tipus de servei"
-  (switch ?service-type
-    (case GreenArea then 10)
-    (case HealthCenter then 12)
-    (case Nightlife then 8)
-    (case School then 10)
-    (case Stadium then 8)
-    (case Supermarket then 11)
-    (case Transport then 11)
-    (default 10))
-)
-
-;;; Funció per obtenir el flag d'avaluació corresponent
-(deffunction get-evaluation-flag (?service-type)
-  "Retorna el nom del flag d'avaluació per al tipus de servei"
-  (switch ?service-type
-    (case GreenArea then verd-avaluat)
-    (case HealthCenter then salut-avaluada)
-    (case Nightlife then nit-avaluada)
-    (case School then escola-avaluada)
-    (case Stadium then estadi-avaluat)
-    (case Supermarket then super-avaluat)
-    (case Transport then transport-avaluat)
-    (default servei-avaluat))
-)
-
-;;; Regla genèrica per serveis desitjats (si) - proximitat categoria 0 (prop)
-(defrule criteri-servei-positiu-prop
+;;; Regles específiques per GreenArea - proximitat categoria 0 (prop)
+(defrule criteri-verd-positiu-prop
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p))
+                    (punts ?p)
+                    (verd-avaluat FALSE))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
@@ -362,29 +319,24 @@
            (nearProperty ?prop)
            (nearService ?srv)
            (distanceCategory 0))
-   (object (is-a ?service-type&:(subclassp ?service-type Service))
+   (object (is-a GreenArea)
            (name ?srv))
-   
-   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
-   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
-   
-   ;; Verificar que el client vol aquest tipus de servei
-   (test (eq (get-service-preference ?c ?service-type) si))
+   (object (is-a Client)
+           (name ?c)
+           (wantsGreenArea si))
    =>
-   (bind ?base-points (get-service-points ?service-type))
-   (bind ?flag (get-evaluation-flag ?service-type))
-   
    (modify ?a 
-           (punts (+ ?p ?base-points))
-           (?flag TRUE))
+           (punts (+ ?p 10))
+           (verd-avaluat TRUE))
 )
 
-;;; Regla genèrica per serveis desitjats (si) - proximitat categoria 1 (mitja)
-(defrule criteri-servei-positiu-mitja
+;;; Regles específiques per GreenArea - proximitat categoria 1 (mitja)
+(defrule criteri-verd-positiu-mitja
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p))
+                    (punts ?p)
+                    (verd-avaluat FALSE))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
@@ -392,53 +344,315 @@
            (nearProperty ?prop)
            (nearService ?srv)
            (distanceCategory 1))
-   (object (is-a ?service-type&:(subclassp ?service-type Service))
+   (object (is-a GreenArea)
            (name ?srv))
-   
-   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
-   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
-   
-   ;; Verificar que el client vol aquest tipus de servei
-   (test (eq (get-service-preference ?c ?service-type) si))
+   (object (is-a Client)
+           (name ?c)
+           (wantsGreenArea si))
    =>
-   (bind ?base-points (get-service-points ?service-type))
-   (bind ?half-points (div ?base-points 2))
-   (bind ?flag (get-evaluation-flag ?service-type))
-   
    (modify ?a 
-           (punts (+ ?p ?half-points))
-           (?flag TRUE))
+           (punts (+ ?p 5))
+           (verd-avaluat TRUE))
 )
 
-;;; Regla genèrica per serveis desitjats (si) - proximitat categoria 2 (lluny)
-(defrule criteri-servei-positiu-lluny
+;;; Regles específiques per HealthCenter - proximitat categoria 0 (prop)
+(defrule criteri-salut-positiu-prop
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
-                    (punts ?p))
+                    (punts ?p)
+                    (salut-avaluada FALSE))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
    (object (is-a Proximity)
            (nearProperty ?prop)
            (nearService ?srv)
-           (distanceCategory 2))
-   (object (is-a ?service-type&:(subclassp ?service-type Service))
+           (distanceCategory 0))
+   (object (is-a HealthCenter)
            (name ?srv))
-   
-   ;; Verificar que no s'ha avaluat ja aquest tipus de servei
-   (test (neq (eval (str-cat "(slot-get ?a " (get-evaluation-flag ?service-type) ")")) TRUE))
-   
-   ;; Verificar que el client vol aquest tipus de servei
-   (test (eq (get-service-preference ?c ?service-type) si))
+   (object (is-a Client)
+           (name ?c)
+           (wantsHealthCenter si))
    =>
-   (bind ?base-points (get-service-points ?service-type))
-   (bind ?quarter-points (div ?base-points 4))
-   (bind ?flag (get-evaluation-flag ?service-type))
-   
    (modify ?a 
-           (punts (+ ?p ?quarter-points))
-           (?flag TRUE))
+           (punts (+ ?p 12))
+           (salut-avaluada TRUE))
+)
+
+;;; Regles específiques per HealthCenter - proximitat categoria 1 (mitja)
+(defrule criteri-salut-positiu-mitja
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (salut-avaluada FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 1))
+   (object (is-a HealthCenter)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsHealthCenter si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 6))
+           (salut-avaluada TRUE))
+)
+
+;;; Regles específiques per Supermarket - proximitat categoria 0 (prop)
+(defrule criteri-super-positiu-prop
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (super-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 0))
+   (object (is-a Supermarket)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsSupermarket si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 11))
+           (super-avaluat TRUE))
+)
+
+;;; Regles específiques per Supermarket - proximitat categoria 1 (mitja)
+(defrule criteri-super-positiu-mitja
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (super-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 1))
+   (object (is-a Supermarket)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsSupermarket si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 6))
+           (super-avaluat TRUE))
+)
+
+;;; Regles específiques per Transport - proximitat categoria 0 (prop)
+(defrule criteri-transport-positiu-prop
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (transport-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 0))
+   (object (is-a Transport)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsTransport si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 11))
+           (transport-avaluat TRUE))
+)
+
+;;; Regles específiques per Transport - proximitat categoria 1 (mitja)
+(defrule criteri-transport-positiu-mitja
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (transport-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 1))
+   (object (is-a Transport)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsTransport si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 6))
+           (transport-avaluat TRUE))
+)
+
+;;; Regles específiques per Nightlife - proximitat categoria 0 (prop)
+(defrule criteri-nit-positiu-prop
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (nit-avaluada FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 0))
+   (object (is-a Nightlife)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsNightLife si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 8))
+           (nit-avaluada TRUE))
+)
+
+;;; Regles específiques per Nightlife - proximitat categoria 1 (mitja)
+(defrule criteri-nit-positiu-mitja
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (nit-avaluada FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 1))
+   (object (is-a Nightlife)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsNightLife si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 4))
+           (nit-avaluada TRUE))
+)
+
+;;; Regles específiques per School - proximitat categoria 0 (prop)
+(defrule criteri-escola-positiu-prop
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (escola-avaluada FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 0))
+   (object (is-a School)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsSchool si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 10))
+           (escola-avaluada TRUE))
+)
+
+;;; Regles específiques per School - proximitat categoria 1 (mitja)
+(defrule criteri-escola-positiu-mitja
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (escola-avaluada FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 1))
+   (object (is-a School)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsSchool si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 5))
+           (escola-avaluada TRUE))
+)
+
+;;; Regles específiques per Stadium - proximitat categoria 0 (prop)
+(defrule criteri-estadi-positiu-prop
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (estadi-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 0))
+   (object (is-a Stadium)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsStadium si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 8))
+           (estadi-avaluat TRUE))
+)
+
+;;; Regles específiques per Stadium - proximitat categoria 1 (mitja)
+(defrule criteri-estadi-positiu-mitja
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (estadi-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Proximity)
+           (nearProperty ?prop)
+           (nearService ?srv)
+           (distanceCategory 1))
+   (object (is-a Stadium)
+           (name ?srv))
+   (object (is-a Client)
+           (name ?c)
+           (wantsStadium si))
+   =>
+   (modify ?a 
+           (punts (+ ?p 4))
+           (estadi-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------
@@ -498,8 +712,8 @@
    ;; Verificar si té habitació doble
    (bind ?te-doble FALSE)
    (progn$ (?room ?habitacions)
-      (if (and (object-existp ?room)
-               (eq (send (instance-address * ?room) get-IsDouble) TRUE))
+      (if (and (instance-existp ?room)
+               (eq (send (instance-address ?room) get-isDouble) TRUE))
           then (bind ?te-doble TRUE)))
    
    ;; Aplicar puntuació segons les regles
