@@ -29,6 +29,39 @@
    )
 )
 
+;;; Function to select a client from a list
+(deffunction seleccionar-client ()
+   ;; Collect all clients
+   (bind ?clients (create$))
+   (do-for-all-instances ((?c Client)) TRUE
+      (bind ?clients (create$ ?clients (instance-name ?c))))
+   
+   (if (= (length$ ?clients) 0) then
+      (printout t "ERROR: No hi ha clients al sistema." crlf)
+      (return FALSE))
+   
+   ;; Display menu
+   (printout t crlf "=== SELECCIONA UN CLIENT ===" crlf)
+   (bind ?i 1)
+   (foreach ?client ?clients
+      (printout t ?i ". " ?client crlf)
+      (bind ?i (+ ?i 1)))
+   (printout t crlf "Selecciona el número del client (1-" (length$ ?clients) "): ")
+   
+   ;; Read selection
+   (bind ?seleccio (read))
+   
+   ;; Validate selection
+   (if (or (not (integerp ?seleccio))
+           (< ?seleccio 1)
+           (> ?seleccio (length$ ?clients))) then
+      (printout t "ERROR: Selecció no vàlida." crlf)
+      (return FALSE))
+   
+   ;; Return selected client
+   (return (nth$ ?seleccio ?clients))
+)
+
 ;;; Function to display recommendations for a specific client  
 (deffunction mostrar-recomanacions-client (?nom-client)
    (bind ?trobat FALSE)
@@ -39,7 +72,65 @@
       (return FALSE)
    )
    
-   (printout t crlf "=== RECOMANACIONS PER AL CLIENT " ?nom-client " ===" crlf crlf)
+   (printout t crlf "========================================" crlf)
+   (printout t "CLIENT: " ?nom-client crlf)
+   (printout t "========================================" crlf)
+   
+   ;; Mostrar característiques del client
+   (printout t crlf "CARACTERÍSTIQUES I PREFERÈNCIES:" crlf)
+   (printout t "----------------------------------------" crlf)
+   
+   ;; Obtenir i mostrar les dades del client
+   (bind ?edat (nth$ 1 (send ?client-instance get-clientAge)))
+   (bind ?preu-max (nth$ 1 (send ?client-instance get-clientMaxPrice)))
+   (bind ?flex (nth$ 1 (send ?client-instance get-priceFlexibility)))
+   (bind ?min-area (nth$ 1 (send ?client-instance get-minArea)))
+   (bind ?min-dorms (nth$ 1 (send ?client-instance get-minDorms)))
+   (bind ?min-months (nth$ 1 (send ?client-instance get-minMonthsClient)))
+   
+   (printout t "· Edat: " ?edat " anys" crlf)
+   (printout t "· Pressupost màxim: " ?preu-max "€/mes (flexibilitat: " ?flex "%)" crlf)
+   (printout t "· Superfície mínima: " ?min-area " m²" crlf)
+   (printout t "· Dormitoris mínims: " ?min-dorms crlf)
+   (printout t "· Durada desitjada: " ?min-months " mesos" crlf)
+   
+   ;; Mostrar si necessita habitació doble
+   (bind ?needs-double (nth$ 1 (send ?client-instance get-needsDoubleBedroom)))
+   (if (eq ?needs-double si) then
+      (printout t "· Necessita habitació doble: Sí" crlf))
+   
+   ;; Mostrar preferències de serveis
+   (printout t crlf "Preferències de serveis propers:" crlf)
+   (bind ?wants-green (nth$ 1 (send ?client-instance get-wantsGreenArea)))
+   (if (eq ?wants-green si) then (printout t "  ✓ Zones verdes" crlf))
+   
+   (bind ?wants-health (nth$ 1 (send ?client-instance get-wantsHealthCenter)))
+   (if (eq ?wants-health si) then (printout t "  ✓ Centres de salut" crlf))
+   
+   (bind ?wants-transport (nth$ 1 (send ?client-instance get-wantsTransport)))
+   (if (eq ?wants-transport si) then (printout t "  ✓ Transport públic" crlf))
+   
+   (bind ?wants-super (nth$ 1 (send ?client-instance get-wantsSupermarket)))
+   (if (eq ?wants-super si) then (printout t "  ✓ Supermercats" crlf))
+   
+   (bind ?wants-school (nth$ 1 (send ?client-instance get-wantsSchool)))
+   (if (eq ?wants-school si) then (printout t "  ✓ Escoles" crlf))
+   
+   (bind ?wants-night (nth$ 1 (send ?client-instance get-wantsNightLife)))
+   (if (eq ?wants-night si) then (printout t "  ✓ Vida nocturna" crlf))
+   
+   (bind ?wants-stadium (nth$ 1 (send ?client-instance get-wantsStadium)))
+   (if (eq ?wants-stadium si) then (printout t "  ✓ Estadis esportius" crlf))
+   
+   ;; Mostrar característiques preferides
+   (bind ?pref-features (send ?client-instance get-prefersFeature))
+   (if (> (length$ ?pref-features) 0) then
+      (printout t crlf "Característiques desitjades de l'habitatge:" crlf)
+      (foreach ?feat ?pref-features
+         (printout t "  ✓ " ?feat crlf)))
+   
+   (printout t "========================================" crlf)
+   (printout t crlf "RECOMANACIONS D'OFERTES:" crlf)
    
    ;; Collect all recommendations for this client
    (bind ?recomanacions (create$))
@@ -104,12 +195,39 @@
                (if (neq ?prop-obj FALSE) then
                   (bind ?adreca (nth$ 1 (send ?prop-obj get-address)))
                   (bind ?area (nth$ 1 (send ?prop-obj get-area)))
-                  (printout t "  Oferta: " ?oferta crlf)
-                  (printout t "    Adreça: " ?adreca crlf)
-                  (printout t "    Preu: " ?preu " €/mes" crlf)
-                  (printout t "    Superfície: " ?area " m2" crlf)
-                  (printout t "    Nivell: " ?nivell crlf)
-                  (printout t "  ----------------------------------------" crlf)
+                  (printout t crlf "========================================" crlf)
+                  (printout t "Oferta: " ?oferta crlf)
+                  (printout t "Adreça: " ?adreca crlf)
+                  (printout t "Preu: " ?preu " €/mes" crlf)
+                  (printout t "Superfície: " ?area " m2" crlf)
+                  (printout t "Nivell: " ?nivell crlf)
+                  (printout t "----------------------------------------" crlf)
+                  
+                  ;; Mostrar criteris no complerts
+                  (bind ?num-no-complerts 0)
+                  (do-for-all-facts ((?cnc criteri-no-complert))
+                     (and (eq ?cnc:client ?nom-client) (eq ?cnc:oferta ?oferta))
+                     (if (= ?num-no-complerts 0) then
+                        (printout t "Criteris NO complerts:" crlf))
+                     (bind ?num-no-complerts (+ ?num-no-complerts 1))
+                     (printout t "  " ?num-no-complerts ". " ?cnc:descripcio crlf))
+                  
+                  (if (= ?num-no-complerts 0) then
+                     (printout t "✓ Compleix tots els criteris restrictius" crlf))
+                  
+                  ;; Mostrar característiques destacades
+                  (bind ?num-destacades 0)
+                  (do-for-all-facts ((?cd caracteristica-destacada))
+                     (and (eq ?cd:client ?nom-client) (eq ?cd:oferta ?oferta))
+                     (if (= ?num-destacades 0) then
+                        (printout t crlf "Característiques destacables:" crlf))
+                     (bind ?num-destacades (+ ?num-destacades 1))
+                     (printout t "  ★ " ?cd:descripcio crlf))
+                  
+                  (if (= ?num-destacades 0) then
+                     (printout t crlf "No té característiques especialment destacables" crlf))
+                  
+                  (printout t "========================================" crlf)
                )
             )
          )
@@ -154,9 +272,9 @@
          (case 1 then
             (mostrar-totes-recomanacions))
          (case 2 then
-            (printout t "Introdueix el nom del client (inclou claudàtors, exemple: [client-parella-centre]): ")
-            (bind ?nom (read))
-            (mostrar-recomanacions-client ?nom))
+            (bind ?client-seleccionat (seleccionar-client))
+            (if (neq ?client-seleccionat FALSE) then
+               (mostrar-recomanacions-client ?client-seleccionat)))
          (case 3 then
             (bind ?sortir TRUE)
             (printout t crlf "Sortint del sistema..." crlf))

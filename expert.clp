@@ -105,6 +105,19 @@
    (slot mesos-avaluats      (type SYMBOL) (default FALSE))
 )
 
+;;; Plantilles per rastrejar criteris no complerts i característiques destacades
+(deftemplate criteri-no-complert
+   (slot client)
+   (slot oferta)
+   (slot descripcio (type STRING))
+)
+
+(deftemplate caracteristica-destacada
+   (slot client)
+   (slot oferta)
+   (slot descripcio (type STRING))
+)
+
 ;;; ---------------------------------------------------------
 ;;; Generació automàtica d'avaluacions per a totes les parelles
 ;;; (Client, RentalOffer) existents
@@ -157,19 +170,42 @@
    =>
    (bind ?nova ?p)
 
+   (bind ?maxFlexible (* ?max (+ 1 (/ ?flex 100.0))))
+
    ;; Si el preu és per sota o igual del màxim assumible, sumem punts
    (if (<= ?preu ?max) then
       (bind ?nova (+ ?nova 50))
+      ;; CARACTERÍSTICA DESTACADA: Preu molt per sota del màxim
+      (if (< ?preu (* ?max 0.80)) then
+         (bind ?percentatge (integer (* 100 (- 1 (/ ?preu ?max)))))
+         (assert (caracteristica-destacada
+                  (client ?c)
+                  (oferta ?o)
+                  (descripcio (str-cat "Preu excel·lent: " ?preu 
+                                      "€, un " ?percentatge
+                                      "% per sota del màxim")))))
    else
       ;; Si supera el màxim però dins de la flexibilitat, penalització moderada
-      (if (<= ?preu (* ?max (+ 1 (/ ?flex 100.0))))
+      (if (<= ?preu ?maxFlexible)
           then (bind ?nova (+ ?nova 25))
-          else (bind ?nova (- ?nova 100))   ; Massa car
+          else 
+             ;; NO COMPLEIX: Massa car
+             (assert (criteri-no-complert 
+                      (client ?c) 
+                      (oferta ?o) 
+                      (descripcio (str-cat "Preu massa alt: " ?preu "€ > " 
+                                          ?maxFlexible "€ (màxim amb flexibilitat)"))))
+             (bind ?nova (- ?nova 100))
       )
    )
 
    ;; Si el preu és especialment raonable (per sota del mínim "raonable")
-   (if (<= ?preu ?minR) then
+   (if (< ?preu ?minR) then
+      (assert (criteri-no-complert 
+               (client ?c) 
+               (oferta ?o) 
+               (descripcio (str-cat "Preu sospitosament baix: " ?preu 
+                                   "€ < " ?minR "€ (mínim raonable)"))))
       (bind ?nova (- ?nova 10))
    )
 
@@ -210,8 +246,22 @@
          (bind ?extra-bonus (min 10 (* 10 (- ?area-ratio 1))))
          (bind ?area-bonus (+ 20 ?extra-bonus))
          (bind ?nova (+ ?nova ?area-bonus))
+         ;; CARACTERÍSTICA DESTACADA: Àrea significativament superior
+         (if (> ?area (* ?minA 1.25)) then
+            (bind ?percentatge-area (integer (* 100 (- ?area-ratio 1))))
+            (assert (caracteristica-destacada
+                     (client ?c)
+                     (oferta ?o)
+                     (descripcio (str-cat "Superfície generosa: " ?area 
+                                         " m², un " ?percentatge-area
+                                         "% més gran del sol·licitat")))))
        else 
          ;; Área insuficient - mínim -20 punts - fins a 10 més segons ratio
+         (assert (criteri-no-complert 
+                  (client ?c) 
+                  (oferta ?o) 
+                  (descripcio (str-cat "Superfície insuficient: " ?area 
+                                      " m² < " ?minA " m² sol·licitats"))))
          (bind ?extra-penalty (min 10 (* 10 (- 1 ?area-ratio))))
          (bind ?area-penalty (+ -20 (- 0 ?extra-penalty)))
          (bind ?nova (+ ?nova ?area-penalty)))
@@ -219,8 +269,22 @@
    ;; Nombre d'habitacions
    (bind ?ndorms (length$ ?habitacions))
    (if (>= ?ndorms ?minD)
-       then (bind ?nova (+ ?nova 30))
-       else (bind ?nova (- ?nova 30)))
+       then 
+         (bind ?nova (+ ?nova 30))
+         ;; CARACTERÍSTICA DESTACADA: Més dormitoris dels necessaris
+         (if (> ?ndorms ?minD) then
+            (assert (caracteristica-destacada
+                     (client ?c)
+                     (oferta ?o)
+                     (descripcio (str-cat "Dormitoris extra: " ?ndorms 
+                                         " (sol·licitats: " ?minD ")")))))
+       else 
+         (assert (criteri-no-complert 
+                  (client ?c) 
+                  (oferta ?o) 
+                  (descripcio (str-cat "Dormitoris insuficients: " ?ndorms 
+                                      " < " ?minD " sol·licitats"))))
+         (bind ?nova (- ?nova 30)))
 
    (modify ?a (punts ?nova)
             (mida-avaluada TRUE)
@@ -250,6 +314,10 @@
    ;; Estat general de l'immoble
    (if (>= ?estat 4) then
       (bind ?nova (+ ?nova 10))
+      (assert (caracteristica-destacada
+               (client ?c)
+               (oferta ?o)
+               (descripcio "Estat excel·lent de l'habitatge")))
    else
       (if (<= ?estat 2) then
           (bind ?nova (- ?nova 10))
@@ -268,6 +336,10 @@
    )
    (if (= ?llum 3) then
       (bind ?nova (+ ?nova 10))
+      (assert (caracteristica-destacada
+               (client ?c)
+               (oferta ?o)
+               (descripcio "Excel·lent llum natural tot el dia")))
    )
 
    (modify ?a (punts ?nova)
@@ -297,6 +369,14 @@
    (modify ?a
            (punts (+ ?p 5))
            (match-features (create$ ?mf ?f)))
+   
+   ;; Si coincideixen moltes característiques, és destacable
+   (if (> (+ (length$ ?mf) 1) 3) then
+      (assert (caracteristica-destacada
+               (client ?c)
+               (oferta ?o)
+               (descripcio (str-cat "Múltiples característiques desitjades ("
+                                   (+ (length$ ?mf) 1) " coincidències)")))))
 )
 
 ;;; ---------------------------------------------------------
@@ -721,7 +801,12 @@
        then 
          (if (eq ?te-doble TRUE)
              then (bind ?nova (+ ?nova 10))    ; Vol i té: +10
-             else (bind ?nova (- ?nova 10)))   ; Vol però no té: -10
+             else 
+                (assert (criteri-no-complert 
+                         (client ?c) 
+                         (oferta ?o) 
+                         (descripcio "No té habitació doble (requerida)")))
+                (bind ?nova (- ?nova 10)))   ; Vol però no té: -10
        ; else -> No vol habitació doble: 0 punts (no fem res)
    )
    
@@ -752,8 +837,23 @@
    
    ;; Si el client pot complir el mínim de mesos requerit per l'oferta
    (if (>= ?minMesesClient ?minMesesOferta)
-       then (bind ?nova (+ ?nova 15))   ; Compatible: +15
-       else (bind ?nova (- ?nova 20)))  ; Incompatible: -20
+       then 
+         (bind ?nova (+ ?nova 15))   ; Compatible: +15
+         ;; CARACTERÍSTICA DESTACADA: Durada molt flexible
+         (if (<= ?minMesesOferta (* ?minMesesClient 0.5)) then
+            (assert (caracteristica-destacada
+                     (client ?c)
+                     (oferta ?o)
+                     (descripcio (str-cat "Contracte molt flexible (" ?minMesesOferta 
+                                         " mesos mínim)")))))
+       else 
+         (assert (criteri-no-complert 
+                  (client ?c) 
+                  (oferta ?o) 
+                  (descripcio (str-cat "Requereix " ?minMesesOferta 
+                                      " mesos mínim (client vol " 
+                                      ?minMesesClient " mesos)"))))
+         (bind ?nova (- ?nova 20)))  ; Incompatible: -20
    
    (modify ?a (punts ?nova)
             (mesos-avaluats TRUE))
@@ -773,22 +873,86 @@
                 (aboutOffer ?o)
                 (recommendedFor ?c)))
    =>
+   ;; Comptar criteris no complerts
+   (bind ?num-no-complerts 0)
+   (do-for-all-facts ((?cnc criteri-no-complert))
+      (and (eq ?cnc:client ?c) (eq ?cnc:oferta ?o))
+      (bind ?num-no-complerts (+ ?num-no-complerts 1)))
+   
+   ;; Comptar característiques destacades
+   (bind ?num-destacades 0)
+   (do-for-all-facts ((?cd caracteristica-destacada))
+      (and (eq ?cd:client ?c) (eq ?cd:oferta ?o))
+      (bind ?num-destacades (+ ?num-destacades 1)))
+   
+   ;; Determinar nivell considerant punts i criteris no complerts
    (bind ?nivell
-      (if (<= ?p ?*PUNTS-NO*)
+      (if (> ?num-no-complerts 2)
           then "no recomenat"
       else
-         (if (<= ?p ?*PUNTS-POC*)
-             then "poc recomenat"
+         (if (> ?num-no-complerts 0)
+             then "poc recomenat"   ; Parcialment adequat
          else
+            ;; Tots els criteris complerts
             (if (<= ?p ?*PUNTS-RECOM*)
-                then "recomenat"
-                else "molt recomenat"))))
+                then "recomenat"     ; Adequat
+                else 
+                   ;; Molt recomanable si té punts alts i característiques destacades
+                   (if (>= ?num-destacades 3)
+                       then "molt recomenat"
+                       else "recomenat")))))
 
    (make-instance (gensym*)
       of Recommendation
       (aboutOffer ?o)
       (recommendedFor ?c)
       (recommendationLevel ?nivell))
+)
+
+;;; ---------------------------------------------------------
+;;; PRESENTACIÓ DE RESULTATS
+;;; ---------------------------------------------------------
+
+(defrule imprimir-recomanacio
+   (declare (salience -10))
+   ?r <- (object (is-a Recommendation)
+                 (aboutOffer ?o)
+                 (recommendedFor ?c)
+                 (recommendationLevel ?nivell))
+   =>
+   (printout t crlf "========================================" crlf)
+   (printout t "RECOMANACIÓ" crlf)
+   (printout t "========================================" crlf)
+   (printout t "Client: " ?c crlf)
+   (printout t "Oferta: " ?o crlf)
+   (printout t "Nivell: " ?nivell crlf)
+   (printout t "----------------------------------------" crlf)
+   
+   ;; Mostrar criteris no complerts (si n'hi ha)
+   (bind ?num-no-complerts 0)
+   (do-for-all-facts ((?cnc criteri-no-complert))
+      (and (eq ?cnc:client ?c) (eq ?cnc:oferta ?o))
+      (if (= ?num-no-complerts 0) then
+         (printout t "Criteris NO complerts:" crlf))
+      (bind ?num-no-complerts (+ ?num-no-complerts 1))
+      (printout t "  " ?num-no-complerts ". " ?cnc:descripcio crlf))
+   
+   (if (= ?num-no-complerts 0) then
+      (printout t "✓ Compleix tots els criteris restrictius" crlf))
+   
+   ;; Mostrar característiques destacades (si n'hi ha)
+   (bind ?num-destacades 0)
+   (do-for-all-facts ((?cd caracteristica-destacada))
+      (and (eq ?cd:client ?c) (eq ?cd:oferta ?o))
+      (if (= ?num-destacades 0) then
+         (printout t crlf "Característiques destacables:" crlf))
+      (bind ?num-destacades (+ ?num-destacades 1))
+      (printout t "  ★ " ?cd:descripcio crlf))
+   
+   (if (= ?num-destacades 0) then
+      (printout t crlf "No té característiques especialment destacables" crlf))
+   
+   (printout t "========================================" crlf)
 )
 
 ;;; ---------------------------------------------------------
