@@ -103,6 +103,13 @@
    (slot soroll-avaluat      (type SYMBOL) (default FALSE))
    (slot habitacio-doble-avaluada (type SYMBOL) (default FALSE))
    (slot mesos-avaluats      (type SYMBOL) (default FALSE))
+   
+   ;; Flags per criteris específics de perfils
+   (slot elderly-avaluat     (type SYMBOL) (default FALSE))
+   (slot family-avaluat      (type SYMBOL) (default FALSE))
+   (slot student-avaluat     (type SYMBOL) (default FALSE))
+   (slot youngadult-avaluat  (type SYMBOL) (default FALSE))
+   (slot couple-avaluat      (type SYMBOL) (default FALSE))
 )
 
 ;;; Plantilles per rastrejar criteris no complerts i característiques destacades
@@ -146,7 +153,12 @@
                       (transport-avaluat FALSE)
                       (soroll-avaluat FALSE)
                       (habitacio-doble-avaluada FALSE)
-                      (mesos-avaluats FALSE)))
+                      (mesos-avaluats FALSE)
+                      (elderly-avaluat FALSE)
+                      (family-avaluat FALSE)
+                      (student-avaluat FALSE)
+                      (youngadult-avaluat FALSE)
+                      (couple-avaluat FALSE)))
 )
 
 ;;; ---------------------------------------------------------
@@ -857,6 +869,227 @@
    
    (modify ?a (punts ?nova)
             (mesos-avaluats TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: ELDERLY
+;;;   - Si el client és Elderly, la propietat és piso/duplex,
+;;;     sense ascensor i la planta >= 1: penalització de punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-elderly-sense-ascensor
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (elderly-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (hasProfile ?profile))
+   (object (is-a Elderly)
+           (name ?profile))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop)
+           (hasFeature $?features))
+   (object (is-a Apartment|Duplex)
+           (name ?prop)
+           (floor ?pis))
+   ;; Verificar que el pis és >= 1
+   (test (>= ?pis 1))
+   ;; Verificar que NO té ascensor (usa variables locales dentro del test)
+   (test (not (member$ [FeatureElevator] ?features)))
+   =>
+   (bind ?nova (- ?p 30))  ; Resta 30 punts per falta d'ascensor
+   
+   (assert (criteri-no-complert 
+            (client ?c) 
+            (oferta ?o) 
+            (descripcio (str-cat "Persona gran en una planta " ?pis 
+                                " sense ascensor (dificultós per a mobilitat)"))))
+   
+   (modify ?a (punts ?nova)
+            (elderly-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: FAMILY
+;;;   - Si el client és Family i la propietat té balcó/terrassa:
+;;;     penalització per perill de caiguda per a nens petits
+;;; ---------------------------------------------------------
+
+(defrule criteri-family-balco-terrassa-perill
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (family-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (hasProfile ?profile))
+   (object (is-a Family)
+           (name ?profile))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop)
+           (hasFeature $?features))
+   (object (is-a Apartment|Duplex)
+           (name ?prop))
+   ;; Verificar que TÉ balcó o terrassa
+   (test (or (member$ [FeatureBalcony] ?features)
+             (member$ [FeatureTerrace] ?features)))
+   =>
+   (bind ?nova (- ?p 10))  ; Resta punts per perill de caiguda
+   
+   (assert (criteri-no-complert 
+            (client ?c) 
+            (oferta ?o) 
+            (descripcio "Família amb balcó/terrassa (perill de caiguda per a nens petits)")))
+   
+   (modify ?a (punts ?nova)
+            (family-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: STUDENT
+;;;   - Si el client és Student, la propietat té balcó/terrassa
+;;;     i no hi ha serveis sorollosos a distància 0: bonificació
+;;;     perquè es pot estudiar a l'exterior tranquil·lament
+;;; ---------------------------------------------------------
+
+(defrule criteri-student-balco-tranquil
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (student-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (hasProfile ?profile))
+   (object (is-a Student)
+           (name ?profile))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop)
+           (hasFeature $?features))
+   (object (is-a Apartment|Duplex)
+           (name ?prop))
+   ;; Cal que tingui balcó o terrassa
+   (test (or (member$ [FeatureBalcony] ?features)
+             (member$ [FeatureTerrace] ?features)))
+   ;; No hi ha serveis sorollosos (nivell>0) a distància 0
+   (not (and (object (is-a Proximity)
+                     (nearProperty ?prop)
+                     (nearService ?srv-noisy)
+                     (distanceCategory 0))
+             (object (is-a Service)
+                     (name ?srv-noisy)
+                     (serviceNoiseLevel ?nivell&:(> ?nivell 0)))))
+   =>
+   (bind ?nova (+ ?p 20))  ; Bonus per espai exterior tranquil per estudiar
+
+   (assert (caracteristica-destacada
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Balcó/terrassa sense soroll: ideal per estudiar a l'exterior")))
+
+   (modify ?a (punts ?nova)
+            (student-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: YOUNGADULT
+;;;   - Pis eficient per pressupost ajustat: màxima llum natural
+;;;     o calefacció/aire (FeatureAirOrHeating), mida ajustada
+;;;     (<= 20% sobre el mínim) i just els dormitoris demanats.
+;;;     Bonus perquè és més barat d'escalfar i mantenir.
+;;; ---------------------------------------------------------
+
+(defrule criteri-youngadult-eficient
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (youngadult-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (hasProfile ?profile)
+           (minArea ?minA)
+           (minDorms ?minD))
+   (object (is-a YoungAdult)
+           (name ?profile))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop)
+           (hasFeature $?features))
+   (object (is-a Property)
+           (name ?prop)
+           (area ?area)
+           (naturalLight ?llum)
+           (hasRoom $?habitacions))
+   ;; Llum natural màxima o bé disposa de calefacció/aire
+   (test (or (= ?llum 3)
+             (member$ [FeatureAirOrHeating] ?features)))
+   ;; Mida eficient: fins a un 20% per sobre del mínim demanat
+   (test (<= ?area (* ?minA 1.2)))
+   ;; Just els dormitoris demanats
+   (test (= (length$ ?habitacions) ?minD))
+   =>
+   (bind ?nova (+ ?p 20))  ; Bonus per pis eficient de calefactar
+
+   (assert (caracteristica-destacada
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Pis eficient: llum màxima o calefacció, mida ajustada i sense espai sobrant")))
+
+   (modify ?a (punts ?nova)
+            (youngadult-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: COUPLE
+;;;   - Si no hi ha zona verda ni transport a prop, la caminada
+;;;     és poc romàntica.
+;;; ---------------------------------------------------------
+
+(defrule criteri-couple-cami-feo
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (couple-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (hasProfile ?profile))
+   (object (is-a Couple)
+           (name ?profile))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   ;; No hi ha cap zona verda propera (cat. 0)
+   (not (and (object (is-a Proximity)
+                     (nearProperty ?prop)
+                     (nearService ?g)
+                     (distanceCategory 0))
+             (object (is-a GreenArea)
+                     (name ?g))))
+   ;; Ni transport proper (cat. 0)
+   (not (and (object (is-a Proximity)
+                     (nearProperty ?prop)
+                     (nearService ?t)
+                     (distanceCategory 0))
+             (object (is-a Transport)
+                     (name ?t))))
+   =>
+   (bind ?nova (- ?p 10))  ; Caminada poc romàntica: resta punts
+
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Sense zona verda ni transport a prop: caminada poc romàntica")))
+
+   (modify ?a (punts ?nova)
+            (couple-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------

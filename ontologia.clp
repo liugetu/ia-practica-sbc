@@ -140,7 +140,7 @@
     (pattern-match reactive)
 )
 
-(defclass Students
+(defclass Student
     (is-a ClientProfile)
     (role concrete)
     (pattern-match reactive)

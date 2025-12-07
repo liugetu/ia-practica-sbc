@@ -243,7 +243,7 @@
 
   ([perfil-parella-jove] of Couple)
   ([perfil-familia]      of Family)
-  ([perfil-estudiants]   of Students)
+  ([perfil-estudiants]   of Student)
   ([perfil-gent-gran]    of Elderly)
   ([perfil-jove-solter]  of YoungAdult)
 
