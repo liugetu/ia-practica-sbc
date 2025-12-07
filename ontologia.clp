@@ -29,6 +29,18 @@
     (multislot state
         (type INTEGER)
         (create-accessor read-write))
+    ;;; Té ocupes (squatters)
+    (multislot hasSquatters
+        (type SYMBOL)
+        (create-accessor read-write))
+    ;;; Té humitats (damp)
+    (multislot hasDampness
+        (type SYMBOL)
+        (create-accessor read-write))
+    ;;; Té fugues (leaks)
+    (multislot hasLeaks
+        (type SYMBOL)
+        (create-accessor read-write))
 )
 
 (defclass Apartment

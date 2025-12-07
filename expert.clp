@@ -110,6 +110,11 @@
    (slot student-avaluat     (type SYMBOL) (default FALSE))
    (slot youngadult-avaluat  (type SYMBOL) (default FALSE))
    (slot couple-avaluat      (type SYMBOL) (default FALSE))
+   
+   ;; Flags per problemes de la propietat
+   (slot squatters-avaluat   (type SYMBOL) (default FALSE))
+   (slot leaks-avaluat       (type SYMBOL) (default FALSE))
+   (slot dampness-avaluat    (type SYMBOL) (default FALSE))
 )
 
 ;;; Plantilles per rastrejar criteris no complerts i característiques destacades
@@ -1090,6 +1095,87 @@
 
    (modify ?a (punts ?nova)
             (couple-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE PROBLEMES DE LA PROPIETAT: OCUPES IL·LEGALS
+;;;   - Si la propietat té ocupes (hasSquatters): -100 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-ocupes-illegals
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (squatters-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (hasSquatters $?ocupes&:(> (length$ ?ocupes) 0)))
+   =>
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "La propietat té ocupes il·legals")))
+   (modify ?a (punts ?nova)
+            (squatters-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE PROBLEMES DE LA PROPIETAT: FUGUES
+;;;   - Si la propietat té fugues (hasLeaks): -100 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-fugues
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (leaks-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (hasLeaks $?fugues&:(> (length$ ?fugues) 0)))
+   =>
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "La propietat té problemes de fugues")))
+   (modify ?a (punts ?nova)
+            (leaks-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE PROBLEMES DE LA PROPIETAT: HUMITATS
+;;;   - Si la propietat té humitats (hasDampness): -100 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-humitats
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (dampness-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (hasDampness $?humitats&:(> (length$ ?humitats) 0)))
+   =>
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "La propietat té problemes d'humitat")))
+   (modify ?a (punts ?nova)
+            (dampness-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------

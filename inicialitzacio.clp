@@ -58,6 +58,11 @@
     (longitude 2.169)
   )
 
+  ([loc-horrible-choice] of Location
+    (latitude 41.395)
+    (longitude 2.175)
+  )
+
   ;;; ------------------------------
   ;;; HABITACIONS
   ;;; ------------------------------
@@ -93,6 +98,10 @@
     (isDouble TRUE))
   ([pis-eixample-dorm-2] of Room
     (isDouble TRUE))
+
+  ;; Propietat horrible
+  ([horrible-dorm-1] of Room
+    (isDouble FALSE))
 
   ;;; ------------------------------
   ;;; SERVEIS
@@ -235,6 +244,20 @@
     (floor 2)
     (hasRoom [pis-eixample-dorm-1] [pis-eixample-dorm-2])
     (locatedAt [loc-eixample-sud])
+  )
+
+  ;; Propietat horrible - per provar els descartes instantanis
+  ([prop-horrible-choice] of Apartment
+    (address "C/ de l'Horror 666, Barri Roig")
+    (area 30)
+    (naturalLight 0)
+    (state 0)
+    (floor 5)
+    (hasSquatters si)
+    (hasDampness si)
+    (hasLeaks si)
+    (hasRoom [horrible-dorm-1])
+    (locatedAt [loc-horrible-choice])
   )
 
   ;;; ------------------------------
@@ -430,6 +453,15 @@
     (maxPeople 3)
     (minMonths 12)
     (price 950.0)
+  )
+
+  ;; Oferta per la propiedad horrible
+  ([oferta-horrible-choice] of RentalOffer
+    (hasProperty [prop-horrible-choice])
+    (hasFeature)
+    (maxPeople 1)
+    (minMonths 6)
+    (price 300.0)
   )
 
 ) ;; fi de definstances inicialitzacio
