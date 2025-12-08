@@ -2,7 +2,7 @@
 ;;; ontologia.clp
 ;;; Translated by owl2clips
 ;;; Translated to CLIPS from ontology alquileres.ttl
-;;; :Date 29/11/2025 11:33:14
+;;; :Date 08/12/2025 18:56:38
 
 (defclass Property "Component físic: característiques intrínseques de l'habitatge."
     (is-a USER)
@@ -29,15 +29,19 @@
     (multislot state
         (type INTEGER)
         (create-accessor read-write))
-    ;;; Té ocupes (squatters)
+    ;;; Indica si la propietat té okupes il·legals (squatters)
     (multislot hasSquatters
         (type SYMBOL)
         (create-accessor read-write))
-    ;;; Té humitats (damp)
+    ;;; Representa el número de lavabos d'una propietat
+    (multislot numBathrooms
+        (type INTEGER)
+        (create-accessor read-write))
+    ;;; Indica si la propietat té humitats (damp)
     (multislot hasDampness
         (type SYMBOL)
         (create-accessor read-write))
-    ;;; Té fugues (leaks)
+    ;;; Indica si la propietat té fugues (d'aigua, gas...) (leaks)
     (multislot hasLeaks
         (type SYMBOL)
         (create-accessor read-write))
@@ -74,7 +78,7 @@
     (role concrete)
     (pattern-match reactive)
     ;;; Relaciona un servei amb la seva ubicació/coordenades
-    (multislot ServiceLocatedAt
+    (multislot serviceLocatedAt
         (type INSTANCE)
         (create-accessor read-write))
     ;;; Nom del servei
@@ -150,6 +154,14 @@
     (is-a ClientProfile)
     (role concrete)
     (pattern-match reactive)
+    ;;; Numero de "tenants" que son avis
+    (multislot numElderly
+        (type INTEGER)
+        (create-accessor read-write))
+    ;;; Numero de "tenants" que són nens
+    (multislot numChildren
+        (type INTEGER)
+        (create-accessor read-write))
 )
 
 (defclass Student
@@ -174,6 +186,10 @@
         (create-accessor read-write))
     ;;; El client té preferència per la característica
     (multislot prefersFeature
+        (type INSTANCE)
+        (create-accessor read-write))
+    ;;; Associa el lloc de trabll o estudi del client a una localització
+    (multislot worksOrStudies
         (type INSTANCE)
         (create-accessor read-write))
     ;;; Edat del client
@@ -224,7 +240,7 @@
     (multislot wantsTransport
         (type SYMBOL)
         (create-accessor read-write))
-    ;;; Nombre mínim de mesos que el client vol llogar
+    ;;; Indica el mínim número de mesos que el client vol llogar el pis
     (multislot minMonthsClient
         (type INTEGER)
         (create-accessor read-write))
@@ -261,7 +277,7 @@
     (multislot nearService
         (type INSTANCE)
         (create-accessor read-write))
-    ;;; Si una Property està a prop (0), a mitja distància (1)
+    ;;; Si una Property està a prop (0), a mitja distància (1), lluny (2)
     (multislot distanceCategory
         (type INTEGER)
         (create-accessor read-write))
@@ -309,27 +325,67 @@
         (create-accessor read-write))
 )
 
-(defclass Room "Modela dormitoris (simple/doble)"
+(defclass Room "Modela dormitoris (simple/doble) i altres estances si cal."
     (is-a USER)
     (role concrete)
     (pattern-match reactive)
-    (slot isDouble
+    ;;; Indica si la habitació és doble o no
+    (multislot isDouble
         (type SYMBOL)
-        (allowed-values TRUE FALSE)
-        (default FALSE)
+        (create-accessor read-write))
+)
+
+(defclass Neighbourhood "Representa un barri"
+    (is-a USER)
+    (role concrete)
+    (pattern-match reactive)
+    ;;; Representa la seguretat del barri, 0 (no hi ha), 5 (supersegur)
+    (multislot safety
+        (type SYMBOL)
+        (create-accessor read-write))
+    ;;; Preu mitjà de les propietats situades al barri
+    (multislot averagePrice
+        (type FLOAT)
+        (create-accessor read-write))
+    ;;; Nom del barri
+    (multislot neighbourhoodName
+        (type STRING)
         (create-accessor read-write))
 )
 
 (definstances instances
-    ([FeatureAirOrHeating] of PropertyFeature)
-    ([FeatureAppliances] of PropertyFeature)
-    ([FeatureBalcony] of PropertyFeature)
-    ([FeatureElevator] of PropertyFeature)
-    ([FeatureFurniture] of PropertyFeature)
-    ([FeatureGarage] of PropertyFeature)
-    ([FeaturePool] of PropertyFeature)
-    ([FeatureTerrace] of PropertyFeature)
-    ([FeatureViews] of PropertyFeature)
-    ([FeatureYard] of PropertyFeature)
-    ([FeaturePetsAllowed] of PropertyFeature)
+    ([FeatureAirOrHeating] of Característica
+    )
+
+    ([FeatureAppliances] of Característica
+    )
+
+    ([FeatureBalcony] of Característica
+    )
+
+    ([FeatureElevator] of Característica
+    )
+
+    ([FeatureFurniture] of Característica
+    )
+
+    ([FeatureGarage] of Característica
+    )
+
+    ([FeaturePool] of Característica
+    )
+
+    ([FeatureTerrace] of Característica
+    )
+
+    ([FeatureViews] of Característica
+    )
+
+    ([FeatureYard] of Característica
+    )
+
+    ;;; permeten / volen tenir mascotes
+    ([petsAllowed] of Característica
+    )
+
 )
