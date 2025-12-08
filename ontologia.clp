@@ -150,6 +150,12 @@
     (is-a ClientProfile)
     (role concrete)
     (pattern-match reactive)
+    (multislot numElderly
+        (type INTEGER)
+        (create-accessor read-write))
+    (multislot numChildren
+        (type INTEGER)
+        (create-accessor read-write))
 )
 
 (defclass Student
@@ -184,7 +190,7 @@
     (multislot clientMaxPrice
         (type FLOAT)
         (create-accessor read-write))
-    (multislot familySize
+    (multislot numTenants
         (type INTEGER)
         (create-accessor read-write))
     (multislot minArea

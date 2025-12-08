@@ -289,6 +289,24 @@
    ;; Create profile instance
    (make-instance ?perfil-instance of ?perfil-type)
    
+   ;; If profile is Family, ask for elderly and children
+   (if (eq ?perfil-type Family) then
+      (bind ?num-ancians (read-integer 0 ?tamany-familia "Quants d'ells són ancians (>=65 anys)"))
+      (if (eq ?num-ancians cancelar) then
+         (printout t crlf "Operació cancel·lada." crlf crlf)
+         (return FALSE))
+      
+      (bind ?num-nens (read-integer 0 ?tamany-familia "Quants d'ells són nens (<18 anys)"))
+      (if (eq ?num-nens cancelar) then
+         (printout t crlf "Operació cancel·lada." crlf crlf)
+         (return FALSE))
+      
+      ;; Set values on the Family profile instance using modify-instance
+      (modify-instance ?perfil-instance
+         (numElderly ?num-ancians)
+         (numChildren ?num-nens))
+   )
+   
    ;; Read service preferences
    (bind ?vol-verdes (read-si-no "Vol zones verdes properes"))
    (if (eq ?vol-verdes cancelar) then
@@ -341,7 +359,7 @@
    (make-instance ?nom-instance of Client
       (clientAge ?edat)
       (clientMaxPrice ?preu-max)
-      (familySize ?tamany-familia)
+      (numTenants ?tamany-familia)
       (minArea ?min-area)
       (minDorms ?min-dorms)
       (minReasonablePrice ?preu-reasonable)
@@ -367,6 +385,19 @@
    (printout t "Nom: " ?nom crlf)
    (printout t "Instància: " ?nom-instance crlf)
    (printout t "Edat: " ?edat " anys" crlf)
+   (printout t "Nombre d'inquilins: " ?tamany-familia)
+   (if (eq ?perfil-type Family) then
+      (bind ?prof-inst (instance-address ?perfil-instance))
+      (if (neq ?prof-inst FALSE) then
+         (bind ?anc (nth$ 1 (send ?prof-inst get-numElderly)))
+         (bind ?nens (nth$ 1 (send ?prof-inst get-numChildren)))
+         (if (> ?anc 0) then
+            (printout t " (ancians: " ?anc ")"))
+         (if (> ?nens 0) then
+            (printout t " (nens: " ?nens ")"))
+      )
+   )
+   (printout t crlf)
    (printout t "Pressupost: " ?preu-max "€/mes (+/-" ?flexibilitat "%)" crlf)
    (printout t "Superfície mínima: " ?min-area " m²" crlf)
    (printout t "Dormitoris mínims: " ?min-dorms crlf)
@@ -872,16 +903,5 @@
    )
 )
 
-;;; ---------------------------------------------------------
-;;; Per iniciar el menú interactiu, executa:
-;;; (menu-interactiu)
-;;; ---------------------------------------------------------
-
-(printout t crlf)
-(printout t "========================================" crlf)
-(printout t "  Sistema carregat correctament!" crlf)
-(printout t "========================================" crlf)
-(printout t "Per iniciar el menú interactiu, escriu:" crlf)
-(printout t "  (menu-interactiu)" crlf)
-(printout t "========================================" crlf)
-(printout t crlf)
+;;; Start interactive menu
+(menu-interactiu)

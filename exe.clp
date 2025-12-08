@@ -87,8 +87,27 @@
    (bind ?min-area (nth$ 1 (send ?client-instance get-minArea)))
    (bind ?min-dorms (nth$ 1 (send ?client-instance get-minDorms)))
    (bind ?min-months (nth$ 1 (send ?client-instance get-minMonthsClient)))
+   (bind ?num-tenants (nth$ 1 (send ?client-instance get-numTenants)))
+   
+   ;; Get profile to check if it's a family
+   (bind ?profile-list (send ?client-instance get-hasProfile))
+   (bind ?num-elderly 0)
+   (bind ?num-children 0)
+   (if (> (length$ ?profile-list) 0) then
+      (bind ?profile-inst (instance-address (nth$ 1 ?profile-list)))
+      (if (and (neq ?profile-inst FALSE) (eq (class ?profile-inst) Family)) then
+         (bind ?num-elderly (nth$ 1 (send ?profile-inst get-numElderly)))
+         (bind ?num-children (nth$ 1 (send ?profile-inst get-numChildren)))
+      )
+   )
    
    (printout t "· Edat: " ?edat " anys" crlf)
+   (printout t "· Nombre d'inquilins: " ?num-tenants)
+   (if (> ?num-elderly 0) then
+      (printout t " (ancians: " ?num-elderly ")"))
+   (if (> ?num-children 0) then
+      (printout t " (nens: " ?num-children ")"))
+   (printout t crlf)
    (printout t "· Pressupost màxim: " ?preu-max "€/mes (flexibilitat: " ?flex "%)" crlf)
    (printout t "· Superfície mínima: " ?min-area " m²" crlf)
    (printout t "· Dormitoris mínims: " ?min-dorms crlf)

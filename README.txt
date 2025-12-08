@@ -30,7 +30,7 @@ Per compilar i executar el sistema:
   (hasProfile [perfil])
   (clientAge 25)
   (clientMaxPrice 800.0)
-  (familySize 1)
+  (numTenants 1)
   (minArea 40)
   (minDorms 1)
   (minReasonablePrice 600)
