@@ -87,8 +87,27 @@
    (bind ?min-area (nth$ 1 (send ?client-instance get-minArea)))
    (bind ?min-dorms (nth$ 1 (send ?client-instance get-minDorms)))
    (bind ?min-months (nth$ 1 (send ?client-instance get-minMonthsClient)))
+   (bind ?num-tenants (nth$ 1 (send ?client-instance get-numTenants)))
+   
+   ;; Get profile to check if it's a family
+   (bind ?profile-list (send ?client-instance get-hasProfile))
+   (bind ?num-elderly 0)
+   (bind ?num-children 0)
+   (if (> (length$ ?profile-list) 0) then
+      (bind ?profile-inst (instance-address (nth$ 1 ?profile-list)))
+      (if (and (neq ?profile-inst FALSE) (eq (class ?profile-inst) Family)) then
+         (bind ?num-elderly (nth$ 1 (send ?profile-inst get-numElderly)))
+         (bind ?num-children (nth$ 1 (send ?profile-inst get-numChildren)))
+      )
+   )
    
    (printout t "· Edat: " ?edat " anys" crlf)
+   (printout t "· Nombre d'inquilins: " ?num-tenants)
+   (if (> ?num-elderly 0) then
+      (printout t " (ancians: " ?num-elderly ")"))
+   (if (> ?num-children 0) then
+      (printout t " (nens: " ?num-children ")"))
+   (printout t crlf)
    (printout t "· Pressupost màxim: " ?preu-max "€/mes (flexibilitat: " ?flex "%)" crlf)
    (printout t "· Superfície mínima: " ?min-area " m²" crlf)
    (printout t "· Dormitoris mínims: " ?min-dorms crlf)
@@ -195,9 +214,33 @@
                (if (neq ?prop-obj FALSE) then
                   (bind ?adreca (nth$ 1 (send ?prop-obj get-address)))
                   (bind ?area (nth$ 1 (send ?prop-obj get-area)))
+                  
+                  ;; Get neighbourhood information
+                  (bind ?barri-nom "Desconegut")
+                  (bind ?barri-seguretat "N/A")
+                  (bind ?barri-preu-mitja "N/A")
+                  (bind ?loc-list (send ?prop-obj get-locatedAt))
+                  (if (> (length$ ?loc-list) 0) then
+                     (bind ?loc-obj (instance-address (nth$ 1 ?loc-list)))
+                     (if (neq ?loc-obj FALSE) then
+                        (bind ?barri-list (send ?loc-obj get-isSituated))
+                        (if (> (length$ ?barri-list) 0) then
+                           (bind ?barri-obj (instance-address (nth$ 1 ?barri-list)))
+                           (if (neq ?barri-obj FALSE) then
+                              (bind ?barri-nom (nth$ 1 (send ?barri-obj get-NeighbourhoodName)))
+                              (bind ?barri-seguretat (nth$ 1 (send ?barri-obj get-safety)))
+                              (bind ?barri-preu-mitja (nth$ 1 (send ?barri-obj get-averagePrice)))
+                           )
+                        )
+                     )
+                  )
+                  
                   (printout t crlf "========================================" crlf)
                   (printout t "Oferta: " ?oferta crlf)
                   (printout t "Adreça: " ?adreca crlf)
+                  (printout t "Barri: " ?barri-nom crlf)
+                  (printout t "  Seguretat: " ?barri-seguretat "/5" crlf)
+                  (printout t "  Preu mitjà zona: " ?barri-preu-mitja " €/mes" crlf)
                   (printout t "Preu: " ?preu " €/mes" crlf)
                   (printout t "Superfície: " ?area " m2" crlf)
                   (printout t "Nivell: " ?nivell crlf)

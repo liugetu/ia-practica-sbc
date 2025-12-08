@@ -154,11 +154,17 @@
     (is-a ClientProfile)
     (role concrete)
     (pattern-match reactive)
+<<<<<<< HEAD
     ;;; Numero de "tenants" que son avis
     (multislot numElderly
         (type INTEGER)
         (create-accessor read-write))
     ;;; Numero de "tenants" que són nens
+=======
+    (multislot numElderly
+        (type INTEGER)
+        (create-accessor read-write))
+>>>>>>> cea2762b2eba4d781340cff5a464e8b939c2980a
     (multislot numChildren
         (type INTEGER)
         (create-accessor read-write))
@@ -170,7 +176,7 @@
     (pattern-match reactive)
 )
 
-(defclass YoungAdult
+(defclass Individual
     (is-a ClientProfile)
     (role concrete)
     (pattern-match reactive)
@@ -200,7 +206,7 @@
     (multislot clientMaxPrice
         (type FLOAT)
         (create-accessor read-write))
-    (multislot familySize
+    (multislot numTenants
         (type INTEGER)
         (create-accessor read-write))
     (multislot minArea
@@ -256,6 +262,28 @@
         (create-accessor read-write))
     ;;; Coordenada de longitud de l'immoble
     (multislot longitude
+        (type FLOAT)
+        (create-accessor read-write))
+    ;;; Relació: una Location pertany a un Neighbourhood
+    (multislot isSituated
+        (type INSTANCE)
+        (create-accessor read-write))
+)
+
+(defclass Neighbourhood "Representa un barri amb les seves característiques."
+    (is-a USER)
+    (role concrete)
+    (pattern-match reactive)
+    ;;; Nom del barri
+    (multislot NeighbourhoodName
+        (type STRING)
+        (create-accessor read-write))
+    ;;; Nivell de seguretat del barri
+    (multislot safety
+        (type INTEGER)
+        (create-accessor read-write))
+    ;;; Preu mitjà del barri
+    (multislot averagePrice
         (type FLOAT)
         (create-accessor read-write))
 )

@@ -10,57 +10,107 @@
 (definstances inicialitzacio
 
   ;;; ------------------------------
+  ;;; BARRIS (NEIGHBOURHOODS)
+  ;;; ------------------------------
+
+  ([barri-centre] of Neighbourhood
+    (NeighbourhoodName "Centre")
+    (safety 4)
+    (averagePrice 1100.0)
+  )
+
+  ([barri-universitari] of Neighbourhood
+    (NeighbourhoodName "Zona Universitaria")
+    (safety 4)
+    (averagePrice 800.0)
+  )
+
+  ([barri-periferia] of Neighbourhood
+    (NeighbourhoodName "Periferia Verda")
+    (safety 5)
+    (averagePrice 1200.0)
+  )
+
+  ([barri-oci] of Neighbourhood
+    (NeighbourhoodName "Zona d'Oci")
+    (safety 2)
+    (averagePrice 900.0)
+  )
+
+  ([barri-eixample] of Neighbourhood
+    (NeighbourhoodName "Eixample")
+    (safety 4)
+    (averagePrice 1000.0)
+  )
+
+  ([barri-horrible] of Neighbourhood
+    (NeighbourhoodName "Zona Degradada")
+    (safety 0)
+    (averagePrice 400.0)
+  )
+
+  ;;; ------------------------------
   ;;; LOCALITZACIONS
   ;;; ------------------------------
 
   ([loc-centre] of Location
     (latitude 41.390)
     (longitude 2.170)
+    (isSituated [barri-centre])
   )
 
   ([loc-campus] of Location
     (latitude 41.404)
     (longitude 2.118)
+    (isSituated [barri-universitari])
   )
 
   ([loc-periferia-verda] of Location
     (latitude 41.430)
     (longitude 2.150)
+    (isSituated [barri-periferia])
   )
 
   ([loc-zona-oci] of Location
     (latitude 41.385)
     (longitude 2.180)
+    (isSituated [barri-oci])
   )
 
   ([loc-plaça-major] of Location
     (latitude 41.388)
     (longitude 2.168)
+    (isSituated [barri-centre])
   )
 
   ([loc-zona-alta] of Location
     (latitude 41.392)
     (longitude 2.172)
+    (isSituated [barri-centre])
   )
 
   ([loc-barri-universitari] of Location
     (latitude 41.403)
     (longitude 2.119)
+    (isSituated [barri-universitari])
   )
 
   ([loc-zona-esportiva] of Location
     (latitude 41.400)
     (longitude 2.125)
+    (isSituated [barri-universitari])
   )
 
   ([loc-eixample-sud] of Location
     (latitude 41.389)
     (longitude 2.169)
+    (isSituated [barri-eixample])
   )
 
   ([loc-horrible-choice] of Location
     (latitude 41.395)
     (longitude 2.175)
+    (isSituated [barri-horrible])
   )
 
   ;;; ------------------------------
@@ -265,10 +315,12 @@
   ;;; ------------------------------
 
   ([perfil-parella-jove] of Couple)
-  ([perfil-familia]      of Family)
+  ([perfil-familia]      of Family
+    (numElderly 0)
+    (numChildren 2))
   ([perfil-estudiants]   of Student)
   ([perfil-gent-gran]    of Elderly)
-  ([perfil-jove-solter]  of YoungAdult)
+  ([perfil-jove-solter]  of Individual)
 
   ;;; ------------------------------
   ;;; CLIENTS
@@ -280,7 +332,7 @@
     (prefersFeature [FeatureElevator] [FeatureBalcony])
     (clientAge 30)
     (clientMaxPrice 1100.0)
-    (familySize 2)
+    (numTenants 2)
     (minArea 60)
     (minDorms 1)
     (minReasonablePrice 900)
@@ -302,7 +354,7 @@
     (prefersFeature [FeatureYard] [FeatureGarage])
     (clientAge 38)
     (clientMaxPrice 1400.0)
-    (familySize 4)
+    (numTenants 4)
     (minArea 100)
     (minDorms 3)
     (minReasonablePrice 1100)
@@ -324,7 +376,7 @@
     (prefersFeature [FeatureAppliances] [FeatureFurniture])
     (clientAge 21)
     (clientMaxPrice 800.0)
-    (familySize 3)
+    (numTenants 3)
     (minArea 55)
     (minDorms 3)
     (minReasonablePrice 600)
@@ -346,7 +398,7 @@
     (prefersFeature [FeatureElevator])
     (clientAge 72)
     (clientMaxPrice 900.0)
-    (familySize 1)
+    (numTenants 1)
     (minArea 50)
     (minDorms 1)
     (minReasonablePrice 700)
@@ -368,7 +420,7 @@
     (prefersFeature [FeatureTerrace] [FeatureViews])
     (clientAge 27)
     (clientMaxPrice 950.0)
-    (familySize 1)
+    (numTenants 1)
     (minArea 45)
     (minDorms 1)
     (minReasonablePrice 750)
@@ -390,7 +442,7 @@
     (prefersFeature [FeatureElevator] [FeatureBalcony] [FeatureAirOrHeating] [FeatureTerrace])
     (clientAge 30)
     (clientMaxPrice 1000.0)
-    (familySize 2)
+    (numTenants 2)
     (minArea 70)
     (minDorms 2)
     (minReasonablePrice 800)

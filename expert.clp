@@ -108,13 +108,17 @@
    (slot elderly-avaluat     (type SYMBOL) (default FALSE))
    (slot family-avaluat      (type SYMBOL) (default FALSE))
    (slot student-avaluat     (type SYMBOL) (default FALSE))
-   (slot youngadult-avaluat  (type SYMBOL) (default FALSE))
+   (slot individual-avaluat  (type SYMBOL) (default FALSE))
    (slot couple-avaluat      (type SYMBOL) (default FALSE))
    
    ;; Flags per problemes de la propietat
    (slot squatters-avaluat   (type SYMBOL) (default FALSE))
    (slot leaks-avaluat       (type SYMBOL) (default FALSE))
    (slot dampness-avaluat    (type SYMBOL) (default FALSE))
+   
+   ;; Flags per criteris de barri
+   (slot barri-seguretat-avaluat (type SYMBOL) (default FALSE))
+   (slot barri-preu-avaluat      (type SYMBOL) (default FALSE))
 )
 
 ;;; Plantilles per rastrejar criteris no complerts i característiques destacades
@@ -162,7 +166,7 @@
                       (elderly-avaluat FALSE)
                       (family-avaluat FALSE)
                       (student-avaluat FALSE)
-                      (youngadult-avaluat FALSE)
+                      (individual-avaluat FALSE)
                       (couple-avaluat FALSE)))
 )
 
@@ -228,6 +232,41 @@
 
    (modify ?a (punts ?nova)
             (preu-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE PREU FAVORABLE PEL BARRI
+;;;   - Si el preu de l'oferta és inferior al preu mitjà del barri: +20 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-preu-favorable-barri
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (barri-preu-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (price $?preu-list)
+           (hasProperty $?prop-list))
+   (object (is-a Property)
+           (name ?prop&:(eq ?prop (nth$ 1 ?prop-list)))
+           (locatedAt $?loc-list))
+   (object (is-a Location)
+           (name ?loc&:(eq ?loc (nth$ 1 ?loc-list)))
+           (isSituated $?barri-list))
+   (object (is-a Neighbourhood)
+           (name ?barri&:(eq ?barri (nth$ 1 ?barri-list)))
+           (averagePrice $?preu-mitja-list))
+   (test (> (nth$ 1 ?preu-mitja-list) (nth$ 1 ?preu-list)))
+   =>
+   (bind ?nova (+ ?p 20))
+   (assert (caracteristica-destacada
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Oferta favorable pel barri")))
+   (modify ?a (punts ?nova)
+            (barri-preu-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------
@@ -891,8 +930,12 @@
    (object (is-a Client)
            (name ?c)
            (hasProfile ?profile))
-   (object (is-a Elderly)
-           (name ?profile))
+   (or
+      (object (is-a Elderly)
+              (name ?profile))
+      (object (is-a Family)
+              (name ?profile)
+              (numElderly ?anc&:(>= ?anc 1))))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop)
@@ -933,7 +976,8 @@
            (name ?c)
            (hasProfile ?profile))
    (object (is-a Family)
-           (name ?profile))
+           (name ?profile)
+           (numChildren ?nens&:(>= ?nens 1)))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop)
@@ -1003,25 +1047,25 @@
 )
 
 ;;; ---------------------------------------------------------
-;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: YOUNGADULT
+;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: INDIVIDUAL
 ;;;   - Pis eficient per pressupost ajustat: màxima llum natural
 ;;;     o calefacció/aire (FeatureAirOrHeating), mida ajustada
 ;;;     (<= 20% sobre el mínim) i just els dormitoris demanats.
 ;;;     Bonus perquè és més barat d'escalfar i mantenir.
 ;;; ---------------------------------------------------------
 
-(defrule criteri-youngadult-eficient
+(defrule criteri-individual-eficient
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
                     (punts ?p)
-                    (youngadult-avaluat FALSE))
+                    (individual-avaluat FALSE))
    (object (is-a Client)
            (name ?c)
            (hasProfile ?profile)
            (minArea ?minA)
            (minDorms ?minD))
-   (object (is-a YoungAdult)
+   (object (is-a Individual)
            (name ?profile))
    (object (is-a RentalOffer)
            (name ?o)
@@ -1048,7 +1092,7 @@
             (descripcio "Pis eficient: llum màxima o calefacció, mida ajustada i sense espai sobrant")))
 
    (modify ?a (punts ?nova)
-            (youngadult-avaluat TRUE))
+            (individual-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------
@@ -1176,6 +1220,40 @@
             (descripcio "La propietat té problemes d'humitat")))
    (modify ?a (punts ?nova)
             (dampness-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE SEGURETAT DEL BARRI
+;;;   - Si el barri té un nivell de seguretat de 0 o 1: -100 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-barri-no-segur
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (barri-seguretat-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty $?prop-list))
+   (object (is-a Property)
+           (name ?prop&:(eq ?prop (nth$ 1 ?prop-list)))
+           (locatedAt $?loc-list))
+   (object (is-a Location)
+           (name ?loc&:(eq ?loc (nth$ 1 ?loc-list)))
+           (isSituated $?barri-list))
+   (object (is-a Neighbourhood)
+           (name ?barri&:(eq ?barri (nth$ 1 ?barri-list)))
+           (safety $?seguretat-list))
+   (test (<= (nth$ 1 ?seguretat-list) 1))
+   =>
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Barri no segur!")))
+   (modify ?a (punts ?nova)
+            (barri-seguretat-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------

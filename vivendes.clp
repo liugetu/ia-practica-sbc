@@ -10,77 +10,155 @@
 (definstances vivendes
 
   ;;; ------------------------------
+  ;;; BARRIS (NEIGHBOURHOODS)
+  ;;; ------------------------------
+
+  ([barri-centre] of Neighbourhood
+    (NeighbourhoodName "Centre")
+    (safety 4)
+    (averagePrice 1100.0)
+  )
+
+  ([barri-campus] of Neighbourhood
+    (NeighbourhoodName "Zona Campus")
+    (safety 4)
+    (averagePrice 800.0)
+  )
+
+  ([barri-periferia] of Neighbourhood
+    (NeighbourhoodName "Periferia Verda")
+    (safety 5)
+    (averagePrice 1200.0)
+  )
+
+  ([barri-oci] of Neighbourhood
+    (NeighbourhoodName "Zona d'Oci")
+    (safety 2)
+    (averagePrice 900.0)
+  )
+
+  ([barri-montjuic] of Neighbourhood
+    (NeighbourhoodName "Montjuïc")
+    (safety 3)
+    (averagePrice 850.0)
+  )
+
+  ([barri-gracia] of Neighbourhood
+    (NeighbourhoodName "Gràcia")
+    (safety 4)
+    (averagePrice 1050.0)
+  )
+
+  ([barri-sagrada-familia] of Neighbourhood
+    (NeighbourhoodName "Sagrada Família")
+    (safety 4)
+    (averagePrice 1150.0)
+  )
+
+  ([barri-sants] of Neighbourhood
+    (NeighbourhoodName "Sants")
+    (safety 3)
+    (averagePrice 900.0)
+  )
+
+  ([barri-diagonal] of Neighbourhood
+    (NeighbourhoodName "Diagonal")
+    (safety 5)
+    (averagePrice 1300.0)
+  )
+
+  ([barri-eixample] of Neighbourhood
+    (NeighbourhoodName "Eixample")
+    (safety 4)
+    (averagePrice 1000.0)
+  )
+
+  ;;; ------------------------------
   ;;; LOCALITZACIONS
   ;;; ------------------------------
 
   ([loc-centre] of Location
     (latitude 41.390)
     (longitude 2.170)
+    (isSituated [barri-centre])
   )
 
   ([loc-campus] of Location
     (latitude 41.404)
     (longitude 2.118)
+    (isSituated [barri-campus])
   )
 
   ([loc-periferia-verda] of Location
     (latitude 41.430)
     (longitude 2.150)
+    (isSituated [barri-periferia])
   )
 
   ([loc-zona-oci] of Location
     (latitude 41.385)
     (longitude 2.180)
+    (isSituated [barri-oci])
   )
 
   ([loc-plaça-major] of Location
     (latitude 41.388)
     (longitude 2.168)
+    (isSituated [barri-centre])
   )
 
   ([loc-zona-alta] of Location
     (latitude 41.392)
     (longitude 2.172)
+    (isSituated [barri-centre])
   )
 
   ([loc-barri-universitari] of Location
     (latitude 41.403)
     (longitude 2.119)
+    (isSituated [barri-campus])
   )
 
   ([loc-zona-esportiva] of Location
     (latitude 41.400)
     (longitude 2.125)
+    (isSituated [barri-campus])
   )
 
   ([loc-eixample-sud] of Location
     (latitude 41.389)
     (longitude 2.169)
+    (isSituated [barri-eixample])
   )
 
   ([loc-montjuic] of Location
     (latitude 41.365)
     (longitude 2.162)
+    (isSituated [barri-montjuic])
   )
 
   ([loc-gracia] of Location
     (latitude 41.415)
     (longitude 2.155)
+    (isSituated [barri-gracia])
   )
 
   ([loc-sagrada-familia] of Location
     (latitude 41.404)
     (longitude 2.174)
+    (isSituated [barri-sagrada-familia])
   )
 
   ([loc-sants] of Location
     (latitude 41.375)
     (longitude 2.140)
+    (isSituated [barri-sants])
   )
 
   ([loc-diagonal] of Location
     (latitude 41.395)
     (longitude 2.155)
+    (isSituated [barri-diagonal])
   )
 
   ;;; ------------------------------
