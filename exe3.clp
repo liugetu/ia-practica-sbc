@@ -198,8 +198,26 @@
          (if (neq ?prop-obj FALSE) then
             (bind ?adreca (nth$ 1 (send ?prop-obj get-address)))
             (bind ?preu (nth$ 1 (send ?o get-price)))
+            
+            ;; Get neighbourhood info
+            (bind ?barri-nom "Desconegut")
+            (bind ?loc-list (send ?prop-obj get-locatedAt))
+            (if (> (length$ ?loc-list) 0) then
+               (bind ?loc-obj (instance-address (nth$ 1 ?loc-list)))
+               (if (neq ?loc-obj FALSE) then
+                  (bind ?barri-list (send ?loc-obj get-isSituated))
+                  (if (> (length$ ?barri-list) 0) then
+                     (bind ?barri-obj (instance-address (nth$ 1 ?barri-list)))
+                     (if (neq ?barri-obj FALSE) then
+                        (bind ?barri-nom (nth$ 1 (send ?barri-obj get-NeighbourhoodName)))
+                     )
+                  )
+               )
+            )
+            
             (printout t ?count ". " (instance-name ?o) crlf)
             (printout t "   Adreça: " ?adreca crlf)
+            (printout t "   Barri: " ?barri-nom crlf)
             (printout t "   Preu: " ?preu "€/mes" crlf)
          )
       )
@@ -459,6 +477,60 @@
    (return (nth$ ?seleccio ?properties))
 )
 
+;;; Function to select or create a neighbourhood
+(deffunction seleccionar-o-crear-barri ()
+   ;; Collect all neighbourhoods
+   (bind ?barris (create$))
+   (do-for-all-instances ((?b Neighbourhood)) TRUE
+      (bind ?barris (create$ ?barris (instance-name ?b))))
+   
+   (printout t crlf "=== BARRI ===" crlf)
+   (if (> (length$ ?barris) 0) then
+      (printout t "Barris existents:" crlf)
+      (bind ?i 1)
+      (foreach ?barri ?barris
+         (bind ?barri-obj (instance-address ?barri))
+         (bind ?nom (nth$ 1 (send ?barri-obj get-NeighbourhoodName)))
+         (bind ?seg (nth$ 1 (send ?barri-obj get-safety)))
+         (printout t ?i ". " ?nom " (seguretat: " ?seg "/5)" crlf)
+         (bind ?i (+ ?i 1)))
+      (printout t ?i ". Crear nou barri" crlf)
+      
+      (bind ?seleccio (read-integer 1 ?i "Selecciona opció"))
+      (if (eq ?seleccio cancelar) then
+         (return FALSE))
+      
+      (if (< ?seleccio ?i) then
+         ;; Select existing neighbourhood
+         (return (nth$ ?seleccio ?barris))
+      )
+   )
+   
+   ;; Create new neighbourhood
+   (printout t crlf "=== CREAR NOU BARRI ===" crlf)
+   (printout t "Nom del barri (o 'cancelar'): ")
+   (bind ?nom-barri (read))
+   (if (eq ?nom-barri cancelar) then
+      (return FALSE))
+   
+   (bind ?seguretat (read-integer 0 5 "Nivell de seguretat (0=molt poca, 5=suprema)"))
+   (if (eq ?seguretat cancelar) then
+      (return FALSE))
+   
+   (bind ?preu-mitja (read-float-free "Preu mitjà del barri en €/mes"))
+   (if (eq ?preu-mitja cancelar) then
+      (return FALSE))
+   
+   (bind ?barri-instance (gensym*))
+   (make-instance ?barri-instance of Neighbourhood
+      (NeighbourhoodName ?nom-barri)
+      (safety ?seguretat)
+      (averagePrice ?preu-mitja))
+   
+   (printout t "Barri creat: " ?barri-instance crlf)
+   (return ?barri-instance)
+)
+
 ;;; Function to create a new location
 (deffunction crear-localitzacio ()
    (printout t crlf "=== CREAR NOVA LOCALITZACIÓ ===" crlf)
@@ -473,11 +545,17 @@
    (if (eq ?lon cancelar) then
       (return FALSE))
    
+   ;; Select or create neighbourhood
+   (bind ?barri (seleccionar-o-crear-barri))
+   (if (eq ?barri FALSE) then
+      (return FALSE))
+   
    ;; Create location instance
    (bind ?loc-instance (gensym*))
    (make-instance ?loc-instance of Location
       (latitude ?lat)
-      (longitude ?lon))
+      (longitude ?lon)
+      (isSituated ?barri))
    
    (printout t "Localització creada: " ?loc-instance crlf)
    (return ?loc-instance)

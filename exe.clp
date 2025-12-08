@@ -214,9 +214,33 @@
                (if (neq ?prop-obj FALSE) then
                   (bind ?adreca (nth$ 1 (send ?prop-obj get-address)))
                   (bind ?area (nth$ 1 (send ?prop-obj get-area)))
+                  
+                  ;; Get neighbourhood information
+                  (bind ?barri-nom "Desconegut")
+                  (bind ?barri-seguretat "N/A")
+                  (bind ?barri-preu-mitja "N/A")
+                  (bind ?loc-list (send ?prop-obj get-locatedAt))
+                  (if (> (length$ ?loc-list) 0) then
+                     (bind ?loc-obj (instance-address (nth$ 1 ?loc-list)))
+                     (if (neq ?loc-obj FALSE) then
+                        (bind ?barri-list (send ?loc-obj get-isSituated))
+                        (if (> (length$ ?barri-list) 0) then
+                           (bind ?barri-obj (instance-address (nth$ 1 ?barri-list)))
+                           (if (neq ?barri-obj FALSE) then
+                              (bind ?barri-nom (nth$ 1 (send ?barri-obj get-NeighbourhoodName)))
+                              (bind ?barri-seguretat (nth$ 1 (send ?barri-obj get-safety)))
+                              (bind ?barri-preu-mitja (nth$ 1 (send ?barri-obj get-averagePrice)))
+                           )
+                        )
+                     )
+                  )
+                  
                   (printout t crlf "========================================" crlf)
                   (printout t "Oferta: " ?oferta crlf)
                   (printout t "Adreça: " ?adreca crlf)
+                  (printout t "Barri: " ?barri-nom crlf)
+                  (printout t "  Seguretat: " ?barri-seguretat "/5" crlf)
+                  (printout t "  Preu mitjà zona: " ?barri-preu-mitja " €/mes" crlf)
                   (printout t "Preu: " ?preu " €/mes" crlf)
                   (printout t "Superfície: " ?area " m2" crlf)
                   (printout t "Nivell: " ?nivell crlf)

@@ -248,6 +248,28 @@
     (multislot longitude
         (type FLOAT)
         (create-accessor read-write))
+    ;;; Relació: una Location pertany a un Neighbourhood
+    (multislot isSituated
+        (type INSTANCE)
+        (create-accessor read-write))
+)
+
+(defclass Neighbourhood "Representa un barri amb les seves característiques."
+    (is-a USER)
+    (role concrete)
+    (pattern-match reactive)
+    ;;; Nom del barri
+    (multislot NeighbourhoodName
+        (type STRING)
+        (create-accessor read-write))
+    ;;; Nivell de seguretat del barri
+    (multislot safety
+        (type INTEGER)
+        (create-accessor read-write))
+    ;;; Preu mitjà del barri
+    (multislot averagePrice
+        (type FLOAT)
+        (create-accessor read-write))
 )
 
 (defclass PropertyFeature "Defineix les possibles característiques d'una propietat"
