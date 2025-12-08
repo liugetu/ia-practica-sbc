@@ -45,6 +45,10 @@
     (multislot hasLeaks
         (type SYMBOL)
         (create-accessor read-write))
+    ;;; Indica si l'habitatge està insonoritzat acústicament
+    (multislot isSoundproof
+        (type SYMBOL)
+        (create-accessor read-write))
 )
 
 (defclass Apartment
@@ -154,17 +158,14 @@
     (is-a ClientProfile)
     (role concrete)
     (pattern-match reactive)
-<<<<<<< HEAD
     ;;; Numero de "tenants" que son avis
     (multislot numElderly
         (type INTEGER)
         (create-accessor read-write))
     ;;; Numero de "tenants" que són nens
-=======
     (multislot numElderly
         (type INTEGER)
         (create-accessor read-write))
->>>>>>> cea2762b2eba4d781340cff5a464e8b939c2980a
     (multislot numChildren
         (type INTEGER)
         (create-accessor read-write))

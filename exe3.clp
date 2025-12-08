@@ -747,6 +747,11 @@
    (bind ?fugues (read-si-no "Té fugues"))
    (if (eq ?fugues cancelar) then
       (return FALSE))
+
+   ;; Soundproofing
+   (bind ?insonoritzat (read-si-no "És insonoritzada (soundproof)"))
+   (if (eq ?insonoritzat cancelar) then
+      (return FALSE))
    
    ;; Create property based on type
    (switch ?tipus
@@ -765,6 +770,7 @@
             (hasSquatters (if (eq ?ocupes si) then TRUE else FALSE))
             (hasDampness (if (eq ?humitats si) then TRUE else FALSE))
             (hasLeaks (if (eq ?fugues si) then TRUE else FALSE))
+            (isSoundproof (if (eq ?insonoritzat si) then TRUE else FALSE))
             (floor ?planta)))
       (case 2 then
          ;; House
@@ -777,7 +783,8 @@
             (state ?estat)
             (hasSquatters (if (eq ?ocupes si) then TRUE else FALSE))
             (hasDampness (if (eq ?humitats si) then TRUE else FALSE))
-            (hasLeaks (if (eq ?fugues si) then TRUE else FALSE))))
+            (hasLeaks (if (eq ?fugues si) then TRUE else FALSE))
+            (isSoundproof (if (eq ?insonoritzat si) then TRUE else FALSE))))
       (case 3 then
          ;; Duplex
          (bind ?planta (read-integer-free "Planta inicial"))
@@ -793,6 +800,7 @@
             (hasSquatters (if (eq ?ocupes si) then TRUE else FALSE))
             (hasDampness (if (eq ?humitats si) then TRUE else FALSE))
             (hasLeaks (if (eq ?fugues si) then TRUE else FALSE))
+            (isSoundproof (if (eq ?insonoritzat si) then TRUE else FALSE))
             (floor ?planta)))
    )
    

@@ -940,6 +940,9 @@
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (isSoundproof $?sp))
    (object (is-a Proximity)
            (nearProperty ?prop)
            (nearService ?srv)
@@ -947,6 +950,9 @@
    (object (is-a Service)
            (name ?srv)
            (serviceNoiseLevel ?nivell&:(> ?nivell 0)))
+        ;; Només si la propietat NO és insonoritzada (absent o FALSE)
+        (test (or (= (length$ ?sp) 0)
+                                 (eq (nth$ 1 ?sp) FALSE)))
    =>
    ;; Calcular penalització proporcional: nivell 1=-5, nivell 2=-10, nivell 3=-15
    (bind ?penalitzacio (* ?nivell 5))
