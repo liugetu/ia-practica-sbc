@@ -1,1 +1,0 @@
-# ia-practica-sbc
