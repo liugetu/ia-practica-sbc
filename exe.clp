@@ -113,6 +113,22 @@
    (printout t "· Dormitoris mínims: " ?min-dorms crlf)
    (printout t "· Durada desitjada: " ?min-months " mesos" crlf)
    
+   ;; Mostrar lloc de treball o estudi si existeix
+   (bind ?works-studies-list (send ?client-instance get-worksOrStudies))
+   (if (and (> (length$ ?works-studies-list) 0) (neq (nth$ 1 ?works-studies-list) nil)) then
+      (bind ?loc-work (instance-address (nth$ 1 ?works-studies-list)))
+      (if (neq ?loc-work FALSE) then
+         (bind ?barri-work-list (send ?loc-work get-isSituated))
+         (if (> (length$ ?barri-work-list) 0) then
+            (bind ?barri-work-obj (instance-address (nth$ 1 ?barri-work-list)))
+            (if (neq ?barri-work-obj FALSE) then
+               (bind ?barri-work-nom (nth$ 1 (send ?barri-work-obj get-NeighbourhoodName)))
+               (printout t "· Treballa/estudia a: " ?barri-work-nom crlf)
+            )
+         )
+      )
+   )
+   
    ;; Mostrar si necessita habitació doble
    (bind ?needs-double (nth$ 1 (send ?client-instance get-needsDoubleBedroom)))
    (if (eq ?needs-double si) then
