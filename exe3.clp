@@ -8,7 +8,8 @@
 (load "ontologia.clp")
 
 ;;; Load the vivendes database
-(load "vivendes.clp")
+;;;(load "vivendes.clp")
+(load "inicialitzacio.clp")
 
 ;;; Load the expert system rules
 (load "expert.clp")
@@ -20,6 +21,17 @@
 ;;; ---------------------------------------------------------
 ;;; FUNCTIONS FOR CLIENT INPUT
 ;;; ---------------------------------------------------------
+
+;;; Forward declarations
+(deffunction crear-localitzacio ())
+(deffunction seleccionar-o-crear-barri ())
+(deffunction seleccionar-location-treball ())
+(deffunction afegir-client-nou ())
+(deffunction mostrar-tots-clients ())
+(deffunction afegir-oferta-nova ())
+(deffunction mostrar-totes-ofertes ())
+(deffunction mostrar-ofertes-client ())
+(deffunction menu-interactiu ())
 
 ;;; Function to read and validate integer input
 (deffunction read-integer (?min ?max ?prompt)
@@ -373,26 +385,56 @@
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
+   ;; Read worksOrStudies location (optional)
+   (bind ?location-treball (seleccionar-location-treball))
+   (if (eq ?location-treball cancelar) then
+      (printout t crlf "Operació cancel·lada." crlf crlf)
+      (return FALSE))
+   
    ;; Create the client instance
-   (make-instance ?nom-instance of Client
-      (clientAge ?edat)
-      (clientMaxPrice ?preu-max)
-      (numTenants ?tamany-familia)
-      (minArea ?min-area)
-      (minDorms ?min-dorms)
-      (minReasonablePrice ?preu-reasonable)
-      (needsDoubleBedroom ?necessita-doble)
-      (priceFlexibility ?flexibilitat)
-      (wantsGreenArea ?vol-verdes)
-      (wantsHealthCenter ?vol-salut)
-      (wantsTransport ?vol-transport)
-      (wantsSupermarket ?vol-super)
-      (wantsSchool ?vol-escola)
-      (wantsNightLife ?vol-nit)
-      (wantsStadium ?vol-estadi)
-      (minMonthsClient ?min-mesos)
-      (hasProfile ?perfil-instance)
-      (prefersFeature ?features-preferides)
+   (if (neq ?location-treball FALSE) then
+      (make-instance ?nom-instance of Client
+         (clientAge ?edat)
+         (clientMaxPrice ?preu-max)
+         (numTenants ?tamany-familia)
+         (minArea ?min-area)
+         (minDorms ?min-dorms)
+         (minReasonablePrice ?preu-reasonable)
+         (needsDoubleBedroom ?necessita-doble)
+         (priceFlexibility ?flexibilitat)
+         (wantsGreenArea ?vol-verdes)
+         (wantsHealthCenter ?vol-salut)
+         (wantsTransport ?vol-transport)
+         (wantsSupermarket ?vol-super)
+         (wantsSchool ?vol-escola)
+         (wantsNightLife ?vol-nit)
+         (wantsStadium ?vol-estadi)
+         (minMonthsClient ?min-mesos)
+         (hasProfile ?perfil-instance)
+         (prefersFeature ?features-preferides)
+         (worksOrStudies ?location-treball)
+      )
+   else
+      (make-instance ?nom-instance of Client
+         (clientAge ?edat)
+         (clientMaxPrice ?preu-max)
+         (numTenants ?tamany-familia)
+         (minArea ?min-area)
+         (minDorms ?min-dorms)
+         (minReasonablePrice ?preu-reasonable)
+         (needsDoubleBedroom ?necessita-doble)
+         (priceFlexibility ?flexibilitat)
+         (wantsGreenArea ?vol-verdes)
+         (wantsHealthCenter ?vol-salut)
+         (wantsTransport ?vol-transport)
+         (wantsSupermarket ?vol-super)
+         (wantsSchool ?vol-escola)
+         (wantsNightLife ?vol-nit)
+         (wantsStadium ?vol-estadi)
+         (minMonthsClient ?min-mesos)
+         (hasProfile ?perfil-instance)
+         (prefersFeature ?features-preferides)
+      )
    )
    
    ;; Display confirmation
@@ -435,6 +477,65 @@
    (printout t "Utilitza l'opció 5 del menú per veure les ofertes recomanades." crlf crlf)
    
    (return ?nom-instance)
+)
+
+;;; Function to select a work/study location (optional)
+(deffunction seleccionar-location-treball ()
+   ;; Ask if client works or studies somewhere
+   (bind ?te-lloc (read-si-no "El client treballa o estudia en algun lloc específic"))
+   (if (eq ?te-lloc cancelar) then
+      (return cancelar))
+   
+   (if (eq ?te-lloc no) then
+      (return FALSE))
+   
+   ;; Collect all locations
+   (bind ?locations (create$))
+   (do-for-all-instances ((?l Location)) TRUE
+      (bind ?locations (create$ ?locations (instance-name ?l))))
+   
+   (printout t crlf "=== UBICACIÓ DE TREBALL/ESTUDI ===" crlf)
+   (if (> (length$ ?locations) 0) then
+      (printout t "Ubicacions existents:" crlf)
+      (bind ?i 1)
+      (foreach ?loc ?locations
+         (bind ?loc-obj (instance-address ?loc))
+         (if (neq ?loc-obj FALSE) then
+            ;; Get neighbourhood name if available
+            (bind ?barri-nom "Desconegut")
+            (bind ?barri-list (send ?loc-obj get-isSituated))
+            (if (> (length$ ?barri-list) 0) then
+               (bind ?barri-obj (instance-address (nth$ 1 ?barri-list)))
+               (if (neq ?barri-obj FALSE) then
+                  (bind ?barri-nom (nth$ 1 (send ?barri-obj get-NeighbourhoodName)))
+               )
+            )
+            (bind ?lat (nth$ 1 (send ?loc-obj get-latitude)))
+            (bind ?lon (nth$ 1 (send ?loc-obj get-longitude)))
+            (printout t ?i ". " ?loc " - Barri: " ?barri-nom " (" ?lat ", " ?lon ")" crlf)
+         )
+         (bind ?i (+ ?i 1)))
+      (printout t ?i ". Crear nova ubicació" crlf)
+      
+      (bind ?seleccio (read-integer 1 ?i "Selecciona opció"))
+      (if (eq ?seleccio cancelar) then
+         (return cancelar))
+      
+      (if (< ?seleccio ?i) then
+         ;; Select existing location
+         (return (nth$ ?seleccio ?locations))
+      )
+   else
+      ;; No locations exist, ask to create one
+      (printout t "No hi ha ubicacions existents al sistema." crlf)
+   )
+   
+   ;; Create new location
+   (bind ?nova-loc (crear-localitzacio))
+   (if (eq ?nova-loc FALSE) then
+      (return FALSE))
+   
+   (return ?nova-loc)
 )
 
 ;;; Function to select a property from a list

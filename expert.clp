@@ -99,6 +99,7 @@
    (slot estadi-avaluat      (type SYMBOL) (default FALSE))
    (slot super-avaluat       (type SYMBOL) (default FALSE))
    (slot transport-avaluat   (type SYMBOL) (default FALSE))
+   (slot treball-avaluat     (type SYMBOL) (default FALSE))
 
    (slot soroll-avaluat      (type SYMBOL) (default FALSE))
    (slot habitacio-doble-avaluada (type SYMBOL) (default FALSE))
@@ -160,6 +161,7 @@
                       (estadi-avaluat FALSE)
                       (super-avaluat FALSE)
                       (transport-avaluat FALSE)
+                      (treball-avaluat FALSE)
                       (soroll-avaluat FALSE)
                       (habitacio-doble-avaluada FALSE)
                       (mesos-avaluats FALSE)
@@ -789,6 +791,136 @@
    (modify ?a 
            (punts (+ ?p 4))
            (estadi-avaluat TRUE))
+)
+
+;;; Regles específiques per lloc de treball/estudi - proximitat categoria 0 (prop)
+(defrule criteri-treball-estudi-prop
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (treball-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (worksOrStudies ?loc-treball))
+   ;; Verificar que el client té un lloc de treball/estudi definit
+   (test (neq ?loc-treball nil))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (locatedAt ?loc-prop))
+   (object (is-a Location)
+           (name ?loc-prop)
+           (latitude ?lat-prop)
+           (longitude ?lon-prop))
+   (object (is-a Location)
+           (name ?loc-treball)
+           (latitude ?lat-treb)
+           (longitude ?lon-treb))
+   ;; Calcular si la distància és categoria 0 (prop)
+   (test (< (manhattan-distance ?lat-prop ?lon-prop ?lat-treb ?lon-treb) 0.010))
+   =>
+   (bind ?nova (+ ?p 15))
+   (assert (caracteristica-destacada
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Molt a prop del lloc de treball/estudi")))
+   (modify ?a 
+           (punts ?nova)
+           (treball-avaluat TRUE))
+)
+
+;;; Regles específiques per lloc de treball/estudi - proximitat categoria 1 (mitja)
+(defrule criteri-treball-estudi-mitja
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (treball-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (worksOrStudies ?loc-treball))
+   ;; Verificar que el client té un lloc de treball/estudi definit
+   (test (neq ?loc-treball nil))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (locatedAt ?loc-prop))
+   (object (is-a Location)
+           (name ?loc-prop)
+           (latitude ?lat-prop)
+           (longitude ?lon-prop))
+   (object (is-a Location)
+           (name ?loc-treball)
+           (latitude ?lat-treb)
+           (longitude ?lon-treb))
+   ;; Calcular si la distància és categoria 1 (mitja)
+   (test (and (>= (manhattan-distance ?lat-prop ?lon-prop ?lat-treb ?lon-treb) 0.010)
+              (< (manhattan-distance ?lat-prop ?lon-prop ?lat-treb ?lon-treb) 0.050)))
+   =>
+   ;; Distància mitja: no suma ni resta punts, només marca com avaluat
+   (modify ?a 
+           (treball-avaluat TRUE))
+)
+
+;;; Regles específiques per lloc de treball/estudi - proximitat categoria 2 (lluny)
+(defrule criteri-treball-estudi-lluny
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (treball-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (worksOrStudies ?loc-treball))
+   ;; Verificar que el client té un lloc de treball/estudi definit
+   (test (neq ?loc-treball nil))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (locatedAt ?loc-prop))
+   (object (is-a Location)
+           (name ?loc-prop)
+           (latitude ?lat-prop)
+           (longitude ?lon-prop))
+   (object (is-a Location)
+           (name ?loc-treball)
+           (latitude ?lat-treb)
+           (longitude ?lon-treb))
+   ;; Calcular si la distància és categoria 2 (lluny)
+   (test (>= (manhattan-distance ?lat-prop ?lon-prop ?lat-treb ?lon-treb) 0.050))
+   =>
+   (bind ?nova (- ?p 15))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Massa lluny del lloc de treball/estudi")))
+   (modify ?a 
+           (punts ?nova)
+           (treball-avaluat TRUE))
+)
+
+;;; Regla per defecto cuando no hay lugar de trabajo/estudio definido
+(defrule criteri-treball-no-definit
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (treball-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (worksOrStudies ?loc-treball))
+   ;; Verificar que el client NO té un lloc de treball/estudi definit
+   (test (eq ?loc-treball nil))
+   =>
+   ;; No suma ni resta punts, només marca com avaluat
+   (modify ?a 
+           (treball-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------

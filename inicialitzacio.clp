@@ -346,6 +346,7 @@
     (wantsSupermarket si)
     (wantsTransport si)
     (minMonthsClient 12)
+    (worksOrStudies [loc-centre])
   )
 
   ;; Família amb criatures que vol escola i zones verdes
@@ -368,6 +369,7 @@
     (wantsSupermarket si)
     (wantsTransport si)
     (minMonthsClient 24)
+    (worksOrStudies [loc-periferia-verda])
   )
 
   ;; Estudiants que volen estar a prop del campus i del transport
@@ -390,6 +392,7 @@
     (wantsSupermarket si)
     (wantsTransport si)
     (minMonthsClient 10)
+    (worksOrStudies [loc-campus])
   )
 
   ;; Persona gran que prioritza la salut i la tranquil·litat
@@ -434,6 +437,7 @@
     (wantsSupermarket si)
     (wantsTransport si)
     (minMonthsClient 6)
+    (worksOrStudies [loc-plaça-major])
   )
 
   ;; Parella professional que busca comoditat i serveis
@@ -456,6 +460,7 @@
     (wantsSupermarket si)
     (wantsTransport si)
     (minMonthsClient 12)
+    (worksOrStudies [loc-zona-alta])
   )
 
   ;;; ------------------------------

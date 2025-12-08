@@ -250,6 +250,10 @@
     (multislot minMonthsClient
         (type INTEGER)
         (create-accessor read-write))
+    ;;; Lloc on el client treballa o estudia (màxim 1, pot ser nil)
+    (slot worksOrStudies
+        (type INSTANCE)
+        (create-accessor read-write))
 )
 
 (defclass Location "Coordenades i referències administratives (districte, adreça)."
