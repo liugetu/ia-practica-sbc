@@ -109,7 +109,7 @@
       (case 2 then (return Family))
       (case 3 then (return Student))
       (case 4 then (return Elderly))
-      (case 5 then (return YoungAdult))
+      (case 5 then (return Individual))
    )
 )
 

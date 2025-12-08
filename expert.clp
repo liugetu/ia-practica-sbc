@@ -108,7 +108,7 @@
    (slot elderly-avaluat     (type SYMBOL) (default FALSE))
    (slot family-avaluat      (type SYMBOL) (default FALSE))
    (slot student-avaluat     (type SYMBOL) (default FALSE))
-   (slot youngadult-avaluat  (type SYMBOL) (default FALSE))
+   (slot individual-avaluat  (type SYMBOL) (default FALSE))
    (slot couple-avaluat      (type SYMBOL) (default FALSE))
    
    ;; Flags per problemes de la propietat
@@ -162,7 +162,7 @@
                       (elderly-avaluat FALSE)
                       (family-avaluat FALSE)
                       (student-avaluat FALSE)
-                      (youngadult-avaluat FALSE)
+                      (individual-avaluat FALSE)
                       (couple-avaluat FALSE)))
 )
 
@@ -1003,25 +1003,25 @@
 )
 
 ;;; ---------------------------------------------------------
-;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: YOUNGADULT
+;;; CRITERIS ESPECÍFICS PER PERFIL DE CLIENT: INDIVIDUAL
 ;;;   - Pis eficient per pressupost ajustat: màxima llum natural
 ;;;     o calefacció/aire (FeatureAirOrHeating), mida ajustada
 ;;;     (<= 20% sobre el mínim) i just els dormitoris demanats.
 ;;;     Bonus perquè és més barat d'escalfar i mantenir.
 ;;; ---------------------------------------------------------
 
-(defrule criteri-youngadult-eficient
+(defrule criteri-individual-eficient
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
                     (punts ?p)
-                    (youngadult-avaluat FALSE))
+                    (individual-avaluat FALSE))
    (object (is-a Client)
            (name ?c)
            (hasProfile ?profile)
            (minArea ?minA)
            (minDorms ?minD))
-   (object (is-a YoungAdult)
+   (object (is-a Individual)
            (name ?profile))
    (object (is-a RentalOffer)
            (name ?o)
@@ -1048,7 +1048,7 @@
             (descripcio "Pis eficient: llum màxima o calefacció, mida ajustada i sense espai sobrant")))
 
    (modify ?a (punts ?nova)
-            (youngadult-avaluat TRUE))
+            (individual-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------

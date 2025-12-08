@@ -268,7 +268,7 @@
   ([perfil-familia]      of Family)
   ([perfil-estudiants]   of Student)
   ([perfil-gent-gran]    of Elderly)
-  ([perfil-jove-solter]  of YoungAdult)
+  ([perfil-jove-solter]  of Individual)
 
   ;;; ------------------------------
   ;;; CLIENTS

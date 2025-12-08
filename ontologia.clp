@@ -158,7 +158,7 @@
     (pattern-match reactive)
 )
 
-(defclass YoungAdult
+(defclass Individual
     (is-a ClientProfile)
     (role concrete)
     (pattern-match reactive)
