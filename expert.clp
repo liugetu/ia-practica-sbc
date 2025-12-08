@@ -104,6 +104,7 @@
    (slot soroll-avaluat      (type SYMBOL) (default FALSE))
    (slot habitacio-doble-avaluada (type SYMBOL) (default FALSE))
    (slot mesos-avaluats      (type SYMBOL) (default FALSE))
+   (slot banys-tenants-avaluat (type SYMBOL) (default FALSE))
    
    ;; Flags per criteris específics de perfils
    (slot elderly-avaluat     (type SYMBOL) (default FALSE))
@@ -165,6 +166,7 @@
                       (soroll-avaluat FALSE)
                       (habitacio-doble-avaluada FALSE)
                       (mesos-avaluats FALSE)
+                      (banys-tenants-avaluat FALSE)
                       (elderly-avaluat FALSE)
                       (family-avaluat FALSE)
                       (student-avaluat FALSE)
@@ -1045,6 +1047,39 @@
    
    (modify ?a (punts ?nova)
             (mesos-avaluats TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE BANYS PER NÚMERO DE TENANTS
+;;;   - Si numTenants >= 4 i numBathrooms >= 2: +10 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-banys-tenants
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (banys-tenants-avaluat FALSE))
+   (object (is-a Client)
+           (name ?c)
+           (numTenants ?numTenants))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (numBathrooms ?numBanys))
+   ;; Només aplica si numTenants >= 4 i numBathrooms >= 2
+   (test (and (>= ?numTenants 4) (>= ?numBanys 2)))
+   =>
+   (bind ?nova (+ ?p 10))
+   (assert (caracteristica-destacada
+            (client ?c)
+            (oferta ?o)
+            (descripcio (str-cat "Bons recursos: " ?numBanys 
+                                " banys per " ?numTenants " tenants"))))
+   (modify ?a (punts ?nova)
+            (banys-tenants-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------

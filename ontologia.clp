@@ -194,10 +194,6 @@
     (multislot prefersFeature
         (type INSTANCE)
         (create-accessor read-write))
-    ;;; Associa el lloc de trabll o estudi del client a una localització
-    (multislot worksOrStudies
-        (type INSTANCE)
-        (create-accessor read-write))
     ;;; Edat del client
     (multislot clientAge
         (type INTEGER)
