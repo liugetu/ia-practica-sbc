@@ -163,9 +163,6 @@
         (type INTEGER)
         (create-accessor read-write))
     ;;; Numero de "tenants" que són nens
-    (multislot numElderly
-        (type INTEGER)
-        (create-accessor read-write))
     (multislot numChildren
         (type INTEGER)
         (create-accessor read-write))
