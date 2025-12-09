@@ -361,24 +361,6 @@
         (create-accessor read-write))
 )
 
-(defclass Neighbourhood "Representa un barri"
-    (is-a USER)
-    (role concrete)
-    (pattern-match reactive)
-    ;;; Representa la seguretat del barri, 0 (no hi ha), 5 (supersegur)
-    (multislot safety
-        (type SYMBOL)
-        (create-accessor read-write))
-    ;;; Preu mitjà de les propietats situades al barri
-    (multislot averagePrice
-        (type FLOAT)
-        (create-accessor read-write))
-    ;;; Nom del barri
-    (multislot neighbourhoodName
-        (type STRING)
-        (create-accessor read-write))
-)
-
 (definstances instances
     ([FeatureAirOrHeating] of Característica
     )
