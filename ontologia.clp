@@ -362,38 +362,38 @@
 )
 
 (definstances instances
-    ([FeatureAirOrHeating] of Característica
+    ([FeatureAirOrHeating] of PropertyFeature
     )
 
-    ([FeatureAppliances] of Característica
+    ([FeatureAppliances] of PropertyFeature
     )
 
-    ([FeatureBalcony] of Característica
+    ([FeatureBalcony] of PropertyFeature
     )
 
-    ([FeatureElevator] of Característica
+    ([FeatureElevator] of PropertyFeature
     )
 
-    ([FeatureFurniture] of Característica
+    ([FeatureFurniture] of PropertyFeature
     )
 
-    ([FeatureGarage] of Característica
+    ([FeatureGarage] of PropertyFeature
     )
 
-    ([FeaturePool] of Característica
+    ([FeaturePool] of PropertyFeature
     )
 
-    ([FeatureTerrace] of Característica
+    ([FeatureTerrace] of PropertyFeature
     )
 
-    ([FeatureViews] of Característica
+    ([FeatureViews] of PropertyFeature
     )
 
-    ([FeatureYard] of Característica
+    ([FeatureYard] of PropertyFeature
     )
 
     ;;; permeten / volen tenir mascotes
-    ([petsAllowed] of Característica
+    ([petsAllowed] of PropertyFeature
     )
 
 )

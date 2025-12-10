@@ -160,79 +160,79 @@
   ([parc-central] of GreenArea
     (serviceName "Parc Central")
     (serviceNoiseLevel 1)
-    (ServiceLocatedAt [loc-plaça-major])
+    (serviceLocatedAt [loc-plaça-major])
   )
 
   ([cap-centre] of HealthCenter
     (serviceName "CAP Centre")
     (serviceNoiseLevel 1)
-    (ServiceLocatedAt [loc-zona-alta])
+    (serviceLocatedAt [loc-zona-alta])
   )
 
   ([zona-bars-centre] of Nightlife
     (serviceName "Zona bars centre")
     (serviceNoiseLevel 3)
-    (ServiceLocatedAt [loc-zona-oci])
+    (serviceLocatedAt [loc-zona-oci])
   )
 
   ([escola-publica-centre] of School
     (serviceName "Escola Pública Centre")
     (serviceNoiseLevel 1)
-    (ServiceLocatedAt [loc-centre])
+    (serviceLocatedAt [loc-centre])
   )
 
   ([estadi-municipal] of Stadium
     (serviceName "Estadi Municipal")
     (serviceNoiseLevel 2)
-    (ServiceLocatedAt [loc-zona-esportiva])
+    (serviceLocatedAt [loc-zona-esportiva])
   )
 
   ([super-centre] of Supermarket
     (serviceName "Supermercat Centre")
     (serviceNoiseLevel 0)
-    (ServiceLocatedAt [loc-centre])
+    (serviceLocatedAt [loc-centre])
   )
 
   ([super-campus] of Supermarket
     (serviceName "Supermercat Campus")
     (serviceNoiseLevel 0)
-    (ServiceLocatedAt [loc-barri-universitari])
+    (serviceLocatedAt [loc-barri-universitari])
   )
 
   ([metro-l1-centre] of Transport
     (serviceName "Metro L1 - Estació Centre")
     (serviceNoiseLevel 0)
-    (ServiceLocatedAt [loc-centre])
+    (serviceLocatedAt [loc-centre])
   )
 
   ([bus-campus] of Transport
     (serviceName "Bus universitat")
     (serviceNoiseLevel 1)
-    (ServiceLocatedAt [loc-barri-universitari])
+    (serviceLocatedAt [loc-barri-universitari])
   )
 
   ([parc-eixample] of GreenArea
     (serviceName "Parc de l'Eixample")
     (serviceNoiseLevel 0)
-    (ServiceLocatedAt [loc-eixample-sud])
+    (serviceLocatedAt [loc-eixample-sud])
   )
 
   ([cap-eixample] of HealthCenter
     (serviceName "CAP Eixample Sud")
     (serviceNoiseLevel 0)
-    (ServiceLocatedAt [loc-eixample-sud])
+    (serviceLocatedAt [loc-eixample-sud])
   )
 
   ([super-eixample] of Supermarket
     (serviceName "Supermercat Eixample")
     (serviceNoiseLevel 0)
-    (ServiceLocatedAt [loc-eixample-sud])
+    (serviceLocatedAt [loc-eixample-sud])
   )
 
   ([metro-eixample] of Transport
     (serviceName "Metro L2 - Eixample")
     (serviceNoiseLevel 0)
-    (ServiceLocatedAt [loc-eixample-sud])
+    (serviceLocatedAt [loc-eixample-sud])
   )
 
   ;;; ------------------------------

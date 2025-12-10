@@ -43,7 +43,7 @@
           (locatedAt ?prop-location))
   (object (is-a Service)
           (name ?service-name)  
-          (ServiceLocatedAt ?service-location))
+          (serviceLocatedAt ?service-location))
   (object (is-a Location)
           (name ?prop-location)
           (latitude ?prop-lat)
