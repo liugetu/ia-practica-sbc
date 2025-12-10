@@ -114,9 +114,12 @@
    (printout t "· Durada desitjada: " ?min-months " mesos" crlf)
    
    ;; Mostrar lloc de treball o estudi si existeix
-   (bind ?works-studies-list (send ?client-instance get-worksOrStudies))
-   (if (and (> (length$ ?works-studies-list) 0) (neq (nth$ 1 ?works-studies-list) nil)) then
-      (bind ?loc-work (instance-address (nth$ 1 ?works-studies-list)))
+   (bind ?works-studies-slot (send ?client-instance get-worksOrStudies))
+   ;; Only process if the slot has a valid instance name (not nil)
+   (if (and (neq ?works-studies-slot nil) 
+            (neq ?works-studies-slot FALSE)
+            (symbolp ?works-studies-slot)) then
+      (bind ?loc-work (instance-address ?works-studies-slot))
       (if (neq ?loc-work FALSE) then
          (bind ?barri-work-list (send ?loc-work get-isSituated))
          (if (> (length$ ?barri-work-list) 0) then
@@ -159,7 +162,7 @@
    
    ;; Mostrar característiques preferides
    (bind ?pref-features (send ?client-instance get-prefersFeature))
-   (if (> (length$ ?pref-features) 0) then
+   (if (and (multifieldp ?pref-features) (> (length$ ?pref-features) 0)) then
       (printout t crlf "Característiques desitjades de l'habitatge:" crlf)
       (foreach ?feat ?pref-features
          (printout t "  ✓ " ?feat crlf)))
