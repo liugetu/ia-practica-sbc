@@ -1330,7 +1330,8 @@
            (hasProperty ?prop))
    (object (is-a Property)
            (name ?prop)
-           (hasSquatters $?ocupes&:(> (length$ ?ocupes) 0)))
+           (hasSquatters $?ocupes))
+   (test (and (> (length$ ?ocupes) 0) (eq (nth$ 1 ?ocupes) TRUE)))
    =>
    (bind ?nova (- ?p 100))
    (assert (criteri-no-complert
@@ -1357,7 +1358,8 @@
            (hasProperty ?prop))
    (object (is-a Property)
            (name ?prop)
-           (hasLeaks $?fugues&:(> (length$ ?fugues) 0)))
+           (hasLeaks $?fugues))
+   (test (and (> (length$ ?fugues) 0) (eq (nth$ 1 ?fugues) TRUE)))
    =>
    (bind ?nova (- ?p 100))
    (assert (criteri-no-complert
@@ -1384,7 +1386,8 @@
            (hasProperty ?prop))
    (object (is-a Property)
            (name ?prop)
-           (hasDampness $?humitats&:(> (length$ ?humitats) 0)))
+           (hasDampness $?humitats))
+   (test (and (> (length$ ?humitats) 0) (eq (nth$ 1 ?humitats) TRUE)))
    =>
    (bind ?nova (- ?p 100))
    (assert (criteri-no-complert
