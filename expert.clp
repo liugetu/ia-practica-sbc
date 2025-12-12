@@ -1508,7 +1508,7 @@
       (printout t "  " ?num-no-complerts ". " ?cnc:descripcio crlf))
    
    (if (= ?num-no-complerts 0) then
-      (printout t "✓ Compleix tots els criteris restrictius" crlf))
+      (printout t "Compleix tots els criteris restrictius" crlf))
    
    ;; Mostrar característiques destacades (si n'hi ha)
    (bind ?num-destacades 0)
@@ -1517,7 +1517,7 @@
       (if (= ?num-destacades 0) then
          (printout t crlf "Característiques destacables:" crlf))
       (bind ?num-destacades (+ ?num-destacades 1))
-      (printout t "  ★ " ?cd:descripcio crlf))
+      (printout t "  - " ?cd:descripcio crlf))
    
    (if (= ?num-destacades 0) then
       (printout t crlf "No té característiques especialment destacables" crlf))

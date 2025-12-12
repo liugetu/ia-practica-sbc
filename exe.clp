@@ -140,32 +140,32 @@
    ;; Mostrar preferències de serveis
    (printout t crlf "Preferències de serveis propers:" crlf)
    (bind ?wants-green (nth$ 1 (send ?client-instance get-wantsGreenArea)))
-   (if (eq ?wants-green si) then (printout t "  ✓ Zones verdes" crlf))
+   (if (eq ?wants-green si) then (printout t " Zones verdes" crlf))
    
    (bind ?wants-health (nth$ 1 (send ?client-instance get-wantsHealthCenter)))
-   (if (eq ?wants-health si) then (printout t "  ✓ Centres de salut" crlf))
+   (if (eq ?wants-health si) then (printout t " Centres de salut" crlf))
    
    (bind ?wants-transport (nth$ 1 (send ?client-instance get-wantsTransport)))
-   (if (eq ?wants-transport si) then (printout t "  ✓ Transport públic" crlf))
+   (if (eq ?wants-transport si) then (printout t " Transport públic" crlf))
    
    (bind ?wants-super (nth$ 1 (send ?client-instance get-wantsSupermarket)))
-   (if (eq ?wants-super si) then (printout t "  ✓ Supermercats" crlf))
+   (if (eq ?wants-super si) then (printout t " Supermercats" crlf))
    
    (bind ?wants-school (nth$ 1 (send ?client-instance get-wantsSchool)))
-   (if (eq ?wants-school si) then (printout t "  ✓ Escoles" crlf))
+   (if (eq ?wants-school si) then (printout t " Escoles" crlf))
    
    (bind ?wants-night (nth$ 1 (send ?client-instance get-wantsNightLife)))
-   (if (eq ?wants-night si) then (printout t "  ✓ Vida nocturna" crlf))
+   (if (eq ?wants-night si) then (printout t " Vida nocturna" crlf))
    
    (bind ?wants-stadium (nth$ 1 (send ?client-instance get-wantsStadium)))
-   (if (eq ?wants-stadium si) then (printout t "  ✓ Estadis esportius" crlf))
+   (if (eq ?wants-stadium si) then (printout t " Estadis esportius" crlf))
    
    ;; Mostrar característiques preferides
    (bind ?pref-features (send ?client-instance get-prefersFeature))
    (if (and (multifieldp ?pref-features) (> (length$ ?pref-features) 0)) then
       (printout t crlf "Característiques desitjades de l'habitatge:" crlf)
       (foreach ?feat ?pref-features
-         (printout t "  ✓ " ?feat crlf)))
+         (printout t " " ?feat crlf)))
    
    (printout t "========================================" crlf)
    (printout t crlf "RECOMANACIONS D'OFERTES:" crlf)
@@ -275,7 +275,7 @@
                      (printout t "  " ?num-no-complerts ". " ?cnc:descripcio crlf))
                   
                   (if (= ?num-no-complerts 0) then
-                     (printout t "✓ Compleix tots els criteris restrictius" crlf))
+                     (printout t "Compleix tots els criteris restrictius" crlf))
                   
                   ;; Mostrar característiques destacades
                   (bind ?num-destacades 0)
@@ -284,7 +284,7 @@
                      (if (= ?num-destacades 0) then
                         (printout t crlf "Característiques destacables:" crlf))
                      (bind ?num-destacades (+ ?num-destacades 1))
-                     (printout t "  ★ " ?cd:descripcio crlf))
+                     (printout t "  - " ?cd:descripcio crlf))
                   
                   (if (= ?num-destacades 0) then
                      (printout t crlf "No té característiques especialment destacables" crlf))

@@ -1014,7 +1014,7 @@
                   )
                   
                   (if (= ?num-no-complerts 0) then
-                     (printout t "✓ Compleix tots els criteris restrictius" crlf)
+                     (printout t " Compleix tots els criteris restrictius" crlf)
                   else
                      (printout t "Criteris NO complerts:" crlf)
                      (bind ?idx 0)
@@ -1031,7 +1031,7 @@
                      (if (= ?num-destacades 0) then
                         (printout t crlf "Característiques destacables:" crlf))
                      (bind ?num-destacades (+ ?num-destacades 1))
-                     (printout t "  ★ " ?cd:descripcio crlf)
+                     (printout t "  - " ?cd:descripcio crlf)
                   )
                   
                   (if (= ?num-destacades 0) then
