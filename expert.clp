@@ -239,41 +239,6 @@
 )
 
 ;;; ---------------------------------------------------------
-;;; CRITERI DE PREU FAVORABLE PEL BARRI
-;;;   - Si el preu de l'oferta és inferior al preu mitjà del barri: +20 punts
-;;; ---------------------------------------------------------
-
-(defrule criteri-preu-favorable-barri
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (barri-preu-avaluat FALSE))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (price $?preu-list)
-           (hasProperty $?prop-list))
-   (object (is-a Property)
-           (name ?prop&:(eq ?prop (nth$ 1 ?prop-list)))
-           (locatedAt $?loc-list))
-   (object (is-a Location)
-           (name ?loc&:(eq ?loc (nth$ 1 ?loc-list)))
-           (isSituated $?barri-list))
-   (object (is-a Neighbourhood)
-           (name ?barri&:(eq ?barri (nth$ 1 ?barri-list)))
-           (averagePrice $?preu-mitja-list))
-   (test (> (nth$ 1 ?preu-mitja-list) (nth$ 1 ?preu-list)))
-   =>
-   (bind ?nova (+ ?p 20))
-   (assert (caracteristica-destacada
-            (client ?c)
-            (oferta ?o)
-            (descripcio "Oferta favorable pel barri")))
-   (modify ?a (punts ?nova)
-            (barri-preu-avaluat TRUE))
-)
-
-;;; ---------------------------------------------------------
 ;;; CRITERIS D'ÀREA I NOMBRE D'HABITACIONS
 ;;; ---------------------------------------------------------
 
@@ -352,91 +317,121 @@
 )
 
 ;;; ---------------------------------------------------------
-;;; CRITERI DE QUALITAT DE L'HABITATGE (estat + llum natural)
+;;; CRITERI DE PROBLEMES DE LA PROPIETAT: OCUPES IL·LEGALS
+;;;   - Si la propietat té ocupes (hasSquatters): -100 punts
 ;;; ---------------------------------------------------------
 
-(defrule criteri-qualitat-habitatge
+(defrule criteri-ocupes-illegals
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
                     (punts ?p)
-                    (qualitat-avaluada FALSE))
+                    (squatters-avaluat FALSE))
    (object (is-a RentalOffer)
            (name ?o)
            (hasProperty ?prop))
    (object (is-a Property)
            (name ?prop)
-           (state ?estat)
-           (naturalLight ?llum))
+           (hasSquatters $?ocupes))
+   (test (and (> (length$ ?ocupes) 0) (eq (nth$ 1 ?ocupes) TRUE)))
    =>
-   (bind ?nova ?p)
-
-   ;; Estat general de l'immoble
-   (if (>= ?estat 4) then
-      (bind ?nova (+ ?nova 10))
-      (assert (caracteristica-destacada
-               (client ?c)
-               (oferta ?o)
-               (descripcio "Estat excel·lent de l'habitatge")))
-   else
-      (if (<= ?estat 2) then
-          (bind ?nova (- ?nova 10))
-      )
-   )
-
-   ;; Llum natural
-   (if (= ?llum 0) then
-      (bind ?nova (+ ?nova 0))
-   )
-   (if (= ?llum 1) then
-      (bind ?nova (+ ?nova 5))
-   )
-   (if (= ?llum 2) then
-      (bind ?nova (+ ?nova 5))
-   )
-   (if (= ?llum 3) then
-      (bind ?nova (+ ?nova 10))
-      (assert (caracteristica-destacada
-               (client ?c)
-               (oferta ?o)
-               (descripcio "Excel·lent llum natural tot el dia")))
-   )
-
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "La propietat té ocupes il·legals")))
    (modify ?a (punts ?nova)
-            (qualitat-avaluada TRUE))
+            (squatters-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------
-;;; COINCIDÈNCIA DE CARACTERÍSTIQUES (FEATURES)
-;;;   - Per cada característica preferida pel client i present
-;;;     a l'oferta, sumem punts.
+;;; CRITERI DE PROBLEMES DE LA PROPIETAT: FUGUES
+;;;   - Si la propietat té fugues (hasLeaks): -100 punts
 ;;; ---------------------------------------------------------
 
-(defrule coincidencia-caracteristica
+(defrule criteri-fugues
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
                     (oferta ?o)
                     (punts ?p)
-                    (match-features $?mf))
-   (object (is-a Client)
-           (name ?c)
-           (prefersFeature $?pf1 ?f $?pf2))
+                    (leaks-avaluat FALSE))
    (object (is-a RentalOffer)
            (name ?o)
-           (hasFeature $?hf1 ?f $?hf2))
-   (test (not (member$ ?f ?mf)))   ; Evitem comptar la mateixa característica diverses vegades
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (hasLeaks $?fugues))
+   (test (and (> (length$ ?fugues) 0) (eq (nth$ 1 ?fugues) TRUE)))
    =>
-   (modify ?a
-           (punts (+ ?p 5))
-           (match-features (create$ ?mf ?f)))
-   
-   ;; Si coincideixen moltes característiques, és destacable
-   (if (> (+ (length$ ?mf) 1) 3) then
-      (assert (caracteristica-destacada
-               (client ?c)
-               (oferta ?o)
-               (descripcio (str-cat "Múltiples característiques desitjades ("
-                                   (+ (length$ ?mf) 1) " coincidències)")))))
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "La propietat té problemes de fugues")))
+   (modify ?a (punts ?nova)
+            (leaks-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE PROBLEMES DE LA PROPIETAT: HUMITATS
+;;;   - Si la propietat té humitats (hasDampness): -100 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-humitats
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (dampness-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (hasDampness $?humitats))
+   (test (and (> (length$ ?humitats) 0) (eq (nth$ 1 ?humitats) TRUE)))
+   =>
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "La propietat té problemes d'humitat")))
+   (modify ?a (punts ?nova)
+            (dampness-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE SEGURETAT DEL BARRI
+;;;   - Si el barri té un nivell de seguretat de 0 o 1: -100 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-barri-no-segur
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (barri-seguretat-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty $?prop-list))
+   (object (is-a Property)
+           (name ?prop&:(eq ?prop (nth$ 1 ?prop-list)))
+           (locatedAt $?loc-list))
+   (object (is-a Location)
+           (name ?loc&:(eq ?loc (nth$ 1 ?loc-list)))
+           (isSituated $?barri-list))
+   (object (is-a Neighbourhood)
+           (name ?barri&:(eq ?barri (nth$ 1 ?barri-list)))
+           (safety $?seguretat-list))
+   (test (<= (nth$ 1 ?seguretat-list) 1))
+   =>
+   (bind ?nova (- ?p 100))
+   (assert (criteri-no-complert
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Barri no segur!")))
+   (modify ?a (punts ?nova)
+            (barri-seguretat-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------
@@ -908,7 +903,7 @@
            (treball-avaluat TRUE))
 )
 
-;;; Regla per defecto cuando no hay lugar de trabajo/estudio definido
+;;; Regla per defecte quan no hi ha lloc de treball/estudi definit
 (defrule criteri-treball-no-definit
    (declare (salience 10))
    ?a <- (avaluacio (client ?c)
@@ -958,6 +953,129 @@
    (bind ?penalitzacio (* ?nivell 5))
    (modify ?a (punts (- ?p ?penalitzacio))
             (soroll-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE PREU FAVORABLE PEL BARRI
+;;;   - Si el preu de l'oferta és inferior al preu mitjà del barri: +20 punts
+;;; ---------------------------------------------------------
+
+(defrule criteri-preu-favorable-barri
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (barri-preu-avaluat FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (price $?preu-list)
+           (hasProperty $?prop-list))
+   (object (is-a Property)
+           (name ?prop&:(eq ?prop (nth$ 1 ?prop-list)))
+           (locatedAt $?loc-list))
+   (object (is-a Location)
+           (name ?loc&:(eq ?loc (nth$ 1 ?loc-list)))
+           (isSituated $?barri-list))
+   (object (is-a Neighbourhood)
+           (name ?barri&:(eq ?barri (nth$ 1 ?barri-list)))
+           (averagePrice $?preu-mitja-list))
+   (test (> (nth$ 1 ?preu-mitja-list) (nth$ 1 ?preu-list)))
+   =>
+   (bind ?nova (+ ?p 20))
+   (assert (caracteristica-destacada
+            (client ?c)
+            (oferta ?o)
+            (descripcio "Oferta favorable pel barri")))
+   (modify ?a (punts ?nova)
+            (barri-preu-avaluat TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; CRITERI DE QUALITAT DE L'HABITATGE (estat + llum natural)
+;;; ---------------------------------------------------------
+
+(defrule criteri-qualitat-habitatge
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (qualitat-avaluada FALSE))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasProperty ?prop))
+   (object (is-a Property)
+           (name ?prop)
+           (state ?estat)
+           (naturalLight ?llum))
+   =>
+   (bind ?nova ?p)
+
+   ;; Estat general de l'immoble
+   (if (>= ?estat 4) then
+      (bind ?nova (+ ?nova 10))
+      (assert (caracteristica-destacada
+               (client ?c)
+               (oferta ?o)
+               (descripcio "Estat excel·lent de l'habitatge")))
+   else
+      (if (<= ?estat 2) then
+          (bind ?nova (- ?nova 10))
+      )
+   )
+
+   ;; Llum natural
+   (if (= ?llum 0) then
+      (bind ?nova (+ ?nova 0))
+   )
+   (if (= ?llum 1) then
+      (bind ?nova (+ ?nova 5))
+   )
+   (if (= ?llum 2) then
+      (bind ?nova (+ ?nova 5))
+   )
+   (if (= ?llum 3) then
+      (bind ?nova (+ ?nova 10))
+      (assert (caracteristica-destacada
+               (client ?c)
+               (oferta ?o)
+               (descripcio "Excel·lent llum natural tot el dia")))
+   )
+
+   (modify ?a (punts ?nova)
+            (qualitat-avaluada TRUE))
+)
+
+;;; ---------------------------------------------------------
+;;; COINCIDÈNCIA DE CARACTERÍSTIQUES (FEATURES)
+;;;   - Per cada característica preferida pel client i present
+;;;     a l'oferta, sumem punts.
+;;; ---------------------------------------------------------
+
+(defrule coincidencia-caracteristica
+   (declare (salience 10))
+   ?a <- (avaluacio (client ?c)
+                    (oferta ?o)
+                    (punts ?p)
+                    (match-features $?mf))
+   (object (is-a Client)
+           (name ?c)
+           (prefersFeature $?pf1 ?f $?pf2))
+   (object (is-a RentalOffer)
+           (name ?o)
+           (hasFeature $?hf1 ?f $?hf2))
+   (test (not (member$ ?f ?mf)))   ; Evitem comptar la mateixa característica diverses vegades
+   =>
+   (modify ?a
+           (punts (+ ?p 5))
+           (match-features (create$ ?mf ?f)))
+   
+   ;; Si coincideixen moltes característiques, és destacable
+   (if (> (+ (length$ ?mf) 1) 3) then
+      (assert (caracteristica-destacada
+               (client ?c)
+               (oferta ?o)
+               (descripcio (str-cat "Múltiples característiques desitjades ("
+                                   (+ (length$ ?mf) 1) " coincidències)")))))
 )
 
 ;;; ---------------------------------------------------------
@@ -1312,124 +1430,6 @@
 
    (modify ?a (punts ?nova)
             (couple-avaluat TRUE))
-)
-
-;;; ---------------------------------------------------------
-;;; CRITERI DE PROBLEMES DE LA PROPIETAT: OCUPES IL·LEGALS
-;;;   - Si la propietat té ocupes (hasSquatters): -100 punts
-;;; ---------------------------------------------------------
-
-(defrule criteri-ocupes-illegals
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (squatters-avaluat FALSE))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (hasProperty ?prop))
-   (object (is-a Property)
-           (name ?prop)
-           (hasSquatters $?ocupes))
-   (test (and (> (length$ ?ocupes) 0) (eq (nth$ 1 ?ocupes) TRUE)))
-   =>
-   (bind ?nova (- ?p 100))
-   (assert (criteri-no-complert
-            (client ?c)
-            (oferta ?o)
-            (descripcio "La propietat té ocupes il·legals")))
-   (modify ?a (punts ?nova)
-            (squatters-avaluat TRUE))
-)
-
-;;; ---------------------------------------------------------
-;;; CRITERI DE PROBLEMES DE LA PROPIETAT: FUGUES
-;;;   - Si la propietat té fugues (hasLeaks): -100 punts
-;;; ---------------------------------------------------------
-
-(defrule criteri-fugues
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (leaks-avaluat FALSE))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (hasProperty ?prop))
-   (object (is-a Property)
-           (name ?prop)
-           (hasLeaks $?fugues))
-   (test (and (> (length$ ?fugues) 0) (eq (nth$ 1 ?fugues) TRUE)))
-   =>
-   (bind ?nova (- ?p 100))
-   (assert (criteri-no-complert
-            (client ?c)
-            (oferta ?o)
-            (descripcio "La propietat té problemes de fugues")))
-   (modify ?a (punts ?nova)
-            (leaks-avaluat TRUE))
-)
-
-;;; ---------------------------------------------------------
-;;; CRITERI DE PROBLEMES DE LA PROPIETAT: HUMITATS
-;;;   - Si la propietat té humitats (hasDampness): -100 punts
-;;; ---------------------------------------------------------
-
-(defrule criteri-humitats
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (dampness-avaluat FALSE))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (hasProperty ?prop))
-   (object (is-a Property)
-           (name ?prop)
-           (hasDampness $?humitats))
-   (test (and (> (length$ ?humitats) 0) (eq (nth$ 1 ?humitats) TRUE)))
-   =>
-   (bind ?nova (- ?p 100))
-   (assert (criteri-no-complert
-            (client ?c)
-            (oferta ?o)
-            (descripcio "La propietat té problemes d'humitat")))
-   (modify ?a (punts ?nova)
-            (dampness-avaluat TRUE))
-)
-
-;;; ---------------------------------------------------------
-;;; CRITERI DE SEGURETAT DEL BARRI
-;;;   - Si el barri té un nivell de seguretat de 0 o 1: -100 punts
-;;; ---------------------------------------------------------
-
-(defrule criteri-barri-no-segur
-   (declare (salience 10))
-   ?a <- (avaluacio (client ?c)
-                    (oferta ?o)
-                    (punts ?p)
-                    (barri-seguretat-avaluat FALSE))
-   (object (is-a RentalOffer)
-           (name ?o)
-           (hasProperty $?prop-list))
-   (object (is-a Property)
-           (name ?prop&:(eq ?prop (nth$ 1 ?prop-list)))
-           (locatedAt $?loc-list))
-   (object (is-a Location)
-           (name ?loc&:(eq ?loc (nth$ 1 ?loc-list)))
-           (isSituated $?barri-list))
-   (object (is-a Neighbourhood)
-           (name ?barri&:(eq ?barri (nth$ 1 ?barri-list)))
-           (safety $?seguretat-list))
-   (test (<= (nth$ 1 ?seguretat-list) 1))
-   =>
-   (bind ?nova (- ?p 100))
-   (assert (criteri-no-complert
-            (client ?c)
-            (oferta ?o)
-            (descripcio "Barri no segur!")))
-   (modify ?a (punts ?nova)
-            (barri-seguretat-avaluat TRUE))
 )
 
 ;;; ---------------------------------------------------------
