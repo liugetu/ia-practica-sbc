@@ -7,10 +7,14 @@
 ;;; Load the ontology (class definitions)
 (load "ontologia.clp")
 
-;;; Load the vivendes database
-;;;(load "vivendes.clp")
-(load "inicialitzacio.clp")
+;;; Load the initialization data (instances)
+;;;(load "inicialitzacio.clp")
+
 ;;;(load "prova-poc-recomenat.clp")
+
+;;; Carrega la base de dades de vivendes i clients de Barcelona
+(load "vivendes-barcelona.clp")
+(load "clients-barcelona.clp")
 
 ;;; Load the expert system rules
 (load "expert.clp")

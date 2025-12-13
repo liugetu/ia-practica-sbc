@@ -9,8 +9,13 @@
 (load "ontologia.clp")
 
 ;;; Load the initialization data (instances)
-(load "inicialitzacio.clp")
+;;;(load "inicialitzacio.clp")
+
 ;;;(load "prova-molt-recomenat.clp")
+
+;;; Carrega la base de dades de vivendes i clients de Barcelona
+(load "vivendes-barcelona.clp")
+(load "clients-barcelona.clp")
 
 ;;; Load the expert system rules
 (load "expert.clp")
