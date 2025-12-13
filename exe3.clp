@@ -10,6 +10,7 @@
 ;;; Load the vivendes database
 ;;;(load "vivendes.clp")
 (load "inicialitzacio.clp")
+;;;(load "prova-poc-recomenat.clp")
 
 ;;; Load the expert system rules
 (load "expert.clp")

@@ -1,7 +1,6 @@
 ;;; ---------------------------------------------------------
 ;;; prova-poc-recomenat.clp
 ;;; Joc de prova per generar una recomanació "poc recomenat"
-;;; (1-2 criteris no complerts)
 ;;; ---------------------------------------------------------
 
 (definstances prova-poc-recomenat
@@ -24,7 +23,7 @@
     
     ;; Requisits moderats
     (minArea 50)
-    (minDorms 2)
+    (minDorms 3)
     (numTenants 1)
     
     ;; Preferències d'ubicació
@@ -73,15 +72,15 @@
     (hasRoom [dorm-test-1] [dorm-test-2])  ; 2 dormitoris (adequat)
     (floor 3)
     (numBathrooms 1)
-    (naturalLight 7)
-    (state 7)
+    (naturalLight 3)
+    (state 4)
     (hasDampness FALSE)
     (hasSquatters FALSE)
     (hasLeaks FALSE)
     (isSoundproof FALSE)
   )
 
-  ;; Oferta amb preu lleugerament per sobre però dins flexibilitat
+  ;; Oferta amb preu lleugerament per sobre pero dins flexibilitat
   ([oferta-test-poc-adequada] of RentalOffer
     (price 900.0)             ; 900€ > 800€ però <= 920€ (800*1.15)
     (hasProperty [pis-test-poc-adequat])
@@ -90,6 +89,3 @@
   )
 
 )
-
-;;; Executar el sistema expert
-(run)

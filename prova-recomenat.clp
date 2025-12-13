@@ -1,7 +1,6 @@
 ;;; ---------------------------------------------------------
 ;;; prova-recomenat.clp
 ;;; Joc de prova per generar una recomanació "recomenat"
-;;; (tots els criteris complerts, sense destacar especialment)
 ;;; ---------------------------------------------------------
 
 (definstances prova-recomenat
@@ -58,6 +57,18 @@
     (isSituated [barri-test-gracia])
   )
 
+  ([parc-test-gracia] of GreenArea
+    (serviceName "Parc de Gràcia")
+    (serviceNoiseLevel 0)
+    (serviceLocatedAt [loc-test-gracia])
+  )
+
+  ([metro-test-gracia] of Transport
+    (serviceName "Metro Gràcia")
+    (serviceNoiseLevel 0)
+    (serviceLocatedAt [loc-test-gracia])
+  )
+
   ([room-test-1] of Room
     (isDouble TRUE)           ; Dormitori doble
   )
@@ -73,8 +84,8 @@
     (hasRoom [room-test-1] [room-test-2])  ; 2 dormitoris
     (floor 2)
     (numBathrooms 1)
-    (naturalLight 8)
-    (state 8)
+    (naturalLight 3)  ; llum tot el dia
+    (state 4)
     (hasDampness FALSE)
     (hasSquatters FALSE)
     (hasLeaks FALSE)
@@ -90,6 +101,3 @@
   )
 
 )
-
-;;; Executar el sistema expert
-(run)

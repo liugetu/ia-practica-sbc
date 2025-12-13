@@ -10,6 +10,7 @@
 
 ;;; Load the initialization data (instances)
 (load "inicialitzacio.clp")
+;;;(load "prova-molt-recomenat.clp")
 
 ;;; Load the expert system rules
 (load "expert.clp")

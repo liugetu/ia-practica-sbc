@@ -1,7 +1,6 @@
 ;;; ---------------------------------------------------------
 ;;; prova-molt-recomenat.clp
 ;;; Joc de prova per generar una recomanació "molt recomenat"
-;;; (tots els criteris complerts + característiques destacades)
 ;;; ---------------------------------------------------------
 
 (definstances prova-molt-recomenat
@@ -61,6 +60,36 @@
     (isSituated [barri-test-residencial])
   )
 
+  ([parc-test-residencial] of GreenArea
+    (serviceName "Parc Residencial")
+    (serviceNoiseLevel 0)
+    (serviceLocatedAt [loc-test-residencial])
+  )
+
+  ([cap-test-residencial] of HealthCenter
+    (serviceName "CAP Residencial")
+    (serviceNoiseLevel 0)
+    (serviceLocatedAt [loc-test-residencial])
+  )
+
+  ([escola-test-residencial] of School
+    (serviceName "Escola Residencial")
+    (serviceNoiseLevel 1)
+    (serviceLocatedAt [loc-test-residencial])
+  )
+
+  ([super-test-residencial] of Supermarket
+    (serviceName "Supermercat Residencial")
+    (serviceNoiseLevel 0)
+    (serviceLocatedAt [loc-test-residencial])
+  )
+
+  ([metro-test-residencial] of Transport
+    (serviceName "Metro Residencial")
+    (serviceNoiseLevel 0)
+    (serviceLocatedAt [loc-test-residencial])
+  )
+
   ;; Tres dormitoris (un d'ells doble)
   ([habitacio-principal] of Room
     (isDouble TRUE)           ; Dormitori doble
@@ -80,8 +109,8 @@
     (locatedAt [loc-test-residencial])
     (hasRoom [habitacio-principal] [habitacio-nens-1] [habitacio-nens-2])
     (numBathrooms 2)
-    (naturalLight 9)
-    (state 9)                 ; Excel·lent estat
+    (naturalLight 3)
+    (state 5)                 ; Excel·lent estat
     (hasDampness FALSE)
     (hasSquatters FALSE)
     (hasLeaks FALSE)
@@ -98,6 +127,3 @@
   )
 
 )
-
-;;; Executar el sistema expert
-(run)

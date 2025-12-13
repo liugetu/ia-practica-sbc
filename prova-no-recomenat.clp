@@ -1,8 +1,6 @@
 ;;; ---------------------------------------------------------
 ;;; prova-no-recomenat.clp
 ;;; Joc de prova per generar una recomanació "no recomenat"
-;;; 
-;;; Es pressuposa que abans s'ha carregat ontologia.clp
 ;;; ---------------------------------------------------------
 
 (definstances prova-no-recomenat
@@ -76,8 +74,8 @@
     (naturalLight 3)
     (state 2)                 ; Mal estat
     (hasDampness TRUE)        ; Té humitats
-    (hasSquatters FALSE)
-    (hasLeaks FALSE)
+    (hasSquatters TRUE)
+    (hasLeaks TRUE)
     (isSoundproof FALSE)
   )
 
