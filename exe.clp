@@ -1,35 +1,35 @@
 ;;; ---------------------------------------------------------
 ;;; exe3.clp
 ;;; Script per afegir nous clients amb tots els camps necessaris
-;;; Utilitza la base de vivendes.clp com a reference de propietats
+;;; Utilitza la base de vivendes.clp com a referència de propietats
 ;;; ---------------------------------------------------------
 
-;;; Load the ontology (class definitions)
+;;; Carrega l'ontologia (definicions de classes)
 (load "ontologia.clp")
 
 ;;; Carrega la base de dades de vivendes i clients de Barcelona
 ;;; POTS COMENTAR I DESCOMENTAR LINIES PER PROVAR DIFERENTS ENTRADES
-;;;(load "vivendes-barcelona.clp")
-;;;(load "clients-barcelona.clp")
+(load "vivendes-barcelona.clp")
+(load "clients-barcelona.clp")
 ;;;(load "inicialitzacio-basica.clp")
 ;;;(load "prova-no-recomenat.clp")
 ;;;(load "prova-poc-recomenat.clp")
 ;;;(load "prova-recomenat.clp")
 ;;;(load "prova-molt-recomenat.clp")
-(load "prova-hardvssoft.clp")
+;;;(load "prova-hardvssoft.clp")
 
-;;; Load the expert system rules
+;;; Carrega les regles del sistema expert
 (load "expert.clp")
 
-;;; Reset and prepare the system
+;;; Reinicia i prepara el sistema
 (reset)
 (run)
 
 ;;; ---------------------------------------------------------
-;;; FUNCTIONS FOR CLIENT INPUT
+;;; FUNCIONS PER A L'ENTRADA DE CLIENTS
 ;;; ---------------------------------------------------------
 
-;;; Forward declarations
+;;; Declaracions anticipades
 (deffunction crear-localitzacio ())
 (deffunction seleccionar-o-crear-barri ())
 (deffunction seleccionar-location-treball ())
@@ -40,7 +40,7 @@
 (deffunction mostrar-ofertes-client ())
 (deffunction menu-interactiu ())
 
-;;; Function to read and validate integer input
+;;; Funció per llegir i validar un enter
 (deffunction read-integer (?min ?max ?prompt)
    (bind ?value FALSE)
    (while (not (and (integerp ?value) (>= ?value ?min) (<= ?value ?max)))
@@ -54,7 +54,7 @@
    (return ?value)
 )
 
-;;; Function to read integer without range restrictions
+;;; Funció per llegir un enter sense restricció de rang
 (deffunction read-integer-free (?prompt)
    (bind ?value FALSE)
    (while (not (integerp ?value))
@@ -68,7 +68,7 @@
    (return ?value)
 )
 
-;;; Function to read and validate float input
+;;; Funció per llegir i validar un número (float)
 (deffunction read-float (?min ?max ?prompt)
    (bind ?value FALSE)
    (while (not (and (numberp ?value) (>= ?value ?min) (<= ?value ?max)))
@@ -82,7 +82,7 @@
    (return (float ?value))
 )
 
-;;; Function to read float without range restrictions
+;;; Funció per llegir un número (float) sense restricció de rang
 (deffunction read-float-free (?prompt)
    (bind ?value FALSE)
    (while (not (numberp ?value))
@@ -96,7 +96,7 @@
    (return (float ?value))
 )
 
-;;; Function to read SI/NO answer
+;;; Funció per llegir una resposta SI/NO
 (deffunction read-si-no (?prompt)
    (bind ?value FALSE)
    (while (not (or (eq ?value si) (eq ?value no)))
@@ -110,7 +110,7 @@
    (return ?value)
 )
 
-;;; Function to get client profile
+;;; Funció per obtenir el perfil del client
 (deffunction get-client-profile ()
    (printout t crlf "=== SELECCIONA EL PERFIL DEL CLIENT ===" crlf)
    (printout t "1. Parella jove" crlf)
@@ -132,7 +132,7 @@
    )
 )
 
-;;; Function to select features from a list
+;;; Funció per seleccionar característiques d'una llista
 (deffunction select-features ()
    (bind ?features (create$))
    (bind ?continue TRUE)
@@ -175,7 +175,7 @@
    (return ?features)
 )
 
-;;; Function to display all clients
+;;; Funció per mostrar tots els clients
 (deffunction mostrar-tots-clients ()
    (printout t crlf crlf)
    (printout t "========================================" crlf)
@@ -194,7 +194,7 @@
       (bind ?min-months (nth$ 1 (send ?c get-minMonthsClient)))
       (bind ?num-tenants (nth$ 1 (send ?c get-numTenants)))
       
-      ;; Get profile to check if it's a family
+      ;; Obtenir el perfil per comprovar si és una família
       (bind ?profile-list (send ?c get-hasProfile))
       (bind ?num-elderly 0)
       (bind ?num-children 0)
@@ -286,7 +286,7 @@
    (printout t "========================================" crlf crlf)
 )
 
-;;; Function to display all rental offers
+;;; Funció per mostrar totes les ofertes de lloguer
 (deffunction mostrar-totes-ofertes ()
    (printout t crlf crlf)
    (printout t "========================================" crlf)
@@ -318,7 +318,7 @@
             (printout t "· Adreça: " ?adreca crlf)
             (printout t "· Superfície: " ?area " m²" crlf)
             
-            ;; Get neighbourhood information
+            ;; Obtenir informació del barri
             (bind ?barri-nom "Desconegut")
             (bind ?barri-seguretat "N/A")
             (bind ?barri-preu-mitja "N/A")
@@ -364,7 +364,7 @@
    (printout t "========================================" crlf crlf)
 )
 
-;;; Function to add a new client with all fields
+;;; Funció per afegir un client nou amb tots els camps
 (deffunction afegir-client-nou ()
    (printout t crlf crlf)
    (printout t "========================================" crlf)
@@ -372,74 +372,74 @@
    (printout t "========================================" crlf crlf)
    (printout t "Pots cancelar en qualsevol moment escrivint 'cancelar'" crlf crlf)
    
-   ;; Read client name
+   ;; Llegir el nom del client
    (printout t "Nom del client (o 'cancelar' per avortar): ")
    (bind ?nom (read))
    (if (eq ?nom cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
-   ;; Use the client name as instance name (add prefix to ensure valid symbol)
+   ;; Fer servir el nom del client com a nom d'instància (afegeix un prefix per assegurar un símbol vàlid)
    (bind ?nom-instance (sym-cat client- ?nom))
    
-   ;; Read age
+   ;; Llegir l'edat
    (bind ?edat (read-integer-free "Edat del client"))
    (if (eq ?edat cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read family size
+   ;; Llegir la mida de la família
    (bind ?tamany-familia (read-integer-free "Nombre de membres de la família"))
    (if (eq ?tamany-familia cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read maximum price
+   ;; Llegir el preu màxim
    (bind ?preu-max (read-float-free "Preu màxim mensual en €"))
    (if (eq ?preu-max cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read price flexibility
+   ;; Llegir la flexibilitat de preu
    (bind ?flexibilitat (read-integer-free "Flexibilitat de preu en %"))
    (if (eq ?flexibilitat cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read minimum area
+   ;; Llegir la superfície mínima
    (bind ?min-area (read-integer-free "Superfície mínima en m²"))
    (if (eq ?min-area cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read minimum dormitories
+   ;; Llegir els dormitoris mínims
    (bind ?min-dorms (read-integer-free "Dormitoris mínims"))
    (if (eq ?min-dorms cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read minimum reasonable price
+   ;; Llegir el preu raonable mínim
    (bind ?preu-reasonable (read-integer-free "Preu raonable mínim en €"))
    (if (eq ?preu-reasonable cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read if needs double bedroom
+   ;; Llegir si necessita dormitori doble
    (bind ?necessita-doble (read-si-no "Necessita dormitori doble"))
    (if (eq ?necessita-doble cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read profile
+   ;; Llegir el perfil
    (bind ?perfil-type (get-client-profile))
    (if (eq ?perfil-type cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    (bind ?perfil-instance (gensym*))
    
-   ;; Create profile instance
+   ;; Crear la instància del perfil
    (make-instance ?perfil-instance of ?perfil-type)
    
-   ;; If profile is Family, ask for elderly and children
+   ;; Si el perfil és Family, demanar el nombre d'ancians i nens
    (if (eq ?perfil-type Family) then
       (bind ?num-ancians (read-integer 0 ?tamany-familia "Quants d'ells són ancians (>=65 anys)"))
       (if (eq ?num-ancians cancelar) then
@@ -451,13 +451,13 @@
          (printout t crlf "Operació cancel·lada." crlf crlf)
          (return FALSE))
       
-      ;; Set values on the Family profile instance using modify-instance
+      ;; Assignar valors a la instància Family amb modify-instance
       (modify-instance ?perfil-instance
          (numElderly ?num-ancians)
          (numChildren ?num-nens))
    )
    
-   ;; Read service preferences
+   ;; Llegir preferències de serveis
    (bind ?vol-verdes (read-si-no "Vol zones verdes properes"))
    (if (eq ?vol-verdes cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
@@ -493,25 +493,25 @@
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read feature preferences
+   ;; Llegir preferències de característiques
    (bind ?features-preferides (select-features))
    (if (eq ?features-preferides cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read minimum months
+   ;; Llegir la durada mínima (mesos)
    (bind ?min-mesos (read-integer-free "Durada mínima de lloguer en mesos"))
    (if (eq ?min-mesos cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read worksOrStudies location (optional)
+   ;; Llegir la ubicació de treball/estudi (opcional)
    (bind ?location-treball (seleccionar-location-treball))
    (if (eq ?location-treball cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Create the client instance
+   ;; Crear la instància del client
    (if (neq ?location-treball FALSE) then
       (make-instance ?nom-instance of Client
          (clientAge ?edat)
@@ -557,7 +557,7 @@
       )
    )
    
-   ;; Display confirmation
+   ;; Mostrar confirmació
    (printout t crlf crlf)
    (printout t "========================================" crlf)
    (printout t "CLIENT AFEGIT CORRECTAMENT" crlf)
@@ -587,10 +587,10 @@
    )
    (printout t "========================================" crlf crlf)
    
-   ;; Generate recommendations for the new client
+   ;; Generar recomanacions per al nou client
    (printout t "Generant recomanacions per al nou client..." crlf crlf)
    
-   ;; Run the expert system to generate recommendations (without reset to preserve existing data)
+   ;; Executar el sistema expert per generar recomanacions (sense reset per preservar les dades existents)
    (run)
    
    (printout t "Recomanacions generades!" crlf)
@@ -599,9 +599,9 @@
    (return ?nom-instance)
 )
 
-;;; Function to select a work/study location (optional)
+;;; Funció per seleccionar una ubicació de treball/estudi (opcional)
 (deffunction seleccionar-location-treball ()
-   ;; Ask if client works or studies somewhere
+   ;; Preguntar si el client treballa o estudia en algun lloc
    (bind ?te-lloc (read-si-no "El client treballa o estudia en algun lloc específic"))
    (if (eq ?te-lloc cancelar) then
       (return cancelar))
@@ -609,7 +609,7 @@
    (if (eq ?te-lloc no) then
       (return FALSE))
    
-   ;; Collect all locations
+   ;; Recollir totes les ubicacions
    (bind ?locations (create$))
    (do-for-all-instances ((?l Location)) TRUE
       (bind ?locations (create$ ?locations (instance-name ?l))))
@@ -621,7 +621,7 @@
       (foreach ?loc ?locations
          (bind ?loc-obj (instance-address ?loc))
          (if (neq ?loc-obj FALSE) then
-            ;; Get neighbourhood name if available
+            ;; Obtenir el nom del barri si està disponible
             (bind ?barri-nom "Desconegut")
             (bind ?barri-list (send ?loc-obj get-isSituated))
             (if (> (length$ ?barri-list) 0) then
@@ -642,15 +642,15 @@
          (return cancelar))
       
       (if (< ?seleccio ?i) then
-         ;; Select existing location
+         ;; Seleccionar una ubicació existent
          (return (nth$ ?seleccio ?locations))
       )
    else
-      ;; No locations exist, ask to create one
+      ;; No hi ha ubicacions existents; demanar crear-ne una
       (printout t "No hi ha ubicacions existents al sistema." crlf)
    )
    
-   ;; Create new location
+   ;; Crear una ubicació nova
    (bind ?nova-loc (crear-localitzacio))
    (if (eq ?nova-loc FALSE) then
       (return FALSE))
@@ -658,9 +658,9 @@
    (return ?nova-loc)
 )
 
-;;; Function to select a property from a list
+;;; Funció per seleccionar una propietat d'una llista
 (deffunction seleccionar-propietat ()
-   ;; Collect all properties
+   ;; Recollir totes les propietats
    (bind ?properties (create$))
    (do-for-all-instances ((?p Property)) TRUE
       (bind ?properties (create$ ?properties (instance-name ?p))))
@@ -669,7 +669,7 @@
       (printout t "ERROR: No hi ha propietats al sistema." crlf)
       (return FALSE))
    
-   ;; Display menu
+   ;; Mostrar el menú
    (printout t crlf "=== SELECCIONA UNA PROPIETAT ===" crlf)
    (bind ?i 1)
    (foreach ?prop ?properties
@@ -681,26 +681,26 @@
       (bind ?i (+ ?i 1)))
    (printout t crlf "Selecciona el número de la propietat (1-" (length$ ?properties) ") o 'cancelar': ")
    
-   ;; Read selection
+   ;; Llegir la selecció
    (bind ?seleccio (read))
    
    (if (eq ?seleccio cancelar) then
       (return FALSE))
    
-   ;; Validate selection
+   ;; Validar la selecció
    (if (or (not (integerp ?seleccio))
            (< ?seleccio 1)
            (> ?seleccio (length$ ?properties))) then
       (printout t "ERROR: Selecció no vàlida." crlf)
       (return FALSE))
    
-   ;; Return selected property
+   ;; Retornar la propietat seleccionada
    (return (nth$ ?seleccio ?properties))
 )
 
-;;; Function to select or create a neighbourhood
+;;; Funció per seleccionar o crear un barri
 (deffunction seleccionar-o-crear-barri ()
-   ;; Collect all neighbourhoods
+   ;; Recollir tots els barris
    (bind ?barris (create$))
    (do-for-all-instances ((?b Neighbourhood)) TRUE
       (bind ?barris (create$ ?barris (instance-name ?b))))
@@ -722,12 +722,12 @@
          (return FALSE))
       
       (if (< ?seleccio ?i) then
-         ;; Select existing neighbourhood
+         ;; Seleccionar un barri existent
          (return (nth$ ?seleccio ?barris))
       )
    )
    
-   ;; Create new neighbourhood
+   ;; Crear un barri nou
    (printout t crlf "=== CREAR NOU BARRI ===" crlf)
    (printout t "Nom del barri (o 'cancelar'): ")
    (bind ?nom-barri (read))
@@ -752,26 +752,26 @@
    (return ?barri-instance)
 )
 
-;;; Function to create a new location
+;;; Funció per crear una localització nova
 (deffunction crear-localitzacio ()
    (printout t crlf "=== CREAR NOVA LOCALITZACIÓ ===" crlf)
    
-   ;; Read latitude
+   ;; Llegir la latitud
    (bind ?lat (read-float 41.0 42.0 "Latitud (41.0-42.0)"))
    (if (eq ?lat cancelar) then
       (return FALSE))
    
-   ;; Read longitude
+   ;; Llegir la longitud
    (bind ?lon (read-float 2.0 3.0 "Longitud (2.0-3.0)"))
    (if (eq ?lon cancelar) then
       (return FALSE))
    
-   ;; Select or create neighbourhood
+   ;; Seleccionar o crear un barri
    (bind ?barri (seleccionar-o-crear-barri))
    (if (eq ?barri FALSE) then
       (return FALSE))
    
-   ;; Create location instance
+   ;; Crear la instància de la localització
    (bind ?loc-instance (gensym*))
    (make-instance ?loc-instance of Location
       (latitude ?lat)
@@ -782,7 +782,7 @@
    (return ?loc-instance)
 )
 
-;;; Function to create rooms for a property
+;;; Funció per crear habitacions per a una propietat
 (deffunction crear-habitacions ()
    (bind ?habitacions (create$))
    
@@ -806,18 +806,18 @@
    (return ?habitacions)
 )
 
-;;; Function to create a new property
+;;; Funció per crear una propietat nova
 (deffunction crear-propietat ()
    (printout t crlf "=== CREAR NOVA PROPIETAT ===" crlf)
    
-   ;; Read property name
+   ;; Llegir el nom de la propietat
    (printout t "Nom de la propietat (o 'cancelar'): ")
    (bind ?nom-prop (read))
    (if (eq ?nom-prop cancelar) then
       (return FALSE))
    (bind ?prop-instance (sym-cat viv- ?nom-prop))
    
-   ;; Select property type
+   ;; Seleccionar el tipus de propietat
    (printout t crlf "=== TIPUS DE PROPIETAT ===" crlf)
    (printout t "1. Pis (Apartment)" crlf)
    (printout t "2. Casa (House)" crlf)
@@ -826,28 +826,28 @@
    (if (eq ?tipus cancelar) then
       (return FALSE))
    
-   ;; Read address
+   ;; Llegir l'adreça
    (printout t "Adreça de la propietat (o 'cancelar'): ")
    (bind ?adreca (read))
    (if (eq ?adreca cancelar) then
       (return FALSE))
    
-   ;; Read area
+   ;; Llegir la superfície
    (bind ?area (read-integer-free "Superfície en m²"))
    (if (eq ?area cancelar) then
       (return FALSE))
    
-   ;; Create location
+   ;; Crear la localització
    (bind ?localitzacio (crear-localitzacio))
    (if (eq ?localitzacio FALSE) then
       (return FALSE))
    
-   ;; Create rooms
+   ;; Crear les habitacions
    (bind ?habitacions (crear-habitacions))
    (if (eq ?habitacions FALSE) then
       (return FALSE))
    
-   ;; Read additional attributes
+   ;; Llegir atributs addicionals
    (bind ?llum-natural (read-integer 0 3 "Llum natural (0-3)"))
    (if (eq ?llum-natural cancelar) then
       (return FALSE))
@@ -868,15 +868,15 @@
    (if (eq ?fugues cancelar) then
       (return FALSE))
 
-   ;; Soundproofing
+   ;; Insonorització
    (bind ?insonoritzat (read-si-no "És insonoritzada (soundproof)"))
    (if (eq ?insonoritzat cancelar) then
       (return FALSE))
    
-   ;; Create property based on type
+   ;; Crear la propietat segons el tipus
    (switch ?tipus
       (case 1 then
-         ;; Apartment
+         ;; Pis
          (bind ?planta (read-integer-free "Planta"))
          (if (eq ?planta cancelar) then
             (return FALSE))
@@ -893,7 +893,7 @@
             (isSoundproof (if (eq ?insonoritzat si) then TRUE else FALSE))
             (floor ?planta)))
       (case 2 then
-         ;; House
+         ;; Casa
          (make-instance ?prop-instance of House
             (address ?adreca)
             (area ?area)
@@ -928,7 +928,7 @@
    (return ?prop-instance)
 )
 
-;;; Function to add a new rental offer
+;;; Funció per afegir una oferta de lloguer nova
 (deffunction afegir-oferta-nova ()
    (printout t crlf crlf)
    (printout t "========================================" crlf)
@@ -936,7 +936,7 @@
    (printout t "========================================" crlf crlf)
    (printout t "Pots cancelar en qualsevol moment escrivint 'cancelar'" crlf crlf)
    
-   ;; Read offer name
+   ;; Llegir el nom de l'oferta
    (printout t "Nom de l'oferta (o 'cancelar' per avortar): ")
    (bind ?nom (read))
    (if (eq ?nom cancelar) then
@@ -944,7 +944,7 @@
       (return FALSE))
    (bind ?nom-instance (sym-cat oferta- ?nom))
    
-   ;; Ask if creating new property or selecting existing
+   ;; Preguntar si es crea una propietat nova o se'n selecciona una d'existent
    (printout t crlf "Vols crear una nova propietat o seleccionar-ne una existent?" crlf)
    (printout t "1. Crear nova propietat" crlf)
    (printout t "2. Seleccionar propietat existent" crlf)
@@ -953,7 +953,7 @@
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Get or create property
+   ;; Obtenir o crear la propietat
    (if (= ?opcio-prop 1) then
       (bind ?propietat (crear-propietat))
       (if (eq ?propietat FALSE) then
@@ -966,32 +966,32 @@
          (return FALSE))
    )
    
-   ;; Read price
+   ;; Llegir el preu
    (bind ?preu (read-float-free "Preu mensual en €"))
    (if (eq ?preu cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read max people
+   ;; Llegir el màxim de persones
    (bind ?max-persones (read-integer-free "Número màxim de persones"))
    (if (eq ?max-persones cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Read minimum months
+   ;; Llegir la durada mínima (mesos)
    (bind ?min-mesos (read-integer-free "Durada mínima del contracte en mesos"))
    (if (eq ?min-mesos cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Select features
+   ;; Seleccionar característiques
    (printout t crlf "Selecciona les característiques de l'oferta:" crlf)
    (bind ?features (select-features))
    (if (eq ?features cancelar) then
       (printout t crlf "Operació cancel·lada." crlf crlf)
       (return FALSE))
    
-   ;; Create the rental offer instance
+   ;; Crear la instància de l'oferta de lloguer
    (make-instance ?nom-instance of RentalOffer
       (hasProperty ?propietat)
       (price ?preu)
@@ -1000,7 +1000,7 @@
       (hasFeature ?features)
    )
    
-   ;; Display confirmation
+   ;; Mostrar confirmació
    (printout t crlf crlf)
    (printout t "========================================" crlf)
    (printout t "OFERTA AFEGIDA CORRECTAMENT" crlf)
@@ -1016,7 +1016,7 @@
    )
    (printout t "========================================" crlf crlf)
    
-   ;; Generate recommendations with the new offer
+   ;; Generar recomanacions amb la nova oferta
    (printout t "Generant recomanacions amb la nova oferta..." crlf crlf)
    (run)
    (printout t "Recomanacions actualitzades!" crlf crlf)
@@ -1024,9 +1024,9 @@
    (return ?nom-instance)
 )
 
-;;; Function to select a client from a list
+;;; Funció per seleccionar un client d'una llista
 (deffunction seleccionar-client ()
-   ;; Collect all clients
+   ;; Recollir tots els clients
    (bind ?clients (create$))
    (do-for-all-instances ((?c Client)) TRUE
       (bind ?clients (create$ ?clients (instance-name ?c))))
@@ -1035,7 +1035,7 @@
       (printout t "ERROR: No hi ha clients al sistema." crlf)
       (return FALSE))
    
-   ;; Display menu
+   ;; Mostrar el menú
    (printout t crlf "=== SELECCIONA UN CLIENT ===" crlf)
    (bind ?i 1)
    (foreach ?client ?clients
@@ -1043,24 +1043,24 @@
       (bind ?i (+ ?i 1)))
    (printout t crlf "Selecciona el número del client (1-" (length$ ?clients) ") o 'cancelar': ")
    
-   ;; Read selection
+   ;; Llegir la selecció
    (bind ?seleccio (read))
    
    (if (eq ?seleccio cancelar) then
       (return FALSE))
    
-   ;; Validate selection
+   ;; Validar la selecció
    (if (or (not (integerp ?seleccio))
            (< ?seleccio 1)
            (> ?seleccio (length$ ?clients))) then
       (printout t "ERROR: Selecció no vàlida." crlf)
       (return FALSE))
    
-   ;; Return selected client
+   ;; Retornar el client seleccionat
    (return (nth$ ?seleccio ?clients))
 )
 
-;;; Function to display all offers for a client filtered by recommendation level
+;;; Funció per mostrar totes les ofertes d'un client filtrades per nivell de recomanació
 (deffunction mostrar-ofertes-client ()
    (bind ?client-seleccionat (seleccionar-client))
    
@@ -1071,7 +1071,7 @@
    (printout t "OFERTES PER AL CLIENT: " ?client-seleccionat crlf)
    (printout t "========================================" crlf crlf)
    
-   ;; Ask for filter level
+   ;; Demanar el nivell de filtre
    (printout t "Filtrar per nivell de recomanació:" crlf)
    (printout t "1. Totes les ofertes" crlf)
    (printout t "2. Molt recomenat" crlf)
@@ -1092,19 +1092,19 @@
       (case 5 then (bind ?nivell-filtre "no recomenat"))
    )
    
-   ;; Collect and display all offers for this client
+   ;; Recollir i mostrar totes les ofertes d'aquest client
    (bind ?count 0)
    (do-for-all-instances ((?o RentalOffer)) TRUE
       (bind ?mostrar FALSE)
       
-      ;; Check if there's a recommendation for this offer and client
+      ;; Comprovar si hi ha una recomanació per a aquesta oferta i client
       (do-for-all-instances ((?r Recommendation))
          (and (eq (nth$ 1 ?r:recommendedFor) ?client-seleccionat)
               (eq (nth$ 1 ?r:aboutOffer) (instance-name ?o)))
          
          (bind ?nivell (nth$ 1 ?r:recommendationLevel))
          
-         ;; Apply filter
+         ;; Aplicar el filtre
          (if (or (eq ?nivell-filtre "tots")
                  (eq ?nivell ?nivell-filtre)) then
             (bind ?mostrar TRUE)
@@ -1118,7 +1118,7 @@
                   (bind ?area (nth$ 1 (send ?prop-obj get-area)))
                   (bind ?preu (nth$ 1 (send ?o get-price)))
                   
-                  ;; Get neighbourhood information
+                  ;; Obtenir informació del barri
                   (bind ?barri-nom "Desconegut")
                   (bind ?barri-seguretat "N/A")
                   (bind ?barri-preu-mitja "N/A")
@@ -1149,7 +1149,7 @@
                   (printout t "Nivell: " ?nivell crlf)
                   (printout t "----------------------------------------" crlf)
                   
-                  ;; Check if meets all restrictive criteria
+                  ;; Comprovar si compleix tots els criteris restrictius
                   (bind ?num-no-complerts 0)
                   (do-for-all-facts ((?cnc criteri-no-complert))
                      (and (eq ?cnc:client ?client-seleccionat) (eq ?cnc:oferta (instance-name ?o)))
@@ -1167,7 +1167,7 @@
                         (printout t "  " ?idx ". " ?cnc:descripcio crlf))
                   )
                   
-                  ;; Show highlighted characteristics
+                  ;; Mostrar característiques destacades
                   (bind ?num-destacades 0)
                   (do-for-all-facts ((?cd caracteristica-destacada))
                      (and (eq ?cd:client ?client-seleccionat) (eq ?cd:oferta (instance-name ?o)))
@@ -1198,7 +1198,7 @@
    (printout t crlf)
 )
 
-;;; Interactive menu
+;;; Menú interactiu
 (deffunction menu-interactiu ()
    (bind ?sortir FALSE)
    (while (not ?sortir)
@@ -1233,5 +1233,5 @@
    )
 )
 
-;;; Start interactive menu
+;;; Inicia el menú interactiu
 (menu-interactiu)
