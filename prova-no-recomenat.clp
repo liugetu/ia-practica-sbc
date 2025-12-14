@@ -30,13 +30,13 @@
     (worksOrStudies [loc-campus-nord])
     
     ;; Preferències de serveis
-    (wantsGreenArea TRUE)     ; Necessita espais verds
-    (wantsHealthCenter TRUE)  ; Necessita centre de salut proper
-    (wantsNightLife FALSE)    ; No li interessa l'oci nocturn
-    (wantsSchool FALSE)       ; No necessita escola
-    (wantsStadium FALSE)      ; No necessita estadi
-    (wantsSupermarket TRUE)   ; Necessita supermercat proper
-    (wantsTransport FALSE)
+    (wantsGreenArea si)     ; Necessita espais verds
+    (wantsHealthCenter si)  ; Necessita centre de salut proper
+    (wantsNightLife no)    ; No li interessa l'oci nocturn
+    (wantsSchool no)       ; No necessita escola
+    (wantsStadium no)      ; No necessita estadi
+    (wantsSupermarket si)   ; Necessita supermercat proper
+    (wantsTransport no)
     
     (minMonthsClient 12)
   )

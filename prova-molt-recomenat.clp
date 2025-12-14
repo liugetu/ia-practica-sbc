@@ -27,19 +27,19 @@
     (minArea 70)
     (minDorms 3)
     (numTenants 4)
-    (needsDoubleBedroom TRUE)
+    (needsDoubleBedroom si)
     
     ;; Preferències d'ubicació
     (worksOrStudies [loc-eixample])
     
     ;; Preferències de serveis (família necessita molts serveis)
-    (wantsGreenArea TRUE)
-    (wantsHealthCenter TRUE)
-    (wantsNightLife FALSE)
-    (wantsSchool TRUE)        ; Important per als nens
-    (wantsStadium FALSE)
-    (wantsSupermarket TRUE)
-    (wantsTransport TRUE)
+    (wantsGreenArea si)
+    (wantsHealthCenter si)
+    (wantsNightLife no)
+    (wantsSchool si)        ; Important per als nens
+    (wantsStadium no)
+    (wantsSupermarket si)
+    (wantsTransport si)
     
     (minMonthsClient 24)
   )

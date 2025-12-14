@@ -30,13 +30,13 @@
     (worksOrStudies [loc-gracia])
     
     ;; Preferències de serveis
-    (wantsGreenArea TRUE)
-    (wantsHealthCenter TRUE)
-    (wantsNightLife FALSE)
-    (wantsSchool FALSE)
-    (wantsStadium FALSE)
-    (wantsSupermarket TRUE)
-    (wantsTransport TRUE)
+    (wantsGreenArea si)
+    (wantsHealthCenter si)
+    (wantsNightLife no)
+    (wantsSchool no)
+    (wantsStadium no)
+    (wantsSupermarket si)
+    (wantsTransport si)
     
     (minMonthsClient 12)
   )
@@ -84,8 +84,8 @@
     (hasRoom [room-test-1] [room-test-2])  ; 2 dormitoris
     (floor 2)
     (numBathrooms 1)
-    (naturalLight 3)  ; llum tot el dia
-    (state 4)
+    (naturalLight 1)
+    (state 3)
     (hasDampness FALSE)
     (hasSquatters FALSE)
     (hasLeaks FALSE)

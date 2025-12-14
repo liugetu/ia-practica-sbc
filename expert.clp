@@ -1102,16 +1102,19 @@
    ;; Verificar si té habitació doble
    (bind ?te-doble FALSE)
    (progn$ (?room ?habitacions)
-      (if (and (instance-existp ?room)
-               (eq (send (instance-address ?room) get-isDouble) TRUE))
-          then (bind ?te-doble TRUE)))
+      (if (instance-existp ?room)
+          then
+            (bind ?is-double-list (send (instance-address ?room) get-isDouble))
+            (if (and (> (length$ ?is-double-list) 0)
+                     (eq (nth$ 1 ?is-double-list) TRUE))
+                then (bind ?te-doble TRUE))))
    
    ;; Aplicar puntuació segons les regles
    (if (eq ?vol-doble si)
        then 
          (if (eq ?te-doble TRUE)
              then (bind ?nova (+ ?nova 10))    ; Vol i té: +10
-             else 
+                else 
                 (assert (criteri-no-complert 
                          (client ?c) 
                          (oferta ?o) 

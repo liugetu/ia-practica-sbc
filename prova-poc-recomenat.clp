@@ -30,13 +30,13 @@
     (worksOrStudies [loc-centre])
     
     ;; Preferències de serveis
-    (wantsGreenArea FALSE)
-    (wantsHealthCenter FALSE)
-    (wantsNightLife TRUE)     ; Vol oci nocturn
-    (wantsSchool FALSE)
-    (wantsStadium FALSE)
-    (wantsSupermarket TRUE)
-    (wantsTransport TRUE)
+    (wantsGreenArea no)
+    (wantsHealthCenter no)
+    (wantsNightLife si)     ; Vol oci nocturn
+    (wantsSchool no)
+    (wantsStadium no)
+    (wantsSupermarket si)
+    (wantsTransport si)     ; Vol transport
     
     (minMonthsClient 6)
   )
