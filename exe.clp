@@ -9,14 +9,15 @@
 
 ;;; Carrega la base de dades de vivendes i clients de Barcelona
 ;;; POTS COMENTAR I DESCOMENTAR LINIES PER PROVAR DIFERENTS ENTRADES
-(load "vivendes-barcelona.clp")
-(load "clients-barcelona.clp")
+;;;(load "vivendes-barcelona.clp")
+;;;(load "clients-barcelona.clp")
 ;;;(load "inicialitzacio-basica.clp")
 ;;;(load "prova-no-recomenat.clp")
 ;;;(load "prova-poc-recomenat.clp")
 ;;;(load "prova-recomenat.clp")
 ;;;(load "prova-molt-recomenat.clp")
 ;;;(load "prova-hardvssoft.clp")
+(load "prova-red-flags.clp")
 
 ;;; Carrega les regles del sistema expert
 (load "expert.clp")

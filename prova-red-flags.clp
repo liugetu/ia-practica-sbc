@@ -48,7 +48,7 @@
 
 	([viv-poblenou-09] of Apartment
 		(address "A/ d'Icària 204, Poblenou")
-		(area 75)
+		(area 70)
 		(naturalLight 2)
 		(state 4)
 		(floor 3)
