@@ -44,6 +44,7 @@
     )
 
 	([room-51-01] of Room (isDouble TRUE))
+    ([room-51-02] of Room (isDouble FALSE))
 
 	([viv-poblenou-09] of Apartment
 		(address "A/ d'Icària 204, Poblenou")
