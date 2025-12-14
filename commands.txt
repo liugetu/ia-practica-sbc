@@ -1,5 +1,0 @@
-Comandaments per transformar de protegé (turtle, per exemple) a clips utilitzant owl2clips
-
-source ~/myenv/bin/activate
-python3 -c "import owl2conv; print('OK')"
-owl2clips --input alquileres.ttl --output ontologia.clp --format turtle
