@@ -1,4 +1,3 @@
-
 ;;; ---------------------------------------------------------
 ;;; prova-squatters.clp
 ;;; Ofertes de prova (squatters)
@@ -6,9 +5,7 @@
 
 (definstances prova-squatters
 
-	;;; ---------------------------------------------------------
-	;;; Dependencies (barri, location, rooms, property)
-	;;; ---------------------------------------------------------
+	([perfil-elderly-02] of Elderly)
 
 	([barri-poblenou] of Neighbourhood
 		(NeighbourhoodName "Poblenou")
@@ -47,6 +44,7 @@
     )
 
 	([room-51-01] of Room (isDouble TRUE))
+    ([room-51-02] of Room (isDouble FALSE))
 
 	([viv-poblenou-09] of Apartment
 		(address "A/ d'Icària 204, Poblenou")
