@@ -1,11 +1,6 @@
 ;;; ---------------------------------------------------------
 ;;; inicialització.clp
-;;; Fets/instàncies d'exemple per provar el sistema d'alquiler
-;;;
-;;; Es pressuposa que abans s'ha carregat ontologia.clp
-;;; (defclass Property, Apartment, House, Duplex, Room, Location,
-;;;  PropertyFeature, Service (+ subclasses), Proximity,
-;;;  ClientProfile (+ subclasses), Client, RentalOffer, Recommendation, ...)
+;;; Fets/instàncies d'exemple per provar el SBC
 
 (definstances inicialitzacio
 

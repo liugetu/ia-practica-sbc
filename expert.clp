@@ -1,10 +1,6 @@
 ;;; ---------------------------------------------------------
 ;;; expert.clp
 ;;; Sistema expert de recomanació de lloguers
-;;;
-;;; Es pressuposa:
-;;;   - Carregada l'ontologia (ontologia.clp)
-;;;   - Carregades les instàncies d'exemple (inicialització.clp)
 ;;; ---------------------------------------------------------
 
 ;;; Llindars globals per transformar punts -> nivell de recomanació
