@@ -93,10 +93,6 @@
   ;;; PROPIETATS
   ;;; ------------------------------
 
-  ;;; ------------------------------
-  ;;; PROPIETATS
-  ;;; ------------------------------
-
   ;; OFERTA 1: Compleix criteris HARD però NO els SOFT
   ;; Preu: 750€ (OK), Superfície: 55m² (OK), Dormitoris: 2 (OK)
   ;; Però: lluny de Gràcia, sense serveis, baixa qualitat, poca llum

@@ -1,16 +1,17 @@
 Aquest programa és capaç de recomanar una propietat òptima segons les preferències d’un client.
 
-El ficher executable es el exe.clp, aquest ficher s'encarrega de carregar l'ontologia, la
+El fitxer executable es el exe.clp, aquest fitxer s'encarrega de carregar l'ontologia, la
 inicialització (vivendes, clients) i el sistema expert.
 
-En cas de voler realitzar aquests pasos manualment, també es pot realitzar tan sols comentant les
-respectives línies d'inicialització en el ficher.
+En cas de voler canviar els fitxers d'entrada, també es pot realitzar tan sols comentant 
+i descomentant les respectives línies d'inicialització en el fitxer exe.clp.
 
-La comanda per executar el programa desde un terminal (clips instalat en el directori de treball)
+La comanda per executar el programa des de un terminal (clips instalat en el directori de treball)
 és el següent:
   clips -f exe.clp
 
-Una vegada executat, cal prémer enter per accedir al menú interactiu. Les opcions són intuïtives, i permeten:
+Una vegada executat, s'ha d'esperar un moment i cal prémer enter per accedir al menú interactiu. 
+Les opcions són intuïtives, i permeten:
   1. Afegir un nou client
   2. Llistar totes les instàncies de client
   3. Afegir una nova oferta de lloguer
