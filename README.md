@@ -1,6 +1,6 @@
 # IA Pràctica 2 - Sistema Basat en el Coneixement (SBC)
 
-Aquest programa és capaç de **recomanar una propietats òptimes** segons les preferències d'un client utilitzant un sistema expert basat en regles implementat en CLIPS.
+Aquest programa és capaç de **recomanar propietats òptimes** segons les preferències d'un client utilitzant un sistema expert basat en regles implementat en CLIPS.
 
 El sistema avalua diferents ofertes de lloguer considerant criteris restrictius (hard) com el preu, superfície i nombre de dormitoris, així com criteris preferibles (soft) com la proximitat a serveis, qualitat de la vivenda i característiques addicionals.
 
